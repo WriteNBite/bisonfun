@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Tv List</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" th:href="@{~/images/logo.png}" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+        type="text/css" />
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"
+        type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link th:href="@{~/css/mainstyles.css}" rel="stylesheet" />
+    <link th:href="@{~/css/usercontentlist.css}" rel="stylesheet" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script th:src="@{~/js/userListScript.js}"></script>
+    <script th:src="@{~/js/iconscript.js}"></script>
+</head>
+
+<body onload="seasonIcon()" class="d-flex flex-column min-vh-100">
+    <!-- Navigation-->
+    <nav class="navbar navbar-light bg-light static-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="" id="icon"> BisonFun <span style="color: green;">TV</span></a>
+            <form th:action="@{~/search}" method="get" class="form-subscribe">
+                <!-- Search input-->
+                <div class="row">
+                    <div class="col-6">
+                        <input class="form-control form-control-lg" id="query" name="query" type="text" placeholder="Search..." required />
+                    </div>
+                    <div class="col-4">
+                        <select id="types" class="form-select form-select-lg types" name="type">
+                            <option value="movie">Movie</option>
+                            <option value="tv" selected>TV Show</option>
+                            <option value="anime">Anime</option>
+                        </select>
+                    </div>
+                    <div class="col-2"><button class="btn btn-success btn-lg" id="searchButton"
+                            type="submit">Find</button></div>
+                </div>
+            </form>
+
+            <!--Authenticated buttons-->
+            <div sec:authorize="isAnonymous()">
+                <a class="btn btn-lg btn-outline-success" th:href="@{~/login}">Login</a>
+                <a class="btn btn-lg btn-success" th:href="@{~/register}">Sign Up</a>
+            </div>
+            <div sec:authorize="isAuthenticated()" class="btn-group">
+                <a th:href="@{~/cabinet}" sec:authentication="name" class="btn btn-lg btn-success">Username</a>
+                <button type="button" class="btn btn-lg btn-success dropdown-toggle dropdown-toggle-split"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" th:href="@{~/cabinet}">
+                        <i class="bi bi-person-circle"></i>
+                        User page</a></li>
+                    <li><a class="dropdown-item" th:href="@{~/wtw}">
+                        <i class="bi bi-collection-play"></i>
+                        What To Watch</a></li>
+                    <li><form action="/logout" method="post">
+                        <button type="submit" class="dropdown-item">
+                            <i class="bi bi-box-arrow-left"></i>
+                            Logout</button>
+                    </form></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Results -->
+    <main class="container">
+        <div class="row d-flex justify-content-center">
+            <br><h3 class="text-center" th:text="${user.username}+'\'s Tv List'"><br>
+                "Hello World"
+            </h3>
+            <input class="col-md-6" type="text" name="filter" id="filter">
+            <br>
+        </div>
+        <div th:if="${plannedList.size()} > 0">
+            <div class="container">
+                <h4 class="d-inline-block">Planned</h4>
+                <button class="expnd list-button planned-button btn"></button>
+            </div>
+            <table id="planned-table" class="table table-bordered">
+                <thead>
+                <tr class="bg-success" style="color: white;">
+                    <th scope="col" class="cell-number">#</th>
+                    <th scope="col" class="cell-poster">Poster</th>
+                    <th scope="col" class="cell-title">Title</th>
+                    <th scope="col" class="cell-rating">Rating</th>
+                    <th scope="col" class="cell-episodes">Progress</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="plannedTv : ${plannedList}">
+                    <th class="align-middle text-center" th:text="${plannedList.indexOf(plannedTv)} + 1" scope="row">1</th>
+                    <td>
+                        <img class="poster" th:src="${plannedTv.tv.poster}" alt="">
+                    </td>
+                    <td class="align-middle">
+                        <a th:href="@{/tv/{id}(id=${plannedTv.tv.id})}" class="link text-decoration-none" th:text="${plannedTv.tv.title}">title <span th:if="${plannedTv.tv.year} > 0" th:text="' ('+${plannedTv.tv.year}+')'">(year)</span></a>
+                    </td>
+                    <td class="align-middle text-center" th:text="${plannedTv.score}">-</td>
+                    <td class="align-middle text-center" th:text="${plannedTv.episodes}">?</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${watchingList.size()} > 0">
+            <div class="container">
+                <h4 class="d-inline-block">Watching</h4>
+                <button class="expnd list-button watching-button btn"></button>
+            </div>
+            <table id="watching-table" class="table table-bordered">
+                <thead>
+                <tr class="bg-success" style="color: white;">
+                    <th scope="col" class="cell-number">#</th>
+                    <th scope="col" class="cell-poster">Poster</th>
+                    <th scope="col" class="cell-title">Title</th>
+                    <th scope="col" class="cell-rating">Rating</th>
+                    <th scope="col" class="cell-episodes">Progress</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="watchingTv : ${watchingList}">
+                    <th class="align-middle text-center" th:text="${watchingList.indexOf(watchingTv)} + 1" scope="row">1</th>
+                    <td>
+                        <img class="poster" th:src="${watchingTv.tv.poster}" alt="">
+                    </td>
+                    <td class="align-middle">
+                        <a th:href="@{/tv/{id}(id=${watchingTv.tv.id})}" class="link text-decoration-none" th:text="${watchingTv.tv.title}">title <span th:if="${watchingTv.tv.year} > 0" th:text="' ('+${watchingTv.tv.year}+')'">(year)</span></a>
+                    </td>
+                    <td class="align-middle text-center" th:text="${watchingTv.score}">-</td>
+                    <td class="align-middle text-center" th:text="${watchingTv.episodes}">?</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${completeList.size()} > 0">
+            <div class="container">
+                <h4 class="d-inline-block">Completed</h4>
+                <button class="expnd list-button completed-button btn"></button>
+            </div>
+            <table id="completed-table" class="table table-bordered">
+                <thead>
+                <tr class="bg-success" style="color: white;">
+                    <th scope="col" class="cell-number">#</th>
+                    <th scope="col" class="cell-poster">Poster</th>
+                    <th scope="col" class="cell-title">Title</th>
+                    <th scope="col" class="cell-rating">Rating</th>
+                    <th scope="col" class="cell-episodes">Progress</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="completeTv : ${completeList}">
+                    <th class="align-middle text-center" th:text="${completeList.indexOf(completeTv)} + 1" scope="row">1</th>
+                    <td>
+                        <img class="poster" th:src="${completeTv.tv.poster}" alt="">
+                    </td>
+                    <td class="align-middle">
+                        <a th:href="@{/tv/{id}(id=${completeTv.tv.id})}" class="link text-decoration-none" th:text="${completeTv.tv.title}">title <span th:if="${completeTv.tv.year} > 0" th:text="' ('+${completeTv.tv.year}+')'">(year)</span></a>
+                    </td>
+                    <td class="align-middle text-center" th:text="${completeTv.score}">-</td>
+                    <td class="align-middle text-center" th:text="${completeTv.episodes}">?</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div th:if="${completeList.size() < 1 && watchingList.size() < 1 && plannedList.size() < 1}" class="text-center">
+            <img class="img-fluid empty" th:src="@{~/images/empty-tv.jpg}" alt="">
+            <h4 class="text-center">
+                Sometimes what a person needs is just one piece of <a th:href="@{~/tv/1405}" class="text-decoration-none link-success">show</a>
+            </h4>
+        </div>
+    </main>
+    <!-- Footer --><br>
+    <footer class="footer bg-light mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+                    <ul class="list-inline mb-2">
+                        <li class="list-inline-item"><a th:href="@{~/about}">About</a></li>
+                        <li class="list-inline-item">⋅</li>
+                        <li class="list-inline-item"><a href="mailto:writenbite@protonmail.com">Contact</a></li>
+                        <li class="list-inline-item">⋅</li>
+                        <li class="list-inline-item"><a th:href="@{~/terms}">Terms of Use</a></li>
+                        <li class="list-inline-item">⋅</li>
+                        <li class="list-inline-item"><a th:href="@{~/privacy}">Privacy Policy</a></li>
+                    </ul>
+                    <p class="text-muted small mb-4 mb-lg-0">© BisonFun 2022. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+
+</html>

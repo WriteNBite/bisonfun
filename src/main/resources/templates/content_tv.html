@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=1024" />
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title th:text="${content.title}">Title</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" th:href="@{~/images/logo.png}"/>
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+          type="text/css"/>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"
+          type="text/css"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link th:href="@{~/css/mainstyles.css}" rel="stylesheet"/>
+    <link th:href="@{~/css/finder.css}" rel="stylesheet"/>
+    <style>
+        .key {
+            color: green;
+        }
+
+        #episodes, #score {
+            width: 75px;
+        }
+    </style>
+    <script th:src="@{~/js/iconscript.js}"></script>
+</head>
+
+<body onload="seasonIcon()" class="d-flex flex-column min-vh-100">
+<!-- Navigation-->
+<nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="" id="icon"> BisonFun <span style="color: green;">TV</span></a>
+        <form th:action="@{~/search}" method="get" class="form-subscribe">
+            <!-- Search input-->
+            <div class="row">
+                <div class="col-6">
+                    <input class="form-control form-control-lg" id="query" name="query" type="text"
+                           placeholder="Search..." required/>
+                </div>
+                <div class="col-4">
+                    <select id="types" class="form-select form-select-lg types" name="type">
+                        <option value="movie">Movie</option>
+                        <option value="tv" selected>TV Show</option>
+                        <option value="anime">Anime</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <button class="btn btn-success btn-lg" id="searchButton"
+                            type="submit">Find
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!--Authenticated buttons-->
+        <div sec:authorize="isAnonymous()">
+            <a class="btn btn-lg btn-outline-success" th:href="@{~/login}">Login</a>
+            <a class="btn btn-lg btn-success" th:href="@{~/register}">Sign Up</a>
+        </div>
+        <div sec:authorize="isAuthenticated()" class="btn-group">
+            <a th:href="@{~/cabinet}" sec:authentication="name" class="btn btn-lg btn-success">Username</a>
+            <button type="button" class="btn btn-lg btn-success dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" th:href="@{~/cabinet}">
+                    <i class="bi bi-person-circle"></i>
+                    User page</a></li>
+                <li><a class="dropdown-item" th:href="@{~/wtw}">
+                    <i class="bi bi-collection-play"></i>
+                    What To Watch</a></li>
+                <li>
+                    <form action="/logout" method="post">
+                        <button type="submit" class="dropdown-item">
+                            <i class="bi bi-box-arrow-left"></i>
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Result -->
+<main class="container mt-3">
+    <div class="d-flex">
+        <div class="col-4">
+            <div>
+                <img class="img-thumbnail img-fluid h-75" th:src="${content.poster}"
+                     alt="">
+            </div>
+            <div class="row">
+                <div class="btn-group mt-2 container">
+                    <button th:text="${userTv.status} != null ? ${userTv.status.string} : 'Add to list'" type="button"
+                            class="btn btn-lg btn-success dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">Add to list
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li th:each="action : ${actions}">
+                            <form th:action="@{~/tv/{id}(id=${content.id})}" th:object="${userTv}" method="post"
+                                  th:if="${action != userTv.status && (content.status == content.status.RELEASED || action != action.COMPLETE)}">
+                                <input type="hidden" th:attr="name='status'" th:value="${action}">
+                                <input type="hidden" th:attr="name='score'" th:value="${userTv.score}">
+                                <input type="hidden" th:attr="name='episodes'" th:value="${userTv.episodes}">
+                                <button th:text="${action.string}" type="submit" class="dropdown-item">Status</button>
+                            </form>
+                        </li>
+                        <li th:if="${userTv.status} != null">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li th:if="${userTv.status} != null">
+                            <form th:method="delete">
+                                <button type="submit" class="dropdown-item" style="color: red">Remove from list</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="container col-8 d-flex">
+            <div class="col-5">
+                <div class="row">
+                    <h2 th:text="${content.title}">Title</h2>
+                    <div th:text="${'Global score: '+content.score}"></div>
+                </div>
+                <div>
+
+                    <!---->
+                    <div th:if="${userTv.status != null}">
+                        <div class="bg-success text-light">
+                            User information
+                        </div>
+                        <div class="row mb-2">
+                            <div>
+                                <div class="key d-inline-block">Episode progress:</div>
+                                <div class="value d-inline-block" th:text="${userTv.episodes}"></div>
+                            </div>
+                            <div>
+                                <div class="key d-inline-block">Score:</div>
+                                <div class="value d-inline-block"
+                                     th:text="${userTv.score == 0 ? '-' : userTv.score}"></div>
+                                <button type="button" class="btn btn-sm btn-success dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Update
+                                </button>
+                                <div class="dropdown-menu">
+                                    <form class="px-4 py-3" method="post" th:action="@{~/tv/{id}(id = ${id})}"
+                                          th:object="${userTv}">
+                                        <div class="form-group">
+                                            <label for="status">Status</label>
+                                            <select id="status" th:attr="name='status'">
+                                                <option th:each="action : ${actions}" th:value="${action}"
+                                                        th:text="${action.string}"
+                                                        th:selected="${action == userTv.status}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="episodes">Episodes progress</label>
+                                            <input th:attr="name='episodes'" type="number" id="episodes" min="0"
+                                                   th:max="${content.episodes} > 0 ? ${content.episodes} : 'Infinity'"
+                                                   step="1"
+                                                   th:value="${userTv.episodes}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="score">Score</label>
+                                            <input th:attr="name='score'" type="number" id="score" min="0"
+                                                   th:max="10" step="1"
+                                                   th:value="${userTv.score}">
+                                        </div>
+                                        <button type="submit" class="mt-2 d-flex ms-auto btn btn-sm btn-success">Save
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!---->
+
+                <div class="bg-success text-light">
+                    Information
+                </div>
+                <div th:if="${content.type == content.type.TV}">
+                    <div class="key d-inline-block">Episodes:</div>
+                    <div th:text="${content.episodes < 0 ? 'Uknown' : content.episodes}"
+                         class="value d-inline-block">null
+                    </div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Seasons:</div>
+                    <div th:text="${content.seasons}" class="value d-inline-block">number</div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Runtime:</div>
+                    <div th:text="${timeToWatch}" class="value d-inline-block">null min</div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Status:</div>
+                    <div th:text="${#strings.capitalize(content.status.toString().toLowerCase())}"
+                         class="value d-inline-block">Undefined
+                    </div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Air date:</div>
+                    <div th:text="${releaseDate}" class="value d-inline-block">null</div>
+                    <div th:if="${content.type == content.type.TV && content.status != content.status.ONGOING && lastAired != null}"
+                         th:text="' - '+${lastAired}" class="value d-inline-block">null
+                    </div>
+                    <div th:if="${content.type == content.type.TV && content.status == content.status.ONGOING}"
+                         th:text="' - present'" class="value d-inline-block">null
+                    </div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Genres:</div>
+                    <div th:text="${#strings.arrayJoin(content.genres, ', ')}" class="value d-inline-block">null
+                    </div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Networks:</div>
+                    <div th:text="${#strings.arrayJoin(content.networks, ', ')}" class="value d-inline-block">null
+                    </div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">Studios:</div>
+                    <div th:text="${#strings.arrayJoin(content.studios, ', ')}" class="value d-inline-block">null
+                    </div>
+                </div>
+                <div>
+                    <div class="key d-inline-block">External sources:</div>
+                    <div class="value d-inline-block"><a th:href="@{'https://www.themoviedb.org/tv/'+${content.getId()}}"><img th:src="@{~/images/tmdb.png}" alt="tmdb"></a></div>
+                </div>
+            </div>
+            <div class="col-6 ms-auto">
+                <div class="bg-success text-light">
+                    Description
+                </div>
+                <div class="row">
+                    <p th:text="${content.description}">Desc.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Footer --><br>
+<footer class="footer bg-light mt-auto">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item"><a th:href="@{~/about}">About</a></li>
+                    <li class="list-inline-item">⋅</li>
+                    <li class="list-inline-item"><a href="mailto:writenbite@protonmail.com">Contact</a></li>
+                    <li class="list-inline-item">⋅</li>
+                    <li class="list-inline-item"><a th:href="@{~/terms}">Terms of Use</a></li>
+                    <li class="list-inline-item">⋅</li>
+                    <li class="list-inline-item"><a th:href="@{~/privacy}">Privacy Policy</a></li>
+                </ul>
+                <p class="text-muted small mb-4 mb-lg-0">© BisonFun 2022. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</body>
+
+</html>

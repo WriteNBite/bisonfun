@@ -1,0 +1,26 @@
+div.wrapper{
+    display: flex;
+    flex-flow: row wrap;
+}
+main div.wrapper > div{
+    width: 200px; 
+    height: 385px; 
+    border: 1px solid black;
+    margin: 10px
+}
+div.wrapper img{
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: top;
+}
+div.title{
+    width: 170px;
+  text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+div.type{
+    display: flex;
+    justify-content: space-between;
+}

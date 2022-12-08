@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title th:text="${user.username}">null</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" th:href="@{~/images/logo.png}" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet"
+        type="text/css" />
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet"
+        type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link th:href="@{~/css/mainstyles.css}" rel="stylesheet" />
+    <link th:href="@{~/css/usercustoms.css}" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"
+        integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <script th:src="@{~/js/iconscript.js}"></script>
+</head>
+
+<body onload="seasonIcon()" class="d-flex flex-column min-vh-100">
+    <!-- Navigation-->
+    <nav class="navbar navbar-light bg-light static-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><img src="" id="icon"> BisonFun <span style="color:purple">User</span></a>
+            <form th:action="@{~/search}" method="get" class="form-subscribe">
+                <!-- Search input-->
+                <div class="row">
+                    <div class="col-6">
+                        <input class="form-control form-control-lg" id="query" name="query" type="text" required
+                               placeholder="Search..."/>
+                    </div>
+                    <div class="col-4">
+                        <select id="types" class="form-select form-select-lg types" name="type">
+                            <option value="movie" selected>Movie</option>
+                            <option value="tv">TV Show</option>
+                            <option value="anime">Anime</option>
+                        </select>
+                    </div>
+                    <div class="col-2">
+                        <button class="btn btn-bisonfun btn-lg" id="searchButton"
+                                type="submit">Find
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!--Authenticated buttons-->
+            <div sec:authorize="isAnonymous()">
+                <a class="btn btn-lg btn-outline-bisonfun" th:href="@{~/login}">Login</a>
+                <a class="btn btn-lg btn-bisonfun" th:href="@{~/register}">Sign Up</a>
+            </div>
+            <div sec:authorize="isAuthenticated()" class="btn-group">
+                <a th:href="@{~/cabinet}" sec:authentication="name" class="btn btn-lg btn-bisonfun">Username</a>
+                <button type="button" class="btn btn-lg btn-bisonfun dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" th:href="@{~/cabinet}">
+                        <i class="bi bi-person-circle"></i>
+                        User page</a></li>
+                    <li><a class="dropdown-item" th:href="@{~/wtw}">
+                        <i class="bi bi-collection-play"></i>
+                        What To Watch</a></li>
+                    <li><form action="/logout" method="post">
+                        <button type="submit" class="dropdown-item">
+                            <i class="bi bi-box-arrow-left"></i>
+                        Logout</button>
+                    </form></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="container mt-3">
+        <div class="row container">
+            <div class="col-4">
+                <img class="alert alert-bisonfun" th:src="@{https://robohash.org/{username}(username=${user.getUsername()}, set='set4')}" alt="">
+                <div class="row">
+                    <div class="btn-group mt-2 container">
+                        <h1 th:text="${user.getUsername()}">Username</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="container col-8">
+                <div class="row container border d-flex align-items-center">
+                    <div class="col">
+                        <h3><a class="text-decoration-none link-primary" th:href="@{~/users/{username}/anime(username=${username})}">Anime</a></h3>
+                        <p>Total: <span th:text="${animeList[0]+animeList[1]+animeList[2]}"></span></p>
+                        <p>Planed: <span th:text="${animeList[0]}"></span></p>
+                        <p>Watching: <span th:text="${animeList[1]}"></span></p>
+                        <p>Complete: <span th:text="${animeList[2]}"></span></p>
+                    </div>
+                    <div class="col">
+                        <canvas id="chart" style="display: block; box-sizing: border-box;"></canvas>
+                    </div>
+                </div>
+                <div class="row container border d-flex align-items-center">
+                    <div class="col">
+                        <h3><a class="text-decoration-none link-danger" th:href="@{~/users/{username}/movie(username=${username})}">Movie</a></h3>
+                        <p>Total: <span th:text="${movieList[0]+movieList[1]+movieList[2]}"></span></p>
+                        <p>Planed: <span th:text="${movieList[0]}"></span></p>
+                        <p>Watching: <span th:text="${movieList[1]}"></span></p>
+                        <p>Complete: <span th:text="${movieList[2]}"></span></p>
+                    </div>
+                    <div class="col">
+                        <canvas id="movie-chart" style="display: block; box-sizing: border-box;"></canvas>
+                    </div>
+                </div>
+                <div class="row container border d-flex align-items-center">
+                    <div class="col">
+                        <h3><a class="text-decoration-none link-success" th:href="@{~/users/{username}/tv(username=${username})}">TV</a></h3>
+                        <p>Total: <span th:text="${tvList[0]+tvList[1]+tvList[2]}"></span></p>
+                        <p>Planed: <span th:text="${tvList[0]}"></span></p>
+                        <p>Watching: <span th:text="${tvList[1]}"></span></p>
+                        <p>Complete: <span th:text="${tvList[2]}"></span></p>
+                    </div>
+                    <div class="col">
+                        <canvas id="tv-chart" style="display: block; box-sizing: border-box;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer --><br>
+    <footer class="footer bg-light mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 h-100 text-center text-lg-start my-auto">
+                    <ul class="list-inline mb-2">
+                        <li class="list-inline-item"><a th:href="@{~/about}">About</a></li>
+                        <li class="list-inline-item">⋅</li>
+                        <li class="list-inline-item"><a href="mailto:writenbite@protonmail.com">Contact</a></li>
+                        <li class="list-inline-item">⋅</li>
+                        <li class="list-inline-item"><a th:href="@{~/terms}">Terms of Use</a></li>
+                        <li class="list-inline-item">⋅</li>
+                        <li class="list-inline-item"><a th:href="@{~/privacy}">Privacy Policy</a></li>
+                    </ul>
+                    <p class="text-muted small mb-4 mb-lg-0">© BisonFun 2022. All Rights Reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script th:inline="javascript">
+        const Anime = {
+            "planned": /*[[${animeList[0]}]]*/ 0,
+            "watching": /*[[${animeList[1]}]]*/ 0,
+            "finished": /*[[${animeList[2]}]]*/ 0
+        };
+        const Movie = {
+            "planned": /*[[${movieList[0]}]]*/ 0,
+            "watching": /*[[${movieList[1]}]]*/ 0,
+            "finished": /*[[${movieList[2]}]]*/ 0
+        };
+        const Tv = {
+            "planned": /*[[${tvList[0]}]]*/ 0,
+            "watching": /*[[${tvList[1]}]]*/ 0,
+            "finished": /*[[${tvList[2]}]]*/ 0
+        };
+
+        const ctx = document.getElementById("chart").getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ["Planned", "Watching", "Complete"],
+                datasets: [{
+                    label: 'food Items',
+                    data: [Anime.planned, Anime.watching, Anime.finished],
+                    backgroundColor: ["#0080ff", "#8000ff", "#0000ff"]
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        const ctm = document.getElementById("movie-chart").getContext('2d');
+        const movieChart = new Chart(ctm, {
+            type: 'doughnut',
+            data: {
+                labels: ["Planned", "Watching", "Complete"],
+                datasets: [{
+                    label: 'food Items',
+                    data: [Movie.planned, Movie.watching, Movie.finished],
+                    backgroundColor: ["#ff8000", "#ff0080", "#ff0000"]
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        //TV Chart
+        const ctT = document.getElementById("tv-chart").getContext('2d');
+        const tvChart = new Chart(ctT, {
+            type: 'doughnut',
+            data: {
+                labels: ["Planned", "Watching", "Complete"],
+                datasets: [{
+                    label: 'food Items',
+                    data: [Tv.planned, Tv.watching, Tv.finished],
+                    backgroundColor: ["#00de80", "#80de00", "#00de00"]
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

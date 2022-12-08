@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>429 - Too many requests</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="refresh" th:content="${time}">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300i,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" th:href="@{~/images/logo.png}" />
+    <style>
+      .text-9xl{
+      font-size: 14rem;
+      }
+      @media(max-width: 645px){
+      .text-9xl{
+      font-size: 5.75rem;
+      }
+      .text-6xl{
+      font-size: 1.75rem;
+      }
+      .text-2xl {
+      font-size: 1rem;
+      line-height: 1.2rem;
+      }
+      .py-8 {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      }
+      .px-12 {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      }
+      }
+    </style>
+    <script th:inline="javascript">
+      const time = /*[[${time}]]*/ 0;
+    </script>
+  </head>
+  <body onload="timer(time)">
+    <div class="bg-gradient-to-r from-purple-300 to-blue-200">
+      <div class="w-9/12 m-auto py-16 min-h-screen flex items-center justify-center">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg pb-8">
+          <div class="border-t border-gray-200 text-center pt-8">
+            <h1 class="text-9xl font-bold text-purple-400">429</h1>
+            <img class="d-block mx-auto" width="300px" th:src="@{~/images/pic-429.png}" alt="">
+            <h1 class="text-6xl font-medium py-8">Oops! Too many requests</h1>
+            <p class="text-2xl pb-8 px-12 font-medium">Sorry, but it seems that too many people want to find some anime right now. The page will refresh in <span id="timer"></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script th:src="@{~/js/timer.js}"></script>
+  </body>
+</html>

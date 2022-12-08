@@ -1,0 +1,67 @@
+@charset "UTF-8";
+
+.btn-bisonfun {
+    color: #fff;
+    background-color: #7a1987;
+    border-color: #7a1987;
+  }
+  .btn-bisonfun:hover {
+    color: #fff;
+    background-color: #62146c;
+    border-color: #5a146c;
+  }
+  .btn-check:focus + .btn-bisonfun, .btn-bisonfun:focus {
+    color: #fff;
+    background-color: #62146c;
+    border-color: #5a146c;
+    box-shadow: 0 0 0 0.25rem rgba(153, 60, 137, 0.5);
+  }
+  .btn-check:checked + .btn-bisonfun, .btn-check:active + .btn-bisonfun, .btn-bisonfun:active, .btn-bisonfun.active, .show > .btn-bisonfun.dropdown-toggle {
+    color: #fff;
+    background-color: #62146c;
+    border-color: #4b1365;
+  }
+  .btn-check:checked + .btn-bisonfun:focus, .btn-check:active + .btn-bisonfun:focus, .btn-bisonfun:active:focus, .btn-bisonfun.active:focus, .show > .btn-bisonfun.dropdown-toggle:focus {
+    box-shadow: 0 0 0 0.25rem rgba(133, 60, 153, 0.5);
+  }
+  .btn-bisonfun:disabled, .btn-bisonfun.disabled {
+    color: #fff;
+    background-color: #7a1987;
+    border-color: #7a1987;
+  }
+
+  .bg-bisonfun {
+    --bs-bg-opacity: 1;
+    background-color: rgba(111, 66, 193, 1) !important;
+  }
+
+  .alert-bisonfun {
+    color: #8c0898;
+    background-color: #ffcff7;
+    border-color: #feb6f4;
+  }
+
+.btn-outline-bisonfun {
+  color: #7a1987;
+  border-color: #7a1987;
+}
+.btn-outline-bisonfun:hover {
+  color: #fff;
+  background-color: #7a1987;
+  border-color: #790dfd;
+}
+.btn-check:focus + .btn-outline-bisonfun, .btn-outline-bisonfun:focus {
+  box-shadow: 0 0 0 0.25rem rgba(193, 13, 253, 0.5);
+}
+.btn-check:checked + .btn-outline-bisonfun, .btn-check:active + .btn-outline-bisonfun, .btn-outline-bisonfun:active, .btn-outline-bisonfun.active, .btn-outline-bisonfun.dropdown-toggle.show {
+  color: #fff;
+  background-color: #810dfd;
+  border-color: #910dfd;
+}
+.btn-check:checked + .btn-outline-bisonfun:focus, .btn-check:active + .btn-outline-bisonfun:focus, .btn-outline-bisonfun:active:focus, .btn-outline-bisonfun.active:focus, .btn-outline-bisonfun.dropdown-toggle.show:focus {
+  box-shadow: 0 0 0 0.25rem rgba(157, 13, 253, 0.5);
+}
+.btn-outline-bisonfun:disabled, .btn-outline-bisonfun.disabled {
+  color: #910dfd;
+  background-color: transparent;
+}

@@ -1,0 +1,31 @@
+img.poster{
+    height: 68px;
+    width: 48px;
+}
+img.empty{
+    height: 400px;
+    width: auto;
+}
+
+.cell-number{
+    width: 3%;
+}
+.cell-poster{
+    width: 5%;
+}
+.cell-title{
+    width: 72%;
+}
+.cell-rating{
+    width: 10%;
+}
+.cell-episodes{
+    width: 10%;
+}
+
+.list-button::after{
+    content: "Collapse";
+}
+.list-button__active::after{
+    content: "Expand";
+}

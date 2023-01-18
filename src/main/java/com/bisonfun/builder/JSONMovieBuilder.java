@@ -143,7 +143,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
     @Override
     public JSONMovieBuilder addScore() {
         log.info("Getting score");
-        score = Math.round(root.getFloat("vote_average")*100f)/100f;
+        score = Math.round(root.getFloat("vote_average")*10f)/10f;
         log.info("Score: "+score);
         return this;
     }

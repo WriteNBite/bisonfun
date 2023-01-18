@@ -3,7 +3,7 @@ package com.bisonfun.builder;
 import com.bisonfun.domain.TMDBTVShow;
 import com.bisonfun.domain.enums.VideoContentStatus;
 import com.bisonfun.utilities.JSONParser;
-import com.bisonfun.utilities.Statics;
+import com.bisonfun.utilities.TMDB;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -148,9 +148,9 @@ public class JSONTVBuilder implements TVContentBuilder{
     public JSONTVBuilder addPoster() {
         log.info("Getting poster");
         if (root.isNull("poster_path")) {
-            poster = Statics.NO_IMAGE;
+            poster = TMDB.NO_IMAGE.link;
         } else {
-            poster = Statics.TMDB_IMAGE + root.getString("poster_path");
+            poster = TMDB.IMAGE.link + root.getString("poster_path");
         }
         log.info("Poster path: "+poster);
         return this;

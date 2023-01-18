@@ -33,8 +33,8 @@ public class JSONParser {
 
 
         //get anime list from AniList API
-        HttpResponse<String> result = Unirest.post(Statics.ANILIST_GRAPHQL)
-                .queryString("query", Statics.ANILIST_QUERY_SEARCH)
+        HttpResponse<String> result = Unirest.post(Anilist.GRAPHQL.link)
+                .queryString("query", AnilistQuery.SEARCH.query)
                 .queryString("variables", variables)
                 .asString();
 
@@ -49,7 +49,7 @@ public class JSONParser {
             log.error("Anime weren't found("+search+");");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }else if(result.getStatus() == 400){
-            log.error("Something went wrong:\n"+Statics.ANILIST_GRAPHQL+"\n"+Statics.ANILIST_QUERY_SEARCH+"\n"+variables);
+            log.error("Something went wrong:\n"+ Anilist.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_ID+"\n"+variables);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -64,8 +64,8 @@ public class JSONParser {
                 "}";
 
         //get anime from AniList API
-        HttpResponse<String> anime = Unirest.post(Statics.ANILIST_GRAPHQL)
-                .queryString("query", Statics.ANILIST_QUERY_ANIME_ID)
+        HttpResponse<String> anime = Unirest.post(Anilist.GRAPHQL.link)
+                .queryString("query", AnilistQuery.ANIME_BY_ID.query)
                 .queryString("variables", variables)
                 .asString();
 
@@ -78,7 +78,7 @@ public class JSONParser {
         }else if(anime.getStatus() == 404){
             throw new ContentNotFoundException("Anime #"+id+" not found");
         }else if(anime.getStatus() == 400){
-            log.error("Something went wrong:\n"+Statics.ANILIST_GRAPHQL+"\n"+Statics.ANILIST_QUERY_ANIME_ID+"\n"+variables);
+            log.error("Something went wrong:\n"+ Anilist.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_ID+"\n"+variables);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -93,8 +93,8 @@ public class JSONParser {
                 "}";
 
         //get anime from AniList API
-        HttpResponse<String> anime = Unirest.post(Statics.ANILIST_GRAPHQL)
-                .queryString("query", Statics.ANILIST_QUERY_ANIME_NAME)
+        HttpResponse<String> anime = Unirest.post(Anilist.GRAPHQL.link)
+                .queryString("query", AnilistQuery.ANIME_BY_NAME.query)
                 .queryString("variables", variables)
                 .asString();
 
@@ -108,7 +108,7 @@ public class JSONParser {
         }else if(anime.getStatus() == 404){
             throw new ContentNotFoundException("Anime '"+name+"' not found");
         }else if(anime.getStatus() == 400){
-            log.error("Something went wrong:\n"+Statics.ANILIST_GRAPHQL+"\n"+Statics.ANILIST_QUERY_ANIME_NAME+"\n"+variables);
+            log.error("Something went wrong:\n"+ Anilist.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_NAME+"\n"+variables);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -119,7 +119,7 @@ public class JSONParser {
     public JSONObject getMovieById(int id){
         log.info("getMovieById({})", id);
         //Get JSON of movie by id from TMDB
-        HttpResponse<String> result = Unirest.get(Statics.TMDB_MOVIE)
+        HttpResponse<String> result = Unirest.get(TMDB.MOVIE.link)
                 .routeParam("movie_id", Integer.toString(id))
                 .queryString("api_key", tmdbKey)
                 .queryString("language", "en-US")
@@ -142,7 +142,7 @@ public class JSONParser {
     public JSONObject getShowById(int id){
         log.info("getShowById({})", id);
         // get JSON of tv-show by id from TMDB
-        HttpResponse<String> result = Unirest.get(Statics.TMDB_TV)
+        HttpResponse<String> result = Unirest.get(TMDB.TV.link)
                 .routeParam("tv_id", Integer.toString(id))
                 .queryString("api_key", tmdbKey)
                 .queryString("language", "en-US")
@@ -164,7 +164,7 @@ public class JSONParser {
     @Cacheable("movieKeywords")
     public JSONArray getMovieKeywords(int id){
         log.info("getMovieKeywords({})", id);
-        HttpResponse<String> result = Unirest.get(Statics.TMDB_MOVIE_KEYWORDS)
+        HttpResponse<String> result = Unirest.get(TMDB.KEYWORDS_MOVIE.link)
                 .routeParam("movie_id", Integer.toString(id))
                 .queryString("api_key", tmdbKey)
                 .asString();
@@ -183,7 +183,7 @@ public class JSONParser {
     @Cacheable("tvKeywords")
     public JSONArray getShowKeywords(int id){
         log.info("getShowKeywords({})", id);
-        HttpResponse<String> result = Unirest.get(Statics.TMDB_TV_KEYWORDS)
+        HttpResponse<String> result = Unirest.get(TMDB.KEYWORDS_TV.link)
                 .routeParam("tv_id", Integer.toString(id))
                 .queryString("api_key", tmdbKey)
                 .asString();
@@ -202,7 +202,7 @@ public class JSONParser {
     public JSONObject getTMDBList(String query, VideoContentType contentType, int page){
         log.info("getTMDBList({}, {}, {})", query, contentType, page);
         //get list of content from TMDB
-        HttpResponse<String> result = Unirest.get(contentType == VideoContentType.MOVIE ? Statics.TMDB_SEARCH_MOVIE : Statics.TMDB_SEARCH_TV)
+        HttpResponse<String> result = Unirest.get(contentType == VideoContentType.MOVIE ? TMDB.SEARCH_MOVIE.link : TMDB.SEARCH_TV.link)
                 .queryString("api_key", tmdbKey)
                 .queryString("language", "en-US")
                 .queryString("query", query)
@@ -232,7 +232,7 @@ public class JSONParser {
                 "\"redirect_uri\":\""+environment.getProperty("bisonfun.anilist.redirect_uri")+"\","+
                 "\"code\":\""+code+"\"}";
 
-        HttpResponse<String> response = Unirest.post(Statics.ANILIST_TOKEN)
+        HttpResponse<String> response = Unirest.post(Anilist.TOKEN.link)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .body(body).asString();
@@ -246,9 +246,9 @@ public class JSONParser {
 
         log.info("get Anilist User By Token");
 
-        HttpResponse<String> userResponse = Unirest.post(Statics.ANILIST_GRAPHQL)
+        HttpResponse<String> userResponse = Unirest.post(Anilist.GRAPHQL.link)
                 .header("Authorization", "Bearer "+token)
-                .queryString("query", Statics.ANILIST_QUERY_VIEWER)
+                .queryString("query", AnilistQuery.VIEWER.query)
                 .asString();
         if(userResponse.getStatus() == 400){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -267,8 +267,8 @@ public class JSONParser {
                 "}";
 
         //get anime list from AniList API
-        HttpResponse<String> result = Unirest.post(Statics.ANILIST_GRAPHQL)
-                .queryString("query", Statics.ANILIST_QUERY_USER_LIST)
+        HttpResponse<String> result = Unirest.post(Anilist.GRAPHQL.link)
+                .queryString("query", AnilistQuery.USER_LIST.query)
                 .queryString("variables", variables)
                 .asString();
 

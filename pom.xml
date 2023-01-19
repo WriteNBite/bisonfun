@@ -10,7 +10,7 @@
     </parent>
     <groupId>com</groupId>
     <artifactId>bisonfun</artifactId>
-    <version>0.8.0-ALPHA</version>
+    <version>0.8.1-ALPHA</version>
     <name>bisonfun</name>
     <description>bisonfun</description>
     <packaging>jar</packaging>
@@ -75,6 +75,10 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

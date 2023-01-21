@@ -34,7 +34,15 @@ public enum TMDB {
     /**
      * Link to get keywords attached to tv show based on info from TheMovieDB
      */
-    KEYWORDS_TV("https://api.themoviedb.org/3/tv/{tv_id}/keywords");
+    KEYWORDS_TV("https://api.themoviedb.org/3/tv/{tv_id}/keywords"),
+    /**
+     * Link to get movie trends
+     * */
+    TRENDS_MOVIE("https://api.themoviedb.org/3/trending/movie/week"),
+    /**
+     * Link to get tv trends
+     */
+    TRENDS_TV("https://api.themoviedb.org/3/trending/tv/week");
 
     public String link;
 

@@ -60,6 +60,29 @@ public class AniParser {
         }
         return new Pagination<>(page, count, documents, lastPage);
     }
+    //parse anime trends
+    public List<VideoEntertainment> parseAnimeTrends() throws TooManyAnimeRequestsException {
+        JSONArray animeArray;
+        try {
+            animeArray = parser.getAnimeTrends().getJSONArray("media");
+        } catch (NoAccessException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
+        List<VideoEntertainment> trends = new ArrayList<>();
+        for(int i = 0; i < animeArray.length(); i++){
+            JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(animeArray.getJSONObject(i));
+            VideoEntertainment anime = aniBuilder.addId()
+                    .addType()
+                    .addTitle()
+                    .addReleaseDate()
+                    .addPoster()
+                    .build();
+
+            trends.add(anime);
+        }
+        return trends;
+    }
     //parse anime(as VideoEntertainment)
     public VideoEntertainment parseAnimeById(int id) throws ContentNotFoundException, TooManyAnimeRequestsException {
         JSONObject jsonAnime = parser.getAnimeById(id);

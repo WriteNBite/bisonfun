@@ -6,6 +6,7 @@ import com.bisonfun.domain.TMDBMovie;
 import com.bisonfun.domain.TMDBTVShow;
 import com.bisonfun.domain.VideoEntertainment;
 import com.bisonfun.domain.enums.VideoContentType;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class TMDBParser {
 
@@ -83,6 +85,26 @@ public class TMDBParser {
         }
         return new Pagination<>(page, count, movieList, lastPage);
     }
+    public List<VideoEntertainment> parseMovieTrends(){
+        JSONArray movies;
+        try {
+            movies = parser.getMovieTrends().getJSONArray("results");
+        } catch (NoAccessException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
+        List<VideoEntertainment> movieList = new ArrayList<>();
+        for(int i = 0; i < movies.length(); i++){
+            JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(movies.getJSONObject(i), parser);
+            VideoEntertainment movie = movieBuilder.addId()
+                    .addTitle()
+                    .addDescription()
+                    .addReleaseDate()
+                    .addPoster().build();
+            movieList.add(movie);
+        }
+        return movieList;
+    }
     public Pagination<VideoEntertainment> parseTVList(String query, int page) {
 
         JSONObject root = parser.getTMDBList(query, VideoContentType.TV, page);
@@ -105,6 +127,26 @@ public class TMDBParser {
             documents.add(tv);
         }
         return new Pagination<>(page, count, documents, lastPage);
+    }
+    public List<VideoEntertainment> parseTVTrends(){
+        JSONArray tvs;
+        try {
+            tvs = parser.getTvTrends().getJSONArray("results");
+        } catch (NoAccessException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
+        List<VideoEntertainment> tvList = new ArrayList<>();
+        for(int i = 0; i < tvs.length(); i++){
+            JSONTVBuilder tvBuilder = JSONTVBuilder.getInstance(tvs.getJSONObject(i), parser);
+            VideoEntertainment tv = tvBuilder.addId()
+                    .addTitle()
+                    .addDescription()
+                    .addReleaseDate()
+                    .addPoster().build();
+            tvList.add(tv);
+        }
+        return tvList;
     }
 
 }

@@ -165,6 +165,34 @@ public enum AnilistQuery {
                     "    description\n" +
                     "  }\n" +
                     "}"
+    ),
+    /**
+     * Query to get trending anime
+     * */
+    ANIME_TRENDING(
+            "query trends{\n" +
+                    "  Page(perPage: 25) {\n" +
+                    "    pageInfo{\n" +
+                    "      perPage\n" +
+                    "    }\n" +
+                    "    media(type: ANIME, isAdult: false, sort: TRENDING_DESC) {\n" +
+                    "      id\n" +
+                    "      title {\n" +
+                    "        romaji\n" +
+                    "        english\n" +
+                    "      }\n" +
+                    "      coverImage{\n" +
+                    "        large\n" +
+                    "      }\n" +
+                    "      format\n" +
+                    "      startDate{\n" +
+                    "        day\n" +
+                    "        month\n" +
+                    "        year\n" +
+                    "      }\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "}"
     );
 
     public String query;

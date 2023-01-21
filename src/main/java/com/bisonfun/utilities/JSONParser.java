@@ -55,6 +55,29 @@ public class JSONParser {
 
             return new JSONObject(result.getBody()).getJSONObject("data").getJSONObject("Page");
     }
+    //get anime trends
+    @Cacheable("animeTrends")
+    public JSONObject getAnimeTrends() throws TooManyAnimeRequestsException, NoAccessException {
+        log.info("Get anime trends");
+
+        HttpResponse<String> result = Unirest.post(Anilist.GRAPHQL.link)
+                .queryString("query", AnilistQuery.ANIME_TRENDING.query)
+                .asString();
+
+        log.info(result.getBody());
+
+        if(result.getStatus() == 429){
+            String secs = result.getHeaders().getFirst("Retry-After");
+            int seconds = Integer.parseInt(secs);
+            log.info("delay in {} seconds", seconds);
+            throw new TooManyAnimeRequestsException("Too many requests to Anilist.co. will be available after " + seconds + "seconds", seconds);
+        }else if(result.getStatus() == 400){
+            log.error("Something went wrong:\n"+ Anilist.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_ID+"\n");
+            throw new NoAccessException("No Access to Anilist.co");
+        }
+
+        return new JSONObject(result.getBody()).getJSONObject("data").getJSONObject("Page");
+    }
     //get anime by id
     @Cacheable("jsonAnime")
     public JSONObject getAnimeById(int id) throws TooManyAnimeRequestsException, ContentNotFoundException {
@@ -222,6 +245,35 @@ public class JSONParser {
 
         return new JSONObject(result.getBody());
     }
+    //get movie trends
+    @Cacheable("movieTrends")
+    public JSONObject getMovieTrends() throws NoAccessException {
+        log.info("Get movie trends");
+
+        HttpResponse<String> result = Unirest.get(TMDB.TRENDS_MOVIE.link)
+                .queryString("api_key", tmdbKey)
+                .asString();
+        if(result.getStatus() == 401){
+            log.error("Invalid API key (TMDB API key)");
+            throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");
+        }
+        return new JSONObject(result.getBody());
+    }
+    //get tv trends
+    @Cacheable("tvTrends")
+    public JSONObject getTvTrends() throws NoAccessException {
+        log.info("Get tv trends");
+
+        HttpResponse<String> result = Unirest.get(TMDB.TRENDS_TV.link)
+                .queryString("api_key", tmdbKey)
+                .asString();
+        if(result.getStatus() == 401){
+            log.error("Invalid API key (TMDB API key)");
+            throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");
+        }
+        return new JSONObject(result.getBody());
+    }
+
     //get Anilist token
     public JSONObject getAniToken(String code){
         log.info("get Anilist Token");

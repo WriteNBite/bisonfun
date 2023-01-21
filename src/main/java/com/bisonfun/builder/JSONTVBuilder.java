@@ -236,9 +236,9 @@ public class JSONTVBuilder implements TVContentBuilder{
 
     @Override
     public TMDBTVShow build() {
-        log.info("Building TMDB Movie class");
+        log.info("Building TMDB TV class");
         TMDBTVShow tmdbtvShow = new TMDBTVShow(id, isAnime, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes, seasons, networks, studios);
-        log.info("Movie: "+tmdbtvShow);
+        log.info("TV: "+tmdbtvShow);
         return tmdbtvShow;
     }
 }

@@ -107,7 +107,7 @@
                     <ul class="dropdown-menu">
                         <li th:each="action : ${actions}">
                             <form th:action="@{~/tv/{id}(id=${content.id})}" th:object="${userTv}" method="post"
-                                  th:if="${action != userTv.status && (content.status == content.status.RELEASED || action != action.COMPLETE)}">
+                                  th:if="${action != userTv.status && (content.status == content.status.RELEASED || (content.episodes > 0 && content.status == content.status.CANCELED) || action != action.COMPLETE)}">
                                 <input type="hidden" th:attr="name='status'" th:value="${action}">
                                 <input type="hidden" th:attr="name='score'" th:value="${userTv.score}">
                                 <input type="hidden" th:attr="name='episodes'" th:value="${userTv.episodes}">

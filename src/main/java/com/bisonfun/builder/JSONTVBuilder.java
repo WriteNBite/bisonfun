@@ -32,6 +32,12 @@ public class JSONTVBuilder implements TVContentBuilder{
     private String[] studios;
     private String[] networks;
 
+    /**
+     * Get instance of builder.
+     * @param root JSONObject to work with. Contains info about tv. Right now needed JSONObject from TheMovieDB API.
+     * @param jsonParser parser to get additional JSONObject from TheMovieDB API.
+     * @return builder.
+     */
     public static JSONTVBuilder getInstance(JSONObject root, JSONParser jsonParser){
         log.info("Returning Instance of JSONAniBuilder");
         return new JSONTVBuilder(root, jsonParser);
@@ -44,6 +50,11 @@ public class JSONTVBuilder implements TVContentBuilder{
         this.parser = parser;
     }
 
+
+    /**
+     * Add to builder last aired date. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addLastAired() {
         log.info("Getting last aired");
@@ -56,7 +67,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Last aired: "+lastAired);
         return this;
     }
-
+    /**
+     * Add to builder number of episodes. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addEpisodes() {
         log.info("Getting episodes");
@@ -64,7 +78,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Episodes: "+episodes);
         return this;
     }
-
+    /**
+     * Add to builder tv id. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addId() {
         log.info("Getting id");
@@ -72,7 +89,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Id: "+id);
         return this;
     }
-
+    /**
+     * Add to builder info if tv have anime keyword. Tv keywords gotten from JSONParser.
+     * @return builder.
+     */
     @Override
     public JSONTVBuilder addIsAnime() {
         log.info("Check if anime");
@@ -97,12 +117,18 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("IsAnime: "+ isAnime);
         return this;
     }
-
+    /**
+     * Add to builder tv type (always Tv).
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addType() {
         return this;
     }
-
+    /**
+     * Add to builder tv title. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addTitle() {
         log.info("Getting title");
@@ -110,7 +136,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Title: "+title);
         return this;
     }
-
+    /**
+     * Add to builder tv description. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addDescription() {
         log.info("Getting description");
@@ -118,7 +147,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Description: "+description);
         return this;
     }
-
+    /**
+     * Add to builder tv runtime. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addRuntime() {
         log.info("Getting runtime");JSONArray runtimes = root.getJSONArray("episode_run_time");
@@ -130,7 +162,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Runtime: "+runtime);
         return this;
     }
-
+    /**
+     * Add to builder tv release date. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addReleaseDate() {
         log.info("Getting release date");
@@ -143,7 +178,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Release Date: "+releaseDate);
         return this;
     }
-
+    /**
+     * Add to builder tv poster path. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addPoster() {
         log.info("Getting poster");
@@ -155,7 +193,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Poster path: "+poster);
         return this;
     }
-
+    /**
+     * Add to builder tv score (format "n.f"). Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addScore() {
         log.info("Getting score");
@@ -163,7 +204,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Score: "+score);
         return this;
     }
-
+    /**
+     * Add to builder tv genres. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addGenres() {
         log.info("Getting genres");
@@ -175,7 +219,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Genres: "+ Arrays.toString(genres));
         return this;
     }
-
+    /**
+     * Add to builder tv status (Released/Ongoing/Upcoming/Rumored/Planned/Canceled). Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONTVBuilder addStatus() {
         log.info("Getting status");
@@ -204,14 +251,20 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Status: "+status);
         return this;
     }
-
+    /**
+     * Add to builder number of seasons. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONTVBuilder addSeasons(){
         log.info("Getting seasons");
         seasons = root.getInt("number_of_seasons");
         log.info("Seasons: "+seasons);
         return this;
     }
-
+    /**
+     * Add to builder studios that were involved in tv development. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONTVBuilder addStudios(){
         log.info("Getting studios");
         JSONArray JSONStudios = root.getJSONArray("production_companies");
@@ -222,7 +275,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Studios: "+ Arrays.toString(studios));
         return this;
     }
-
+    /**
+     * Add to builder networks that stream tv. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONTVBuilder addNetworks(){
         log.info("Getting networks");
         JSONArray JSONNetworks = root.getJSONArray("networks");
@@ -233,7 +289,10 @@ public class JSONTVBuilder implements TVContentBuilder{
         log.info("Networks: "+ Arrays.toString(networks));
         return this;
     }
-
+    /**
+     * Create tv object.
+     * @return {@link com.bisonfun.domain.TMDBTVShow}
+     */
     @Override
     public TMDBTVShow build() {
         log.info("Building TMDB TV class");

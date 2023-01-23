@@ -135,7 +135,7 @@ public class AniParser {
         JSONObject root;
         do {
             log.info("Page: "+page+" Status: "+status);
-            root = parser.getUserMediaList(userId, page, status.getString());
+            root = parser.getUserMediaList(userId, page, status);
             log.info(root.toString());
 
             VideoConsumingStatus consumingStatus = null;

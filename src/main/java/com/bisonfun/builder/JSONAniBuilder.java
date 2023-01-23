@@ -31,6 +31,11 @@ public class JSONAniBuilder implements TVContentBuilder {
     private String[] studios;
     private String[] otherNames;
 
+    /**
+     * Get instance of builder.
+     * @param root JSONObject to work with. Right now needed "Media" JSONObject from Anilist API.
+     * @return builder
+     */
     public static JSONAniBuilder getInstance(JSONObject root){
         log.info("Returning Instance of JSONAniBuilder");
         return new JSONAniBuilder(root);
@@ -42,6 +47,10 @@ public class JSONAniBuilder implements TVContentBuilder {
         this.root = root;
     }
 
+    /**
+     * Add to builder anime id. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONAniBuilder addId(){
         log.info("Getting id");
         id = root.getInt("id");
@@ -49,11 +58,20 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder if it's anime (always true).
+     * @return builder
+     */
     @Override
     public VideoContentBuilder addIsAnime() {
         return this;
     }
 
+    /**
+     * Add to builder anime type (Movie/TV/Unknown). Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addType() {
         log.info("Getting type");
         if(root.isNull("format")){
@@ -65,6 +83,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime title. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addTitle() {
         log.info("Getting title");
         if(!root.isNull("title")) {
@@ -78,6 +101,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime description. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addDescription() {
         log.info("Getting description");
         if(!root.isNull("description")){
@@ -89,6 +117,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime runtime(for episode or movie). Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addRuntime() {
         log.info("Getting runtime");
         this.runtime = root.isNull("duration") ? -1 : root.getInt("duration");
@@ -96,6 +129,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime release date. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addReleaseDate() {
         log.info("Getting release date");
         JSONObject jsonReleaseDate = root.getJSONObject("startDate");
@@ -104,6 +142,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime poster path. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addPoster() {
         log.info("Getting poster");
         JSONObject coverImages = root.getJSONObject("coverImage");
@@ -118,6 +161,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime rating score(format "n.f"). Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addScore() {
         log.info("Getting score");
         this.score = root.isNull("averageScore") ? 0 : root.getInt("averageScore")/10f;
@@ -125,6 +173,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime genres. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addGenres() {
         log.info("Getting genres");
         JSONArray JSONGenres = root.getJSONArray("genres");
@@ -137,6 +190,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime status (Finished/Upcoming/Ongoing/Canceled/Paused). Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addStatus() {
         log.info("Getting status");
         if(!root.isNull("status")){
@@ -165,6 +223,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime last aired date. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addLastAired() {
         log.info("Getting last aired date");
         JSONObject jsonLastDate = root.getJSONObject("endDate");
@@ -173,6 +236,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder number of anime episodes. Gotten from JSONObject root.
+     * @return builder
+     */
+    @Override
     public JSONAniBuilder addEpisodes() {
         log.info("Getting episodes");
         if(root.isNull("episodes")){
@@ -185,6 +253,10 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder anime id from MyAnimeList. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONAniBuilder addIdMAL() {
         if(!root.isNull("idMal")) {
             this.idMAL = root.getInt("idMal");
@@ -195,6 +267,10 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder array of studios that was involved in anime development. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONAniBuilder addStudios() {
         log.info("Getting studios");
         JSONArray JSONStudios = root.getJSONObject("studios").getJSONArray("nodes");
@@ -207,6 +283,10 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Add to builder other(official, not official, translated) names of anime. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONAniBuilder addOtherNames() {
         log.info("Getting other names");
         JSONArray JSONNames = root.getJSONArray("synonyms");
@@ -219,6 +299,11 @@ public class JSONAniBuilder implements TVContentBuilder {
         return this;
     }
 
+    /**
+     * Create anime object.
+     * @return {@link com.bisonfun.domain.AniAnime}
+     */
+    @Override
     public AniAnime build(){
         log.info("Building an AniAnime class");
         AniAnime anime = new AniAnime(id, true, type, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes, idMAL, studios, otherNames);

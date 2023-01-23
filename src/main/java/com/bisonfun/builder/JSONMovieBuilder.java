@@ -29,6 +29,12 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
     private String imdbId;
     private String[] studios;
 
+    /**
+     * Get instance of builder.
+     * @param root JSONObject to work with. Contains info about movie. Right now needed JSONObject from TheMovieDB API.
+     * @param jsonParser parser to get additional JSONObject from TheMovieDB API.
+     * @return builder.
+     */
     public static JSONMovieBuilder getInstance(JSONObject root, JSONParser jsonParser){
         log.info("Returning Instance of JSONAniBuilder");
         return new JSONMovieBuilder(root, jsonParser);
@@ -41,6 +47,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         this.jsonParser = parser;
     }
 
+    /**
+     * Add to builder movie id. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addId() {
         log.info("Getting id");
@@ -49,6 +59,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         return this;
     }
 
+    /**
+     * Add to builder info if movie have anime keyword. Movie keywords gotten from JSONParser.
+     * @return builder.
+     */
     @Override
     public JSONMovieBuilder addIsAnime() {
         log.info("Check if anime");
@@ -75,12 +89,18 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("IsAnime: "+ false);
         return this;
     }
-
+    /**
+     * Add to builder movie type (always Movie).
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addType() {
         return this;
     }
-
+    /**
+     * Add to builder movie title. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addTitle() {
         log.info("Getting title");
@@ -88,7 +108,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Title: "+title);
         return this;
     }
-
+    /**
+     * Add to builder movie description. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addDescription() {
         log.info("Getting description");
@@ -101,7 +124,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         }
         return this;
     }
-
+    /**
+     * Add to builder movie runtime. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addRuntime() {
         log.info("Getting runtime");
@@ -114,7 +140,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         }
         return this;
     }
-
+    /**
+     * Add to builder movie release date. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addReleaseDate() {
         log.info("Getting release date");
@@ -127,7 +156,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Release date: "+releaseDate);
         return this;
     }
-
+    /**
+     * Add to builder movie poster path. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addPoster() {
         log.info("Getting poster");
@@ -139,7 +171,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Poster path: "+poster);
         return this;
     }
-
+    /**
+     * Add to builder movie score (format "n.f"). Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addScore() {
         log.info("Getting score");
@@ -147,7 +182,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Score: "+score);
         return this;
     }
-
+    /**
+     * Add to builder movie genres. Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addGenres() {
         log.info("Getting genres");
@@ -159,7 +197,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Genres: "+ Arrays.toString(genres));
         return this;
     }
-
+    /**
+     * Add to builder movie status (Released/Upcoming/Rumored/Planned/Canceled). Gotten from JSONObject root.
+     * @return builder
+     */
     @Override
     public JSONMovieBuilder addStatus() {
         log.info("Getting status");
@@ -185,7 +226,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Status: "+status);
         return this;
     }
-
+    /**
+     * Create movie object.
+     * @return {@link com.bisonfun.domain.TMDBMovie}
+     */
     @Override
     public TMDBMovie build() {
         log.info("Building TMDB Movie class");
@@ -193,7 +237,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Movie: "+movie);
         return movie;
     }
-
+    /**
+     * Add to builder id from IMDB. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONMovieBuilder addIMDBId(){
         log.info("Getting IMDB id");
         if(root.isNull("imdb_id")){
@@ -205,7 +252,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         }
         return this;
     }
-
+    /**
+     * Add to builder studios that were involved in movie development. Gotten from JSONObject root.
+     * @return builder
+     */
     public JSONMovieBuilder addStudios(){
         log.info("Getting studios");
         JSONArray JSONStudios = root.getJSONArray("production_companies");

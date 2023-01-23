@@ -1,5 +1,6 @@
 package com.bisonfun.utilities;
 
+import com.bisonfun.domain.enums.MediaListStatus;
 import com.bisonfun.domain.enums.VideoContentType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -22,7 +23,13 @@ public class JSONParser {
     @Value("#{environment['bisonfun.tmdb.key']}")
     private String tmdbKey;
 
-    //get anime search list
+    /**
+     * Get anime list by search query.
+     * @param search string query to get list.
+     * @param page current page of list
+     * @return "Page" JSONObject which have page info(number, count, etc.) and JSONArray of anime "Media" JSONObjects.
+     * @throws TooManyAnimeRequestsException if Anilist.co have got more requests than limit from app's account.
+     * */
     public JSONObject getAnimeList(String search, int page) throws TooManyAnimeRequestsException{
         log.info("GetAnimeList "+search+" page "+page);
 
@@ -55,7 +62,12 @@ public class JSONParser {
 
             return new JSONObject(result.getBody()).getJSONObject("data").getJSONObject("Page");
     }
-    //get anime trends
+    /**
+     * Get list of anime trends. Cacheable as "animeTrends".
+     * @return "Page" JSONObject which have page info(number, count, etc.) and JSONArray of anime "Media" JSONObjects.
+     * @throws TooManyAnimeRequestsException if Anilist.co have got more requests than limit from app's account.
+     * @throws NoAccessException if app can't access to Anilist.co API.
+     */
     @Cacheable("animeTrends")
     public JSONObject getAnimeTrends() throws TooManyAnimeRequestsException, NoAccessException {
         log.info("Get anime trends");
@@ -78,7 +90,13 @@ public class JSONParser {
 
         return new JSONObject(result.getBody()).getJSONObject("data").getJSONObject("Page");
     }
-    //get anime by id
+    /**
+     * Get anime by id. Cacheable as "jsonAnime".
+     * @param id identification number from Anilist database.
+     * @return "Media" JSONObject with info about anime (id, title, description, etc.).
+     * @throws TooManyAnimeRequestsException if Anilist.co have got more requests than limit from app's account.
+     * @throws ContentNotFoundException if there's no such anime in database.
+     */
     @Cacheable("jsonAnime")
     public JSONObject getAnimeById(int id) throws TooManyAnimeRequestsException, ContentNotFoundException {
         log.info("getAnimeById({})", id);
@@ -107,7 +125,13 @@ public class JSONParser {
 
         return new JSONObject(anime.getBody()).getJSONObject("data").getJSONObject("Media");
     }
-    //get anime by name
+    /**
+     * Get anime by name. Cacheable as "jsonAnime".
+     * @param name title from Anilist database
+     * @return "Media" JSONObject with info about anime (id, title, description, etc.).
+     * @throws TooManyAnimeRequestsException if Anilist.co have got more requests than limit from app's account.
+     * @throws ContentNotFoundException if there's no such anime in database.
+     */
     @Cacheable("jsonAnime")
     public JSONObject getAnimeByName(String name) throws TooManyAnimeRequestsException, ContentNotFoundException {
         log.info("getAnimeByName({})", name);
@@ -137,7 +161,11 @@ public class JSONParser {
 
         return new JSONObject(anime.getBody()).getJSONObject("data").getJSONObject("Media");
     }
-    //get movie by id
+    /**
+     * Get movie by id. Cacheable as "jsonMovie".
+     * @param id identification number from TheMovieDB database.
+     * @return JSONObject with info about movie (id, title, description, etc.).
+     */
     @Cacheable("jsonMovie")
     public JSONObject getMovieById(int id){
         log.info("getMovieById({})", id);
@@ -160,7 +188,11 @@ public class JSONParser {
 
         return new JSONObject(result.getBody());
     }
-    //get show by id
+    /**
+     * Get tv by id. Cacheable as "jsonShow".
+     * @param id identification number from TheMovieDB database.
+     * @return JSONObject with info about tv (id, title, description, etc.).
+     */
     @Cacheable("jsonShow")
     public JSONObject getShowById(int id){
         log.info("getShowById({})", id);
@@ -183,7 +215,11 @@ public class JSONParser {
 
         return new JSONObject(result.getBody());
     }
-    //get movie keywords
+    /**
+     * Get movie keywords by movie id. Cacheable as "movieKeywords".
+     * @param id movie identification number from TheMovieDB database.
+     * @return JSONArray of keywords connected to movie with specific id.
+     */
     @Cacheable("movieKeywords")
     public JSONArray getMovieKeywords(int id){
         log.info("getMovieKeywords({})", id);
@@ -202,7 +238,11 @@ public class JSONParser {
         JSONObject root = new JSONObject(result.getBody());
         return root.getJSONArray("keywords");
     }
-    //get show keywords
+    /**
+     * Get tv keywords by tv id. Cacheable as "tvKeywords".
+     * @param id tv identification number from TheMovieDB database.
+     * @return JSONArray of keywords connected to tv with specific id.
+     */
     @Cacheable("tvKeywords")
     public JSONArray getShowKeywords(int id){
         log.info("getShowKeywords({})", id);
@@ -221,7 +261,13 @@ public class JSONParser {
         JSONObject root = new JSONObject(result.getBody());
         return root.getJSONArray("results");
     }
-    //get movie list
+    /**
+     * Get movie\tv list by search query.
+     * @param query string query to find movie\tv.
+     * @param contentType (Movie or TV).
+     * @param page current page of list.
+     * @return JSONObject with page info(current page, etc.) and JSONArray with movie\tv JSONObjects.
+     */
     public JSONObject getTMDBList(String query, VideoContentType contentType, int page){
         log.info("getTMDBList({}, {}, {})", query, contentType, page);
         //get list of content from TMDB
@@ -245,7 +291,11 @@ public class JSONParser {
 
         return new JSONObject(result.getBody());
     }
-    //get movie trends
+    /**
+     * Get list of movie trends. Cacheable as "movieTrends".
+     * @return JSONObject with page info(current page, etc.) and JSONArray with movie JSONObjects.
+     * @throws NoAccessException if app can't access to TheMovieDB API.
+     */
     @Cacheable("movieTrends")
     public JSONObject getMovieTrends() throws NoAccessException {
         log.info("Get movie trends");
@@ -259,7 +309,11 @@ public class JSONParser {
         }
         return new JSONObject(result.getBody());
     }
-    //get tv trends
+    /**
+     * Get list of tv trends. Cacheable as "tvTrends".
+     * @return JSONObject with page info(current page, etc.) and JSONArray with tv JSONObjects.
+     * @throws NoAccessException if app can't access to TheMovieDB API.
+     */
     @Cacheable("tvTrends")
     public JSONObject getTvTrends() throws NoAccessException {
         log.info("Get tv trends");
@@ -273,8 +327,11 @@ public class JSONParser {
         }
         return new JSONObject(result.getBody());
     }
-
-    //get Anilist token
+    /**
+     * Get token from Anilist.co by code.
+     * @param code granted from authorised Anilist user.
+     * @return JSONObject with token to get user info.
+     */
     public JSONObject getAniToken(String code){
         log.info("get Anilist Token");
         String body = "{" +
@@ -293,7 +350,11 @@ public class JSONParser {
         }
         return new JSONObject(response.getBody());
     }
-    //get Anilist user
+    /**
+     * Get Anilist user info by token.
+     * @param token granted from Anilist by code from logged Anilist user.
+     * @return JSONObject with Anilist user info (id, name).
+     */
     public JSONObject getUserByToken(String token){
 
         log.info("get Anilist User By Token");
@@ -307,15 +368,21 @@ public class JSONParser {
         }
         return new JSONObject(userResponse.getBody()).getJSONObject("data");
     }
-
-    //get user's mediaList
-    public JSONObject getUserMediaList(int userId, int page, String status) throws TooManyAnimeRequestsException {
+    /**
+     * Get Anilist user lists by user's id.
+     * @param userId identification number of Anilist user.
+     * @param page page of the user's list
+     * @param status status of the user's list
+     * @return "Page" JSONObject which have page info(number, count, etc.) and JSONArray of anime "Media" JSONObjects.
+     * @throws TooManyAnimeRequestsException if Anilist.co have got more requests than limit from app's account.
+     */
+    public JSONObject getUserMediaList(int userId, int page, MediaListStatus status) throws TooManyAnimeRequestsException {
         log.info("get user's anime list({}, {}, {})", userId, page, status);
 
         String variables = "{\n" +
                 "  \"page\": "+page+",\n" +
                 "  \"userId\": "+userId+",\n" +
-                "  \"status\": \""+status+"\"\n" +
+                "  \"status\": \""+status.getString()+"\"\n" +
                 "}";
 
         //get anime list from AniList API

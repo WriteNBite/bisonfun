@@ -162,11 +162,20 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addPoster() {
+        return addPoster(500);
+    }
+    /**
+     * Add to builder movie poster path. Gotten from JSONObject root.
+     * @param maxSize maximum width for poster.
+     * @return builder.
+     */
+    public JSONMovieBuilder addPoster(int maxSize){
         log.info("Getting poster");
         if (root.isNull("poster_path")) {
             poster = TMDB.NO_IMAGE.link;
         } else {
-            poster = TMDB.IMAGE.link + root.getString("poster_path");
+            String photoLink = maxSize < 500 ? TMDB.IMAGE_200.link : TMDB.IMAGE_500.link;
+            poster = photoLink + root.getString("poster_path");
         }
         log.info("Poster path: "+poster);
         return this;

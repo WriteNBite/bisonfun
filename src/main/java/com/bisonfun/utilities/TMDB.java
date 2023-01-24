@@ -10,7 +10,8 @@ public enum TMDB {
      * Link to image system from TheMovieDB API.
      * Add "poster path" from API to get image
      */
-    IMAGE("https://image.tmdb.org/t/p/w500"),
+    IMAGE_500("https://image.tmdb.org/t/p/w500"),
+    IMAGE_200("https://image.tmdb.org/t/p/w200"),
     /**
      * Link to get info about movie by id.
      */
@@ -42,7 +43,9 @@ public enum TMDB {
     /**
      * Link to get tv trends
      */
-    TRENDS_TV("https://api.themoviedb.org/3/trending/tv/week");
+    TRENDS_TV("https://api.themoviedb.org/3/trending/tv/week"),
+    RECOMMENDATIONS_MOVIE("https://api.themoviedb.org/3/movie/{movie_id}/recommendations"),
+    RECOMMENDATIONS_TV("https://api.themoviedb.org/3/tv/{tv_id}/recommendations");
 
     public String link;
 

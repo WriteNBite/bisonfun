@@ -126,7 +126,8 @@ public class AniParser {
                 .addLastAired()
                 .addEpisodes()
                 .addStudios()
-                .addOtherNames().build();
+                .addOtherNames()
+                .addRecommendations().build();
     }
 
     public List<UserAnime> parseMediaList(int userId, MediaListStatus status) throws TooManyAnimeRequestsException {

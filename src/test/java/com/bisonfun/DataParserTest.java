@@ -2,6 +2,7 @@ package com.bisonfun;
 
 import com.bisonfun.domain.VideoEntertainment;
 import com.bisonfun.utilities.AniParser;
+import com.bisonfun.utilities.ContentNotFoundException;
 import com.bisonfun.utilities.TMDBParser;
 import com.bisonfun.utilities.TooManyAnimeRequestsException;
 import org.junit.Test;
@@ -39,5 +40,21 @@ public class DataParserTest {
     public void animeTrendsTest() throws TooManyAnimeRequestsException {
         List<VideoEntertainment> animeTrends = aniParser.parseAnimeTrends();
         assertTrue(animeTrends.size() > 0);
+    }
+
+    @Test
+    public void animeRecommendationsTest() throws ContentNotFoundException, TooManyAnimeRequestsException {
+        VideoEntertainment[] animeRecommendations = aniParser.parseById(1).getRecommendations();
+        assertTrue(animeRecommendations.length > 0);
+    }
+    @Test
+    public void movieRecommendationsTest(){
+        List<VideoEntertainment> movieRecommendations = tmdbParser.parseMovieRecommendations(12160);
+        assertTrue(movieRecommendations.size() > 0);
+    }
+    @Test
+    public void tvRecommendationsTest(){
+        List<VideoEntertainment> tvRecommendations = tmdbParser.parseTVRecommendations(207863);
+        assertTrue(tvRecommendations.size() > 0);
     }
 }

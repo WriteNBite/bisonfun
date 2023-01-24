@@ -105,6 +105,26 @@ public class TMDBParser {
         }
         return movieList;
     }
+    public List<VideoEntertainment> parseMovieRecommendations(int id){
+        JSONArray movies;
+        try {
+            movies = parser.getMovieRecommendations(id).getJSONArray("results");
+        } catch (NoAccessException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
+        List<VideoEntertainment> movieList = new ArrayList<>();
+        for(int i = 0; i < movies.length(); i++){
+            JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(movies.getJSONObject(i), parser);
+            VideoEntertainment movie = movieBuilder.addId()
+                    .addTitle()
+                    .addDescription()
+                    .addReleaseDate()
+                    .addPoster(200).build();
+            movieList.add(movie);
+        }
+        return movieList;
+    }
     public Pagination<VideoEntertainment> parseTVList(String query, int page) {
 
         JSONObject root = parser.getTMDBList(query, VideoContentType.TV, page);
@@ -144,6 +164,26 @@ public class TMDBParser {
                     .addDescription()
                     .addReleaseDate()
                     .addPoster().build();
+            tvList.add(tv);
+        }
+        return tvList;
+    }
+    public List<VideoEntertainment> parseTVRecommendations(int id){
+        JSONArray tvs;
+        try {
+            tvs = parser.getTvRecommendations(id).getJSONArray("results");
+        } catch (NoAccessException e) {
+            log.error(e.getMessage());
+            return new ArrayList<>();
+        }
+        List<VideoEntertainment> tvList = new ArrayList<>();
+        for(int i = 0; i < tvs.length(); i++){
+            JSONTVBuilder tvBuilder = JSONTVBuilder.getInstance(tvs.getJSONObject(i), parser);
+            VideoEntertainment tv = tvBuilder.addId()
+                    .addTitle()
+                    .addDescription()
+                    .addReleaseDate()
+                    .addPoster(200).build();
             tvList.add(tv);
         }
         return tvList;

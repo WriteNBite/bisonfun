@@ -1,6 +1,7 @@
 package com.bisonfun.builder;
 
 import com.bisonfun.domain.AniAnime;
+import com.bisonfun.domain.VideoEntertainment;
 import com.bisonfun.domain.enums.VideoContentStatus;
 import com.bisonfun.domain.enums.VideoContentType;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class JSONAniBuilder implements TVContentBuilder {
     private int idMAL = -1;
     private String[] studios;
     private String[] otherNames;
+    private VideoEntertainment[] recommendations;
 
     /**
      * Get instance of builder.
@@ -300,13 +302,35 @@ public class JSONAniBuilder implements TVContentBuilder {
     }
 
     /**
+     * Add array of recommended anime to builder. Gotten from JSONObject root.
+     * @return builder
+     */
+    public JSONAniBuilder addRecommendations(){
+        log.info("Getting recommendations");
+        JSONArray JSONRec = root.getJSONObject("recommendations").getJSONArray("nodes");
+        VideoEntertainment[] recs = new VideoEntertainment[JSONRec.length()];
+        for(int i = 0; i < JSONRec.length(); i++){
+            JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(JSONRec.getJSONObject(i).getJSONObject("mediaRecommendation"));
+            recs[i] = aniBuilder.addId()
+                    .addTitle()
+                    .addReleaseDate()
+                    .addPoster()
+                    .addType()
+                    .build();
+        }
+        recommendations = recs;
+        log.info("Recommendations: "+Arrays.toString(recommendations));
+        return this;
+    }
+
+    /**
      * Create anime object.
      * @return {@link com.bisonfun.domain.AniAnime}
      */
     @Override
     public AniAnime build(){
         log.info("Building an AniAnime class");
-        AniAnime anime = new AniAnime(id, true, type, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes, idMAL, studios, otherNames);
+        AniAnime anime = new AniAnime(id, true, type, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes, idMAL, studios, otherNames, recommendations);
         log.info("Anime: "+ anime);
         return anime;
     }

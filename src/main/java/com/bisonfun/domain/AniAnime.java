@@ -10,22 +10,25 @@ public class AniAnime extends TVShow{
     protected int idMAL;
     protected String[] studios;
     protected String[] otherNames;
+    protected VideoEntertainment[] recommendations;
 
     public AniAnime() {
     }
 
-    public AniAnime(int id, boolean isAnime, VideoContentType type, String title, String description, int runtime, Date releaseDate, String poster, float score, String[] genres, VideoContentStatus status, Date lastAired, int episodes, int idMAL, String[] studios, String[] otherNames) {
+    public AniAnime(int id, boolean isAnime, VideoContentType type, String title, String description, int runtime, Date releaseDate, String poster, float score, String[] genres, VideoContentStatus status, Date lastAired, int episodes, int idMAL, String[] studios, String[] otherNames, VideoEntertainment[] recommendations) {
         super(id, isAnime, type, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes);
         this.idMAL = idMAL;
         this.studios = studios;
         this.otherNames = otherNames;
+        this.recommendations = recommendations;
     }
 
-    public AniAnime(VideoEntertainment videoEntertainment, int idMAL, Date lastAired, int episodes, String[] studios, String[] otherNames){
+    public AniAnime(VideoEntertainment videoEntertainment, int idMAL, Date lastAired, int episodes, String[] studios, String[] otherNames, VideoEntertainment[] recommendations){
         super(videoEntertainment.getId(), videoEntertainment.isAnime(), videoEntertainment.getType(), videoEntertainment.getTitle(), videoEntertainment.getDescription(), videoEntertainment.getRuntime(), videoEntertainment.getReleaseDate(), videoEntertainment.getPoster(), videoEntertainment.getScore(), videoEntertainment.getGenres(), videoEntertainment.getStatus(), lastAired, episodes);
         this.idMAL = idMAL;
         this.studios = studios;
         this.otherNames = otherNames;
+        this.recommendations = recommendations;
     }
 
     public String[] getStudios() {
@@ -50,6 +53,14 @@ public class AniAnime extends TVShow{
 
     public void setIdMAL(int idMAL) {
         this.idMAL = idMAL;
+    }
+
+    public VideoEntertainment[] getRecommendations() {
+        return recommendations;
+    }
+
+    public void setRecommendations(VideoEntertainment[] recommendations) {
+        this.recommendations = recommendations;
     }
 
     @Override

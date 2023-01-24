@@ -20,7 +20,7 @@
           type="text/css"/>
     <!-- Core theme CSS (includes Bootstrap)-->
     <link th:href="@{~/css/mainstyles.css}" rel="stylesheet"/>
-    <link th:href="@{~/css/finder.css}" rel="stylesheet"/>
+    <link th:href="@{~/css/recommendations.css}" rel="stylesheet"/>
     <style>
         .key {
             color: blue;
@@ -251,6 +251,25 @@
                 </div>
                 <div class="row">
                     <p th:utext="${anime.description}">Desc.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#arrays.length(anime.getRecommendations()) > 0}" id="rec">
+        <div class="bg-primary text-light">
+            Recommendations
+        </div>
+        <div class="wrapper">
+            <div th:each="rec : ${anime.getRecommendations()}" class="alert alert-primary">
+                <img th:src="${rec.poster}" alt="">
+                <div class="title">
+                    <a th:href="@{/anime/{id}(id=${rec.id})}"
+                       th:text="${rec.title}" class="alert-link">Title</a>
+                </div>
+                <div class="type">
+                    <span th:text="${rec.type.string}">Type</span>
+                    <span th:text="${rec.getReleaseYear() < 0 ? 'Unknown' : rec.getReleaseYear()}"></span>
                 </div>
             </div>
         </div>

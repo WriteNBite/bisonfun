@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.text.DateFormat;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
@@ -89,9 +90,12 @@ public class MovieController {
         String releaseDate = movie.getReleaseDate() == null ? "???" : DateFormat.getDateInstance().format(movie.getReleaseDate());
         String timeToWatch = movie.getTimeToWatch();
 
+        List<VideoEntertainment> movieRecommendations = tmdbParser.parseMovieRecommendations(id);
+
         model.addAttribute("content", movie);
         model.addAttribute("releaseDate", releaseDate);
         model.addAttribute("timeToWatch", timeToWatch);
+        model.addAttribute("recommendations", movieRecommendations);
 
         model.addAttribute("actions", asList(VideoConsumingStatus.values()));
         model.addAttribute("userMovie", userMovie);

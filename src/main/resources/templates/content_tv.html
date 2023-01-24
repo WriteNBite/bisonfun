@@ -20,7 +20,7 @@
           type="text/css"/>
     <!-- Core theme CSS (includes Bootstrap)-->
     <link th:href="@{~/css/mainstyles.css}" rel="stylesheet"/>
-    <link th:href="@{~/css/finder.css}" rel="stylesheet"/>
+    <link th:href="@{~/css/recommendations.css}" rel="stylesheet"/>
     <style>
         .key {
             color: green;
@@ -246,6 +246,23 @@
                 </div>
                 <div class="row">
                     <p th:text="${content.description}">Desc.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:if="${#arrays.length(recommendations) > 0}" id="rec">
+        <div class="bg-success text-light">
+            Recommendations
+        </div>
+        <div class="wrapper">
+            <div th:each="entertainment : ${recommendations}" class="alert alert-success">
+                <img th:src="${entertainment.poster}" alt="">
+                <div class="title">
+                    <a th:href="@{/tv/{id}(id=${entertainment.id})}" th:text="${entertainment.title}" class="alert-link">Title</a>
+                </div>
+                <div class="type">
+                    <span>TV</span>
+                    <span th:text="${entertainment.getReleaseYear() < 0 ? 'Unknown' : entertainment.getReleaseYear()}"></span>
                 </div>
             </div>
         </div>

@@ -328,6 +328,48 @@ public class JSONParser {
         return new JSONObject(result.getBody());
     }
     /**
+     * Get recommendations based on movie. Cacheable as "movieRec"
+     * @param id movie identification number from TheMovieDB API.
+     * @return JSONObject with page info (current page, etc.) and JSONArray with movie JSONObject.
+     * @throws NoAccessException if app can't access to TheMovieDB API.
+     */
+    @Cacheable("movieRec")
+    public JSONObject getMovieRecommendations(int id) throws NoAccessException {
+        log.info("Get movie recommendations");
+
+        HttpResponse<String> result = Unirest.get(TMDB.RECOMMENDATIONS_MOVIE.link)
+                .routeParam("movie_id", String.valueOf(id))
+                .queryString("api_key", tmdbKey)
+                .asString();
+
+        if(result.getStatus() == 401){
+            log.error("Invalid API key (TMDB API key)");
+            throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");
+        }
+        return new JSONObject(result.getBody());
+    }
+    /**
+     * Get recommendations based on tv show. Cacheable as "tvRec"
+     * @param id tv show identification number from TheMovieDB API.
+     * @return JSONObject with page info (current page, etc.) and JSONArray with tv JSONObject.
+     * @throws NoAccessException if app can't access to TheMovieDB API.
+     */
+    @Cacheable("tvRec")
+    public JSONObject getTvRecommendations(int id) throws NoAccessException {
+        log.info("Get tv recommendations");
+
+        HttpResponse<String> result = Unirest.get(TMDB.RECOMMENDATIONS_TV.link)
+                .routeParam("tv_id", String.valueOf(id))
+                .queryString("api_key", tmdbKey)
+                .asString();
+
+        if(result.getStatus() == 401){
+            log.error("Invalid API key (TMDB API key)");
+            throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");
+        }
+        return new JSONObject(result.getBody());
+    }
+    /**
      * Get token from Anilist.co by code.
      * @param code granted from authorised Anilist user.
      * @return JSONObject with token to get user info.

@@ -49,9 +49,8 @@ public class AniParser {
         for(int i = 0; i < count; i++){
             //New one
             JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(animeArray.getJSONObject(i));
-            VideoEntertainment anime = aniBuilder.addId()
+            VideoEntertainment anime = aniBuilder
                     .addType()
-                    .addTitle()
                     .addReleaseDate()
                     .addPoster()
                     .build();
@@ -72,9 +71,8 @@ public class AniParser {
         List<VideoEntertainment> trends = new ArrayList<>();
         for(int i = 0; i < animeArray.length(); i++){
             JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(animeArray.getJSONObject(i));
-            VideoEntertainment anime = aniBuilder.addId()
+            VideoEntertainment anime = aniBuilder
                     .addType()
-                    .addTitle()
                     .addReleaseDate()
                     .addPoster()
                     .build();
@@ -96,9 +94,8 @@ public class AniParser {
     }
     private VideoEntertainment parseAnime(JSONObject jsonAnime){
         JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(jsonAnime);
-        return aniBuilder.addId()
+        return aniBuilder
                 .addType()
-                .addTitle()
                 .addDescription()
                 .addRuntime()
                 .addReleaseDate()
@@ -112,9 +109,8 @@ public class AniParser {
         JSONObject root = parser.getAnimeById(id);
 
         JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(root);
-        return aniBuilder.addId()
+        return aniBuilder
                 .addType()
-                .addTitle()
                 .addDescription()
                 .addRuntime()
                 .addReleaseDate()

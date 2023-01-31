@@ -36,7 +36,7 @@ public class JSONAniBuilder implements TVContentBuilder {
     /**
      * Get instance of builder.
      * @param root JSONObject to work with. Right now needed "Media" JSONObject from Anilist API.
-     * @return builder
+     * @return builder with id and title included.
      */
     public static JSONAniBuilder getInstance(JSONObject root){
         log.info("Returning Instance of JSONAniBuilder");
@@ -47,6 +47,8 @@ public class JSONAniBuilder implements TVContentBuilder {
         log.info("Instance of JSONAniBuilder created");
         log.info("Root: "+root.toString());
         this.root = root;
+        addId();
+        addTitle();
     }
 
     /**
@@ -311,8 +313,7 @@ public class JSONAniBuilder implements TVContentBuilder {
         VideoEntertainment[] recs = new VideoEntertainment[JSONRec.length()];
         for(int i = 0; i < JSONRec.length(); i++){
             JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(JSONRec.getJSONObject(i).getJSONObject("mediaRecommendation"));
-            recs[i] = aniBuilder.addId()
-                    .addTitle()
+            recs[i] = aniBuilder
                     .addReleaseDate()
                     .addPoster()
                     .addType()

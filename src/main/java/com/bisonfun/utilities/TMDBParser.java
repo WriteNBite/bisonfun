@@ -28,8 +28,7 @@ public class TMDBParser {
 
         JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(root, parser);
 
-        return movieBuilder.addId()
-                .addTitle()
+        return movieBuilder
                 .addDescription()
                 .addRuntime()
                 .addReleaseDate()
@@ -47,8 +46,7 @@ public class TMDBParser {
 
         JSONTVBuilder tvBuilder = JSONTVBuilder.getInstance(root, parser);
 
-        return tvBuilder.addId()
-                .addTitle()
+        return tvBuilder
                 .addDescription()
                 .addRuntime()
                 .addReleaseDate()
@@ -76,8 +74,7 @@ public class TMDBParser {
         List<VideoEntertainment> movieList = new ArrayList<>();
         for(int i = 0; i < count; i++){
             JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(data.getJSONObject(i), parser);
-            VideoEntertainment movie = movieBuilder.addId()
-                    .addTitle()
+            VideoEntertainment movie = movieBuilder
                     .addDescription()
                     .addReleaseDate()
                     .addPoster().build();
@@ -96,8 +93,7 @@ public class TMDBParser {
         List<VideoEntertainment> movieList = new ArrayList<>();
         for(int i = 0; i < movies.length(); i++){
             JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(movies.getJSONObject(i), parser);
-            VideoEntertainment movie = movieBuilder.addId()
-                    .addTitle()
+            VideoEntertainment movie = movieBuilder
                     .addDescription()
                     .addReleaseDate()
                     .addPoster().build();
@@ -116,8 +112,7 @@ public class TMDBParser {
         List<VideoEntertainment> movieList = new ArrayList<>();
         for(int i = 0; i < movies.length(); i++){
             JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(movies.getJSONObject(i), parser);
-            VideoEntertainment movie = movieBuilder.addId()
-                    .addTitle()
+            VideoEntertainment movie = movieBuilder
                     .addDescription()
                     .addReleaseDate()
                     .addPoster(200).build();
@@ -138,8 +133,7 @@ public class TMDBParser {
         List<VideoEntertainment> documents = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             JSONTVBuilder tvBuilder = JSONTVBuilder.getInstance(data.getJSONObject(i), parser);
-            VideoEntertainment tv = tvBuilder.addId()
-                    .addTitle()
+            VideoEntertainment tv = tvBuilder
                     .addDescription()
                     .addReleaseDate()
                     .addPoster().build();
@@ -159,8 +153,7 @@ public class TMDBParser {
         List<VideoEntertainment> tvList = new ArrayList<>();
         for(int i = 0; i < tvs.length(); i++){
             JSONTVBuilder tvBuilder = JSONTVBuilder.getInstance(tvs.getJSONObject(i), parser);
-            VideoEntertainment tv = tvBuilder.addId()
-                    .addTitle()
+            VideoEntertainment tv = tvBuilder
                     .addDescription()
                     .addReleaseDate()
                     .addPoster().build();
@@ -179,8 +172,7 @@ public class TMDBParser {
         List<VideoEntertainment> tvList = new ArrayList<>();
         for(int i = 0; i < tvs.length(); i++){
             JSONTVBuilder tvBuilder = JSONTVBuilder.getInstance(tvs.getJSONObject(i), parser);
-            VideoEntertainment tv = tvBuilder.addId()
-                    .addTitle()
+            VideoEntertainment tv = tvBuilder
                     .addDescription()
                     .addReleaseDate()
                     .addPoster(200).build();

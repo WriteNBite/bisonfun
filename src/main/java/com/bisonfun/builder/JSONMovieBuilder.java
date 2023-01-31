@@ -33,7 +33,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      * Get instance of builder.
      * @param root JSONObject to work with. Contains info about movie. Right now needed JSONObject from TheMovieDB API.
      * @param jsonParser parser to get additional JSONObject from TheMovieDB API.
-     * @return builder.
+     * @return builder with id and title included.
      */
     public static JSONMovieBuilder getInstance(JSONObject root, JSONParser jsonParser){
         log.info("Returning Instance of JSONAniBuilder");
@@ -45,6 +45,8 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         log.info("Root: "+root.toString());
         this.root = root;
         this.jsonParser = parser;
+        addId();
+        addTitle();
     }
 
     /**

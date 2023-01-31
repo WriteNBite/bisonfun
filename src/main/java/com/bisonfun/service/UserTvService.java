@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class UserTvService {
         List<VideoEntertainment> tvList = new ArrayList<>();
         for(UserTv userTv : userTvRepo.findUserTvByUserIdAndStatus(userId, status)){
             Tv tv = userTv.getTv();
-            tvList.add(new VideoEntertainment(tv.getId(), false, tv.getType(), tv.getTitle(), null, null, tv.getPoster()));
+            tvList.add(new VideoEntertainment(tv.getId(), false, tv.getType(), tv.getTitle(), null, tv.getYear() > 0 ? Date.valueOf(tv.getYear()+"-1-1") : null, tv.getPoster()));
         }
         log.info("Tv list: "+tvList);
         return tvList;

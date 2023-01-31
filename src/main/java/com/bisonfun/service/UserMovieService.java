@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class UserMovieService {
         List<VideoEntertainment> movieList = new ArrayList<>();
         for(UserMovie userMovie : userMovieRepo.findUserMovieByUserIdAndStatus(userId, status)){
             Movie movie = userMovie.getMovie();
-            movieList.add(new VideoEntertainment(movie.getId(), false, movie.getType(), movie.getTitle(), null, null, movie.getPoster()));
+            movieList.add(new VideoEntertainment(movie.getId(), false, movie.getType(), movie.getTitle(), null, movie.getYear() > 0 ? Date.valueOf(movie.getYear()+"-1-1") : null, movie.getPoster()));
         }
         log.info("Movie list: "+ movieList);
         return movieList;

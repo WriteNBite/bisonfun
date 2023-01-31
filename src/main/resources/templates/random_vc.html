@@ -23,31 +23,14 @@
     <link th:href="@{~/css/usercustoms.css}" rel="stylesheet" />
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#roll-button').click(function () {
-                let checked = $("input[type=checkbox]:checked").length;
-
-                if (!checked) {
-                    alert("Please select at least something one to submit.");
-                    return false;
-                } else {
-                    $('form#wtw').submit();
-                }
-
-            });
-        });
-    </script>
-    <style>
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
     <script th:src="@{~/js/iconscript.js}"></script>
+
+    <link th:href="@{~/css/wtw.css}" rel="stylesheet">
+    <link th:href="@{~/css/wtw-tabs.css}" rel="stylesheet">
+    <script th:src="@{~/js/wtwscript.js}"></script>
 </head>
 
-<body onload="seasonIcon()" class="d-flex flex-column min-vh-100">
+<body onload="seasonIcon(); enableOptions();" class="d-flex flex-column min-vh-100">
     <!-- Navigation-->
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
@@ -102,61 +85,116 @@
     </nav>
     <!-- Result -->
     <main class="container mt-3">
-        <div>
-            <h1 class="text-center">What To Watch</h1>
-            <form id="wtw" th:action="@{~/random}" method="get" target="_blank" class="d-flex justify-content-center flex-nowrap">
-                <div class="col-auto">
-                    <span>Movie</span>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item" disabled>Status:</li>
-                        <label for="movie-planned">
-                            <li class="list-group-item"><input type="checkbox" name="movie-planned"
-                                                               id="movie-planned">Planned</li>
-                        </label>
-                        <label for="movie-watching">
-                            <li class="list-group-item"><input type="checkbox" name="movie-watching"
-                                                               id="movie-watching">Watching</li>
-                        </label>
-                        <label for="movie-complete">
-                            <li class="list-group-item"><input type="checkbox" name="movie-complete"
-                                                               id="movie-complete">Complete</li>
-                        </label>
-                    </ul>
-                    <span>TV</span>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item" disabled>Status:</li>
-                        <label for="tv-planned">
-                            <li class="list-group-item"><input type="checkbox" name="tv-planned" id="tv-planned">Planned
-                            </li>
-                        </label>
-                        <label for="tv-watching">
-                            <li class="list-group-item"><input type="checkbox" name="tv-watching" id="tv-watching">Watching
-                            </li>
-                        </label>
-                        <label for="tv-complete">
-                            <li class="list-group-item"><input type="checkbox" name="tv-complete" id="tv-complete">Complete
-                            </li>
-                        </label>
-                    </ul>
-                    <span>Anime:</span><br>
-                    <ul class="list-group list-group-horizontal">
-                        <li class="list-group-item" disabled>Status:</li>
-                        <label for="anime-planned">
-                            <li class="list-group-item"><input type="checkbox" name="anime-planned"
-                                                               id="anime-planned">Planned</li>
-                        </label>
-                        <label for="anime-watching">
-                            <li class="list-group-item"><input type="checkbox" name="anime-watching"
-                                                               id="anime-watching">Watching</li>
-                        </label>
-                        <label for="anime-complete">
-                            <li class="list-group-item"><input type="checkbox" name="anime-complete"
-                                                               id="anime-complete">Complete</li>
-                        </label>
-                    </ul>
+        <div class="row" style="height: 500px;">
+            <div class="col-6 ">
+
+                <div class="tabs" id="tabs">
+                    <div class="tab">
+                        <input type="radio" name="css-tabs" id="personal" checked value="lightgray" style="display: none" class="tab-switch">
+                        <label for="personal" class="tab-label">Personal</label>
+                        <div class="tab-content">
+                            <div class="container d-flex" style="height: 10vw">
+                                <div class="col-4 text-center">
+                                    <label for="anime">Anime </label>
+                                    <input type="checkbox" value="anime" class="switch content-type" id="anime" name="content-type">
+                                    <div class="anime">
+                                        <div class="setting">
+                                            <label for="anime-planned">Planned: </label>
+                                            <input type="checkbox" value="planned" id="anime-planned" name="anime-planned">
+                                        </div>
+                                        <div class="setting">
+                                            <label for="anime-watching">Watching: </label>
+                                            <input type="checkbox" value="watching" id="anime-watching" name="anime-watching">
+                                        </div>
+                                        <div class="setting">
+                                            <label for="anime-complete">Complete: </label>
+                                            <input type="checkbox" value="complete" id="anime-complete" name="anime-complete">
+                                        </div>
+                                        <div class="setting">
+                                            <select class="form-select" name="anime-type" id="anime-type">
+                                                <option value="all">
+                                                    Movie\TV
+                                                </option>
+                                                <option value="tv">
+                                                    TV
+                                                </option>
+                                                <option value="movie">
+                                                    Movie
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <label for="movie">Movie </label>
+                                    <input type="checkbox" value="movie" class="switch content-type" id="movie" name="content-type">
+                                    <div class="movie">
+                                        <div class="setting">
+                                            <label for="movie-planned">Planned: </label>
+                                            <input type="checkbox" value="planned" id="movie-planned" name="movie-planned">
+                                        </div>
+                                        <div class="setting">
+                                            <label for="movie-watching">Watching: </label>
+                                            <input type="checkbox" value="watching" id="movie-watching" name="movie-watching">
+                                        </div>
+                                        <div class="setting">
+                                            <label for="movie-complete">Complete: </label>
+                                            <input type="checkbox" value="complete" id="movie-complete" name="movie-complete">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <label for="tv">Tv</label>
+                                    <input type="checkbox" value="tv" class="switch content-type" id="tv" name="content-type">
+                                    <div class="tv">
+                                        <div class="setting">
+                                            <label for="tv-planned">Planned: </label>
+                                            <input type="checkbox" value="planned" id="tv-planned" name="tv-planned">
+                                        </div>
+                                        <div class="setting">
+                                            <label for="tv-watching">Watching: </label>
+                                            <input type="checkbox" value="watching" id="tv-watching" name="tv-watching">
+                                        </div>
+                                        <div class="setting">
+                                            <label for="tv-complete">Complete: </label>
+                                            <input type="checkbox" value="complete" id="tv-complete" name="tv-complete">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <input type="hidden" id="username" th:value="${username}">
+                                <input class="btn btn-outline-primary" disabled id="personal-generate" onclick="wtwscript()" type="button" value="Start"
+                                       style="vertical-align: center">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab">
+                        <input style="display: none" type="radio" name="css-tabs" id="global" value="#dc3545" class="tab-switch">
+                        <label for="global" class="tab-label">Global</label>
+                        <div class="tab-content overflow-auto d-flex flex-row flex-nowrap">
+                            <h3>
+                                Coming soon!
+                            </h3>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn btn-lg btn-bisonfun mt-2" id="roll-button" type="button">Roll</button>
-            </form>
+            </div>
+
+            <div class="col-6 ">
+                <div id="content">
+                    <div class="alert alert-secondary mx-auto">
+                        <img src="https://img.freepik.com/free-vector/flat-design-no-photo-sign-design_23-2149289006.jpg" alt="">
+                        <div class="title">
+                            <a href="" class="alert-link">Title</a>
+                        </div>
+                        <div class="type">
+                            <span>Type</span>
+                            <span>Year</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
     <!-- Footer --><br>

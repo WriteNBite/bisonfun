@@ -2,6 +2,7 @@ package com.bisonfun.service;
 
 import com.bisonfun.domain.VideoEntertainment;
 import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.domain.enums.VideoContentType;
 import com.bisonfun.entity.Anime;
 import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserAnime;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,18 @@ public class UserAnimeService {
         List<VideoEntertainment> animeList = new ArrayList<>();
         for(UserAnime userAnime : userAnimeRepo.findUserAnimeByUserIdAndStatus(userId, status)){
             Anime anime = userAnime.getAnime();
-            animeList.add(new VideoEntertainment(anime.getId(), true, anime.getType(), anime.getTitle(), null, null, anime.getPoster()));
+            animeList.add(new VideoEntertainment(anime.getId(), true, anime.getType(), anime.getTitle(), null, anime.getYear() > 0 ? Date.valueOf(anime.getYear()+"-1-1") : null, anime.getPoster()));
+        }
+        log.info("Anime list: "+animeList);
+        return animeList;
+    }
+
+    public List<VideoEntertainment> getVideoContentListByStatusAndType(int userId, VideoConsumingStatus status, VideoContentType type){
+        log.info("Getting "+status+" anime list\nUser id: "+userId);
+        List<VideoEntertainment> animeList = new ArrayList<>();
+        for(UserAnime userAnime : userAnimeRepo.findUserAnimeByUserIdAndStatusAndType(userId, status, type)){
+            Anime anime = userAnime.getAnime();
+            animeList.add(new VideoEntertainment(anime.getId(), true, anime.getType(), anime.getTitle(), null, anime.getYear() > 0 ? Date.valueOf(anime.getYear()+"-1-1") : null, anime.getPoster()));
         }
         log.info("Anime list: "+animeList);
         return animeList;

@@ -71,11 +71,14 @@ public class JSONParser {
     @Cacheable("animeTrends")
     public JSONObject getAnimeTrends() throws TooManyAnimeRequestsException, NoAccessException {
         log.info("Get anime trends");
-
-        HttpResponse<String> result = Unirest.post(Anilist.GRAPHQL.link)
-                .queryString("query", AnilistQuery.ANIME_TRENDING.query)
-                .asString();
-
+        HttpResponse<String> result;
+        try {
+             result = Unirest.post(Anilist.GRAPHQL.link)
+                    .queryString("query", AnilistQuery.ANIME_TRENDING.query)
+                    .asString();
+        }catch (Exception e){
+            throw new NoAccessException("No Access to Anilist.co");
+        }
         log.info(result.getBody());
 
         if(result.getStatus() == 429){
@@ -299,10 +302,14 @@ public class JSONParser {
     @Cacheable("movieTrends")
     public JSONObject getMovieTrends() throws NoAccessException {
         log.info("Get movie trends");
-
-        HttpResponse<String> result = Unirest.get(TMDB.TRENDS_MOVIE.link)
-                .queryString("api_key", tmdbKey)
-                .asString();
+        HttpResponse<String> result;
+        try {
+            result = Unirest.get(TMDB.TRENDS_MOVIE.link)
+                    .queryString("api_key", tmdbKey)
+                    .asString();
+        }catch (Exception e){
+            throw new NoAccessException("Can't access to TheMovieDB");
+        }
         if(result.getStatus() == 401){
             log.error("Invalid API key (TMDB API key)");
             throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");
@@ -317,10 +324,14 @@ public class JSONParser {
     @Cacheable("tvTrends")
     public JSONObject getTvTrends() throws NoAccessException {
         log.info("Get tv trends");
-
-        HttpResponse<String> result = Unirest.get(TMDB.TRENDS_TV.link)
-                .queryString("api_key", tmdbKey)
-                .asString();
+        HttpResponse<String> result;
+        try {
+            result = Unirest.get(TMDB.TRENDS_TV.link)
+                    .queryString("api_key", tmdbKey)
+                    .asString();
+        }catch (Exception e){
+            throw new NoAccessException("Can't access to TheMovieDB");
+        }
         if(result.getStatus() == 401){
             log.error("Invalid API key (TMDB API key)");
             throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");

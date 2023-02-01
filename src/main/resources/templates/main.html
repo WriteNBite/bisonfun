@@ -92,7 +92,7 @@
         </div>
     </header>
 
-    <div class="container" style="margin-top: 5%; margin-bottom: 5%;">
+    <div th:if="${(animeTrends.size()+movieTrends.size()+tvTrends.size()) > 0}" class="container" style="margin-top: 5%; margin-bottom: 5%;">
         <h3>
             Trending
         </h3>
@@ -114,7 +114,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tab">
+            <div th:if="${movieTrends.size() > 0}" class="tab">
                 <input type="radio" name="css-tabs" checked  id="movie" value="#dc3545" class="tab-switch">
                 <label for="movie" class="tab-label">Movie</label>
                 <div class="tab-content overflow-auto d-flex flex-row flex-nowrap">
@@ -131,7 +131,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tab">
+            <div th:if="${tvTrends.size() > 0}" class="tab">
                 <input type="radio" name="css-tabs" id="tv" value="#198754" class="tab-switch">
                 <label for="tv" class="tab-label">Tv</label>
                 <div class="tab-content overflow-auto d-flex flex-row flex-nowrap">

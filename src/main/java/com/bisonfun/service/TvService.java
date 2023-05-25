@@ -9,8 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TvService {
+    private final TvRepository tvRepository;
+
     @Autowired
-    private TvRepository tvRepository;
+    public TvService(TvRepository tvRepository) {
+        this.tvRepository = tvRepository;
+    }
 
     public Tv findById(int tvId){
         return tvRepository.findById(tvId).orElse(null);

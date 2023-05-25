@@ -21,8 +21,12 @@ import java.util.List;
 @Slf4j
 @Component
 public class AniParser {
+    private final JSONParser parser;
+
     @Autowired
-    private JSONParser parser;
+    public AniParser(JSONParser parser) {
+        this.parser = parser;
+    }
 
     //parse anime lists
     public Pagination<VideoEntertainment> parse(String query) throws TooManyAnimeRequestsException {

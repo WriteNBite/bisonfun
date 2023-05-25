@@ -27,14 +27,18 @@ import static java.util.Arrays.asList;
 @Controller
 public class AnimeController extends VideoContentController {
 
+    private final UserService userService;
+    private final AnimeService animeService;
+    private final UserAnimeService userAnimeService;
+    private final AniParser aniParser;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private AnimeService animeService;
-    @Autowired
-    private UserAnimeService userAnimeService;
-    @Autowired
-    private AniParser aniParser;
+    public AnimeController(UserService userService, AnimeService animeService, UserAnimeService userAnimeService, AniParser aniParser) {
+        this.userService = userService;
+        this.animeService = animeService;
+        this.userAnimeService = userAnimeService;
+        this.aniParser = aniParser;
+    }
 
     @GetMapping("/anime/{id}")
     public String animePage(@PathVariable int id, Model model, Principal principal) throws JSONException, TooManyAnimeRequestsException {

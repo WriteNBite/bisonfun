@@ -12,8 +12,12 @@ import java.util.List;
 
 @Service
 public class AnimeService {
+    private final AnimeRepository animeRepository;
+
     @Autowired
-    private AnimeRepository animeRepository;
+    public AnimeService(AnimeRepository animeRepository) {
+        this.animeRepository = animeRepository;
+    }
 
     public Anime findById(int animeId){
         return animeRepository.findById(animeId).orElse(null);

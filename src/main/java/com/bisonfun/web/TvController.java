@@ -27,16 +27,20 @@ import static java.util.Arrays.asList;
 
 @Controller
 public class TvController extends VideoContentController{
+    private final AniParser aniParser;
+    private final TMDBParser tmdbParser;
+    private final UserService userService;
+    private final UserTvService userTvService;
+    private final TvService tvService;
+
     @Autowired
-    private AniParser aniParser;
-    @Autowired
-    private TMDBParser tmdbParser;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserTvService userTvService;
-    @Autowired
-    private TvService tvService;
+    public TvController(AniParser aniParser, TMDBParser tmdbParser, UserService userService, UserTvService userTvService, TvService tvService) {
+        this.aniParser = aniParser;
+        this.tmdbParser = tmdbParser;
+        this.userService = userService;
+        this.userTvService = userTvService;
+        this.tvService = tvService;
+    }
 
     @GetMapping("/tv/{id}")
     public String tvPage(Model model, @PathVariable int id, Principal principal) throws JSONException {

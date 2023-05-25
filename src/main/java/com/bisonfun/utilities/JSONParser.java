@@ -18,10 +18,15 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 @Slf4j
 public class JSONParser {
-    @Autowired
+    final
     Environment environment;
     @Value("#{environment['bisonfun.tmdb.key']}")
     private String tmdbKey;
+
+    @Autowired
+    public JSONParser(Environment environment) {
+        this.environment = environment;
+    }
 
     /**
      * Get anime list by search query.

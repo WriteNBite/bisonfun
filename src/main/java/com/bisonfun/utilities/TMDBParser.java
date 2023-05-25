@@ -19,8 +19,13 @@ import java.util.List;
 @Component
 public class TMDBParser {
 
-    @Autowired
+    final
     JSONParser parser;
+
+    @Autowired
+    public TMDBParser(JSONParser parser) {
+        this.parser = parser;
+    }
 
     public TMDBMovie parseMovieById(int id) {
 

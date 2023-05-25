@@ -26,16 +26,20 @@ import static java.util.Arrays.asList;
 @Controller
 public class MovieController {
 
+    private final AniParser aniParser;
+    private final TMDBParser tmdbParser;
+    private final UserService userService;
+    private final UserMovieService userMovieService;
+    private final MovieService movieService;
+
     @Autowired
-    private AniParser aniParser;
-    @Autowired
-    private TMDBParser tmdbParser;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserMovieService userMovieService;
-    @Autowired
-    private MovieService movieService;
+    public MovieController(AniParser aniParser, TMDBParser tmdbParser, UserService userService, UserMovieService userMovieService, MovieService movieService) {
+        this.aniParser = aniParser;
+        this.tmdbParser = tmdbParser;
+        this.userService = userService;
+        this.userMovieService = userMovieService;
+        this.movieService = movieService;
+    }
 
     @GetMapping("/search")
     public String searchProcess(Model model, @RequestParam String query, @RequestParam String type, @RequestParam Optional<Integer> page) throws JSONException, TooManyAnimeRequestsException {

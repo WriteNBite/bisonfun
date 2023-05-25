@@ -20,16 +20,20 @@ import java.util.List;
 
 @Controller
 public class UserController {
+    private final UserService userService;
+    private final UserAnimeService userAnimeService;
+    private final UserMovieService userMovieService;
+    private final UserTvService userTvService;
+    private final Environment environment;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private UserAnimeService userAnimeService;
-    @Autowired
-    private UserMovieService userMovieService;
-    @Autowired
-    private UserTvService userTvService;
-    @Autowired
-    private Environment environment;
+    public UserController(UserService userService, UserAnimeService userAnimeService, UserMovieService userMovieService, UserTvService userTvService, Environment environment) {
+        this.userService = userService;
+        this.userAnimeService = userAnimeService;
+        this.userMovieService = userMovieService;
+        this.userTvService = userTvService;
+        this.environment = environment;
+    }
 
     @GetMapping("/users/{username}")
     public String getUsernamePage(Model model, @PathVariable String username){

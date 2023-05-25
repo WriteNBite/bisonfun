@@ -16,8 +16,12 @@ import java.util.Optional;
 
 @Controller
 public class LoggingController {
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public LoggingController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/register")
     public String registerPage(@RequestParam Optional<Boolean> alreadyExist, ModelMap map){

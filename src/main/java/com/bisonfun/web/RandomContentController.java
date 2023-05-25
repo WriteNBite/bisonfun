@@ -24,14 +24,22 @@ import java.util.regex.Pattern;
 
 @RestController
 public class RandomContentController {
-    @Autowired
+    final
     UserAnimeService userAnimeService;
-    @Autowired
+    final
     UserMovieService userMovieService;
-    @Autowired
+    final
     UserTvService userTvService;
-    @Autowired
+    final
     UserService userService;
+
+    @Autowired
+    public RandomContentController(UserAnimeService userAnimeService, UserMovieService userMovieService, UserTvService userTvService, UserService userService) {
+        this.userAnimeService = userAnimeService;
+        this.userMovieService = userMovieService;
+        this.userTvService = userTvService;
+        this.userService = userService;
+    }
 
     @GetMapping(value = "/random/video", produces = "application/json")
     public VideoEntertainment getRandomVideoContent(

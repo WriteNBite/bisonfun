@@ -9,8 +9,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class UserService {
-    @Autowired
+    final
     UserRepository userRepo;
+
+    @Autowired
+    public UserService(UserRepository userRepo) {
+        this.userRepo = userRepo;
+    }
 
     public User getUserByUsername(String username){
         log.info("Getting user by username");

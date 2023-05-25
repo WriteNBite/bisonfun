@@ -19,8 +19,13 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserAnimeService {
-    @Autowired
+    final
     UserAnimeRepository userAnimeRepo;
+
+    @Autowired
+    public UserAnimeService(UserAnimeRepository userAnimeRepo) {
+        this.userAnimeRepo = userAnimeRepo;
+    }
 
     public List<UserAnime> getUserAnimeListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get userAnime list\nUser id: "+userId+"\nStatus: "+status);

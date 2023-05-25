@@ -17,8 +17,13 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserMovieService {
-    @Autowired
+    final
     UserMovieRepository userMovieRepo;
+
+    @Autowired
+    public UserMovieService(UserMovieRepository userMovieRepo) {
+        this.userMovieRepo = userMovieRepo;
+    }
 
     public List<Movie> getMovieListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get movie list\nUser id: "+userId+"\nStatus: "+status);

@@ -17,8 +17,13 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserTvService {
-    @Autowired
+    final
     UserTvRepository userTvRepo;
+
+    @Autowired
+    public UserTvService(UserTvRepository userTvRepo) {
+        this.userTvRepo = userTvRepo;
+    }
 
     public List<Tv> getTvListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get tv list\nUser id: "+userId+"\nStatus: "+status);

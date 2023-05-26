@@ -2,10 +2,10 @@ package com.bisonfun.utilities;
 
 import com.bisonfun.builder.JSONMovieBuilder;
 import com.bisonfun.builder.JSONTVBuilder;
-import com.bisonfun.domain.TMDBMovie;
-import com.bisonfun.domain.TMDBTVShow;
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.dto.TMDBMovie;
+import com.bisonfun.dto.TMDBTVShow;
+import com.bisonfun.dto.VideoEntertainment;
+import com.bisonfun.dto.enums.VideoContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;

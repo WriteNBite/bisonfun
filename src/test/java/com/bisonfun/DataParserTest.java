@@ -1,6 +1,6 @@
 package com.bisonfun;
 
-import com.bisonfun.domain.VideoEntertainment;
+import com.bisonfun.dto.VideoEntertainment;
 import com.bisonfun.utilities.AniParser;
 import com.bisonfun.utilities.ContentNotFoundException;
 import com.bisonfun.utilities.TMDBParser;

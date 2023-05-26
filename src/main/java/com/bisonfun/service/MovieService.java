@@ -1,6 +1,6 @@
 package com.bisonfun.service;
 
-import com.bisonfun.domain.TMDBMovie;
+import com.bisonfun.dto.TMDBMovie;
 import com.bisonfun.entity.Movie;
 import com.bisonfun.repository.MovieRepository;
 import com.bisonfun.utilities.ContentNotFoundException;

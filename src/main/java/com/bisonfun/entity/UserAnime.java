@@ -1,6 +1,6 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

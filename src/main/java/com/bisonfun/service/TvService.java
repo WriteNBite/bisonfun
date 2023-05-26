@@ -1,6 +1,6 @@
 package com.bisonfun.service;
 
-import com.bisonfun.domain.TMDBTVShow;
+import com.bisonfun.dto.TMDBTVShow;
 import com.bisonfun.entity.Tv;
 import com.bisonfun.repository.TvRepository;
 import com.bisonfun.utilities.ContentNotFoundException;

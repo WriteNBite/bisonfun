@@ -1,7 +1,7 @@
-package com.bisonfun.domain;
+package com.bisonfun.dto;
 
-import com.bisonfun.domain.enums.VideoContentStatus;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.dto.enums.VideoContentStatus;
+import com.bisonfun.dto.enums.VideoContentType;
 
 import java.sql.Date;
 

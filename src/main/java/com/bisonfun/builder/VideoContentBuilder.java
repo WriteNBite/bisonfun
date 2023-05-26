@@ -1,6 +1,6 @@
 package com.bisonfun.builder;
 
-import com.bisonfun.domain.VideoEntertainment;
+import com.bisonfun.dto.VideoEntertainment;
 
 public interface VideoContentBuilder {
     VideoContentBuilder addId();

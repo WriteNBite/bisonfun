@@ -1,8 +1,8 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.TVShow;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
-import com.bisonfun.domain.enums.VideoContentStatus;
+import com.bisonfun.dto.TVShow;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
+import com.bisonfun.dto.enums.VideoContentStatus;
 import com.bisonfun.entity.UserTvContent;
 
 public abstract class VideoContentController {

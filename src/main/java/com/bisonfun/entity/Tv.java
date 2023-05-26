@@ -1,7 +1,7 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.domain.TMDBTVShow;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.dto.TMDBTVShow;
+import com.bisonfun.dto.enums.VideoContentType;
 
 import javax.persistence.*;
 import java.io.Serializable;

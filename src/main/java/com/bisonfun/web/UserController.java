@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
 import com.bisonfun.service.UserAnimeService;
 import com.bisonfun.service.UserMovieService;

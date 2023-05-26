@@ -2,6 +2,9 @@ package com.bisonfun.entity;
 
 import com.bisonfun.dto.TMDBMovie;
 import com.bisonfun.dto.enums.VideoContentType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,6 +13,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "movie")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Movie implements Serializable {
     @Id
     private int id;
@@ -32,9 +38,6 @@ public class Movie implements Serializable {
         this.year = year;
     }
 
-    public Movie() {
-    }
-
     public boolean update(TMDBMovie apiMovie){
         boolean posterUpdate = !this.poster.equals(apiMovie.getPoster());
         boolean titleUpdate = !this.title.equals(apiMovie.getTitle());
@@ -49,62 +52,6 @@ public class Movie implements Serializable {
             this.setYear(apiMovie.getReleaseYear());
         }
         return posterUpdate || titleUpdate || yearUpdate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getImdbId() {
-        return imdbId;
-    }
-
-    public void setImdbId(String idIMDB) {
-        this.imdbId = idIMDB;
-    }
-
-    public String getPoster() {
-        return poster;
-    }
-
-    public void setPoster(String poster) {
-        this.poster = poster;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public VideoContentType getType() {
-        return type;
-    }
-
-    public void setType(VideoContentType type) {
-        this.type = type;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public Set<UserMovie> getUserMovies() {
-        return userMovies;
-    }
-
-    public void setUserMovies(Set<UserMovie> userMovies) {
-        this.userMovies = userMovies;
     }
 
     @Override

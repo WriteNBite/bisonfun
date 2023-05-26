@@ -46,27 +46,15 @@ public class UserController {
         int userId = user.getId();
 
         //AnimeList
-        int[] animeList = {
-                userAnimeService.getUserAnimeListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                userAnimeService.getUserAnimeListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                userAnimeService.getUserAnimeListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
-        };
+        int[] animeList = userAnimeService.getSizeOfLists(userId);
         model.addAttribute("animeList", animeList);
 
         //MovieList
-        int[] movieList = {
-                userMovieService.getUserMovieListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                userMovieService.getUserMovieListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                userMovieService.getUserMovieListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
-        };
+        int[] movieList = userMovieService.getSizeOfLists(userId);
         model.addAttribute("movieList", movieList);
 
         //MovieList
-        int[] tvList = {
-                userTvService.getUserTvListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                userTvService.getUserTvListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                userTvService.getUserTvListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
-        };
+        int[] tvList = userTvService.getSizeOfLists(userId);
         model.addAttribute("tvList", tvList);
 
         return "user";

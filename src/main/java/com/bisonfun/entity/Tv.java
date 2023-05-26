@@ -1,6 +1,5 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.dto.TMDBTVShow;
 import com.bisonfun.dto.enums.VideoContentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -36,22 +36,6 @@ public class Tv implements Serializable {
         this.year = year;
     }
 
-    public boolean update(TMDBTVShow apiTv){
-        boolean posterUpdate = !this.poster.equals(apiTv.getPoster());
-        boolean titleUpdate = !this.title.equals(apiTv.getTitle());
-        boolean yearUpdate = this.year != apiTv.getReleaseYear();
-        if(posterUpdate){ //update content if was something new
-            this.setPoster(apiTv.getPoster());
-        }
-        if(titleUpdate){
-            this.setTitle(apiTv.getTitle());
-        }
-        if(yearUpdate){
-            this.setYear(apiTv.getReleaseYear());
-        }
-        return posterUpdate || titleUpdate || yearUpdate;
-    }
-
     @Override
     public String toString() {
         return "Tv{" +
@@ -61,5 +45,18 @@ public class Tv implements Serializable {
                 ", type=" + type +
                 ", year=" + year +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tv tv = (Tv) o;
+        return id == tv.id && year == tv.year && Objects.equals(poster, tv.poster) && title.equals(tv.title) && type == tv.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, poster, title, type, year);
     }
 }

@@ -26,7 +26,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @Controller
-public class TvController extends VideoContentController{
+public class TvController{
     private final AniParser aniParser;
     private final TMDBParser tmdbParser;
     private final UserService userService;
@@ -95,25 +95,9 @@ public class TvController extends VideoContentController{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         User user = userService.getUserByUsername(principal.getName());
-        Tv dbTv = tvService.findById(tvId);
-        TMDBTVShow tmdbtvShow = tmdbParser.parseShowById(tvId);
-        if(dbTv == null){
-            dbTv = tvService.addNewMovie(tmdbtvShow);
-        }else{
-            dbTv = tvService.updating(dbTv, tmdbtvShow);
-        }
-        UserTvKey userTvKey = new UserTvKey(user.getId(), dbTv.getId());
-        userTv.setId(userTvKey);
-        userTv.setUser(user);
-        userTv.setTv(dbTv);
+        Tv dbTv = tvService.updateTv(tvId);
 
-        UserTv dbUserTv = userTvService.getUserTvById(userTvKey);
-        if(userTv.getEpisodes() != dbUserTv.getEpisodes()){
-            userTv.setStatus(updateStatus(userTv, tmdbtvShow));
-        }else if(userTv.getStatus() != dbUserTv.getStatus()){
-            userTv.setEpisodes(updateEpisodes(userTv, tmdbtvShow));
-        }
-        userTvService.saveUserTv(userTv);
+        userTvService.createUserTv(userTv, user, dbTv);
 
 
         String tvLink = "/tv/"+tvId;

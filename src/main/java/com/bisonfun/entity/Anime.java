@@ -1,6 +1,5 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.dto.AniAnime;
 import com.bisonfun.dto.enums.VideoContentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -36,22 +36,6 @@ public class Anime implements Serializable {
         this.year = year;
     }
 
-    public boolean update(AniAnime apiAnime){
-        boolean posterUpdate = !this.poster.equals(apiAnime.getPoster());
-        boolean titleUpdate = !this.title.equals(apiAnime.getTitle());
-        boolean yearUpdate = this.year != apiAnime.getReleaseYear();
-        if(posterUpdate){ //update content if was something new
-            this.setPoster(apiAnime.getPoster());
-        }
-        if(titleUpdate){
-            this.setTitle(apiAnime.getTitle());
-        }
-        if(yearUpdate){
-            this.setYear(apiAnime.getReleaseYear());
-        }
-        return posterUpdate || titleUpdate || yearUpdate;
-    }
-
     @Override
     public String toString() {
         return "Anime{" +
@@ -62,5 +46,18 @@ public class Anime implements Serializable {
                 ", type=" + type +
                 ", year=" + year +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Anime anime = (Anime) o;
+        return id == anime.id && malId == anime.malId && year == anime.year && Objects.equals(poster, anime.poster) && title.equals(anime.title) && type == anime.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, malId, poster, title, type, year);
     }
 }

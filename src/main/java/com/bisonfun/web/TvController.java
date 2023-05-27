@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -69,14 +68,7 @@ public class TvController{
 
         List<VideoEntertainment> tvRecommendations = tmdbParser.parseTVRecommendations(id);
 
-        String lastAired = show.getLastAired() == null ? null : DateFormat.getDateInstance().format(show.getLastAired());
-        String releaseDate = show.getReleaseDate() == null ? "???" : DateFormat.getDateInstance().format(show.getReleaseDate());
-        String timeToWatch = show.getTimeToWatch();
-
         model.addAttribute("content", show);
-        model.addAttribute("lastAired", lastAired);
-        model.addAttribute("releaseDate", releaseDate);
-        model.addAttribute("timeToWatch", timeToWatch);
         model.addAttribute("recommendations", tvRecommendations);
 
         model.addAttribute("actions", asList(VideoConsumingStatus.values()));

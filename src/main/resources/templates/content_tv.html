@@ -202,7 +202,7 @@
                 </div>
                 <div>
                     <div class="key d-inline-block">Runtime:</div>
-                    <div th:text="${timeToWatch}" class="value d-inline-block">null min</div>
+                    <div th:text="${content.getTimeToWatch()}" class="value d-inline-block">null min</div>
                 </div>
                 <div>
                     <div class="key d-inline-block">Status:</div>
@@ -212,9 +212,9 @@
                 </div>
                 <div>
                     <div class="key d-inline-block">Air date:</div>
-                    <div th:text="${releaseDate}" class="value d-inline-block">null</div>
-                    <div th:if="${content.type == content.type.TV && content.status != content.status.ONGOING && lastAired != null}"
-                         th:text="' - '+${lastAired}" class="value d-inline-block">null
+                    <div th:text="${content.getReleaseDate() == null ? '???' : #dates.format(content.getReleaseDate(), 'dd MMM yyyy')}" class="value d-inline-block">null</div>
+                    <div th:if="${content.type == content.type.TV && content.status != content.status.ONGOING && content.getLastAired() != null}"
+                         th:text="' - '+${#dates.format(content.getLastAired(), 'dd MMM yyyy')}" class="value d-inline-block">null
                     </div>
                     <div th:if="${content.type == content.type.TV && content.status == content.status.ONGOING}"
                          th:text="' - present'" class="value d-inline-block">null

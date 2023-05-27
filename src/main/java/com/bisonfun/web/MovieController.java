@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,14 +84,9 @@ public class MovieController {
 
         UserMovie userMovie = principal == null ? new UserMovie() : userMovieService.getUserMovieByUsernameAndId(principal.getName(), movie.getId());
 
-        String releaseDate = movie.getReleaseDate() == null ? "???" : DateFormat.getDateInstance().format(movie.getReleaseDate());
-        String timeToWatch = movie.getTimeToWatch();
-
         List<VideoEntertainment> movieRecommendations = tmdbParser.parseMovieRecommendations(id);
 
         model.addAttribute("content", movie);
-        model.addAttribute("releaseDate", releaseDate);
-        model.addAttribute("timeToWatch", timeToWatch);
         model.addAttribute("recommendations", movieRecommendations);
 
         model.addAttribute("actions", asList(VideoConsumingStatus.values()));

@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=1024" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title th:text="${user.username}">null</title>
+    <title th:text="${login}">null</title>
     <!-- Favicon-->
     <link rel="icon" type="image/x-icon" th:href="@{~/images/logo.png}" />
     <!-- Bootstrap icons-->
@@ -89,10 +89,10 @@
     <main class="container mt-3">
         <div class="row container">
             <div class="col-4">
-                <img class="alert alert-bisonfun" th:src="@{https://robohash.org/{username}(username=${user.getUsername()}, set='set4')}" alt="">
+                <img class="alert alert-bisonfun" th:src="@{https://robohash.org/{username}(username=${login}, set='set4')}" alt="">
                 <div class="row">
                     <div class="btn-group mt-2 container">
-                        <h1 th:text="${user.getUsername()}">Username</h1>
+                        <h1 th:text="${login}">Username</h1>
                     </div>
                 </div>
             </div>

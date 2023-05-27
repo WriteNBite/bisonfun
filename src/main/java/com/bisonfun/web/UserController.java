@@ -41,7 +41,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         int userId = user.getId();
 
@@ -66,7 +66,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         //Planned List
         List<UserAnime> plannedList = userAnimeService.getUserAnimeListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
@@ -101,7 +101,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         //Planned List
         List<UserMovie> plannedList = userMovieService.getUserMovieListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
@@ -124,7 +124,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         //Planned List
         List<UserTv> plannedList = userTvService.getUserTvListByStatus(user.getId(), VideoConsumingStatus.PLANNED);

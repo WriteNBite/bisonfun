@@ -1,6 +1,6 @@
 package com.bisonfun.utilities;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

@@ -1,12 +1,16 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
 @Entity
+@Getter @Setter @NoArgsConstructor
 public class UserTv implements UserTvContent{
     @EmbeddedId
     UserTvKey id;
@@ -29,60 +33,9 @@ public class UserTv implements UserTvContent{
     @Column(columnDefinition = "integer default 0")
     int score;
 
-    public UserTv() {
-    }
-
     public UserTv(UserTvKey id, VideoConsumingStatus status) {
         this.id = id;
         this.status = status;
-    }
-
-    public UserTvKey getId() {
-        return id;
-    }
-
-    public void setId(UserTvKey id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Tv getTv() {
-        return tv;
-    }
-
-    public void setTv(Tv tv) {
-        this.tv = tv;
-    }
-
-    public VideoConsumingStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(VideoConsumingStatus status) {
-        this.status = status;
-    }
-
-    public int getEpisodes() {
-        return episodes;
-    }
-
-    public void setEpisodes(int episodes) {
-        this.episodes = episodes;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.enums.MediaListStatus;
+import com.bisonfun.dto.enums.MediaListStatus;
 import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserAnime;
 import com.bisonfun.service.AnimeService;

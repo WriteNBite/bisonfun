@@ -1,7 +1,7 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.AniAnime;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.dto.AniAnime;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
 import com.bisonfun.entity.Anime;
 import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserAnime;
@@ -25,7 +25,7 @@ import java.security.Principal;
 import static java.util.Arrays.asList;
 
 @Controller
-public class AnimeController extends VideoContentController {
+public class AnimeController{
 
     private final UserService userService;
     private final AnimeService animeService;
@@ -66,7 +66,7 @@ public class AnimeController extends VideoContentController {
     }
 
     @PostMapping("/anime/{animeId}")
-    public String completeAnime(UserAnime userAnime, @PathVariable int animeId, Principal principal) throws ContentNotFoundException, TooManyAnimeRequestsException {
+    public String updateAnimeList(UserAnime userAnime, @PathVariable int animeId, Principal principal) throws ContentNotFoundException, TooManyAnimeRequestsException {
         if (principal == null) {//if user isn't logged in
             String loginLink = "/login";
             return "redirect:"+loginLink;
@@ -74,27 +74,10 @@ public class AnimeController extends VideoContentController {
         if (userAnime.getStatus() == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        User user = userService.getUserByUsername(principal.getName());
-        Anime dbAnime = animeService.findById(animeId);
-        AniAnime anime = aniParser.parseById(animeId);
-        if (dbAnime == null) {
-            dbAnime = animeService.addNewAnime(anime);
-        }else{
-            dbAnime = animeService.updating(dbAnime, anime);
-        }
-        //getUserAnimeKey and UserAnime
-        UserAnimeKey userAnimeKey = new UserAnimeKey(user.getId(), dbAnime.getId());
-        userAnime.setId(userAnimeKey);
-        userAnime.setUser(user);
-        userAnime.setAnime(dbAnime);
+        Anime dbAnime = animeService.updateAnime(animeId);
 
-        UserAnime dbUserAnime = userAnimeService.getUserAnimeById(userAnimeKey);
-        if(userAnime.getEpisodes() != dbUserAnime.getEpisodes()){//if episode number changed
-            userAnime.setStatus(updateStatus(userAnime, anime));
-        }else if(userAnime.getStatus() != dbUserAnime.getStatus()){//if status changed
-            userAnime.setEpisodes(updateEpisodes(userAnime, anime));
-        }
-        userAnimeService.saveUserAnime(userAnime);
+        User user = userService.getUserByUsername(principal.getName());
+        userAnimeService.createUserAnime(userAnime, user, dbAnime);
 
         String redirectLink = "/anime/"+animeId;
         return "redirect:"+redirectLink;

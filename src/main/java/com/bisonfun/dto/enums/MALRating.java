@@ -1,4 +1,4 @@
-package com.bisonfun.domain.enums;
+package com.bisonfun.dto.enums;
 
 public enum MALRating {
     G("G - All ages"),

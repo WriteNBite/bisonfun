@@ -1,28 +1,44 @@
 package com.bisonfun.service;
 
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.dto.TMDBTVShow;
+import com.bisonfun.dto.VideoEntertainment;
+import com.bisonfun.dto.enums.VideoConsumingStatus;
 import com.bisonfun.entity.Tv;
+import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserTv;
 import com.bisonfun.entity.UserTvKey;
+import com.bisonfun.mapper.TvMapper;
 import com.bisonfun.repository.UserTvRepository;
+import com.bisonfun.utilities.TMDBParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UserTvService {
+public class UserTvService extends UserVideoContentService {
     final
     UserTvRepository userTvRepo;
+    final TMDBParser tmdbParser;
+    final TvMapper tvMapper;
 
     @Autowired
-    public UserTvService(UserTvRepository userTvRepo) {
+    public UserTvService(UserTvRepository userTvRepo, TMDBParser tmdbParser, TvMapper tvMapper) {
         this.userTvRepo = userTvRepo;
+        this.tmdbParser = tmdbParser;
+        this.tvMapper = tvMapper;
+    }
+
+    public int[] getSizeOfLists(int userId){
+        return new int[]{
+                getUserTvListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
+                getUserTvListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
+                getUserTvListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
+        };
     }
 
     public List<Tv> getTvListByStatus(int userId, VideoConsumingStatus status){
@@ -37,18 +53,30 @@ public class UserTvService {
 
     public List<VideoEntertainment> getContentListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get tv list\nUser id: "+userId+"\nStatus: "+status);
-        List<VideoEntertainment> tvList = new ArrayList<>();
-        for(UserTv userTv : userTvRepo.findUserTvByUserIdAndStatus(userId, status)){
-            Tv tv = userTv.getTv();
-            tvList.add(new VideoEntertainment(tv.getId(), false, tv.getType(), tv.getTitle(), null, tv.getYear() > 0 ? Date.valueOf(tv.getYear()+"-1-1") : null, tv.getPoster()));
-        }
+        List<Tv> tvList = getTvListByStatus(userId, status);
         log.info("Tv list: "+tvList);
-        return tvList;
+        return tvList.stream().map(tvMapper::toVideoEntertainment).collect(Collectors.toList());
     }
 
     public List<UserTv> getUserTvListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get userTv list\nUser id: "+userId+"\nStatus: "+status);
         return userTvRepo.findUserTvByUserIdAndStatus(userId, status);
+    }
+
+    public void createUserTv(UserTv userTv, User user, Tv tv){
+        UserTvKey userTvKey = new UserTvKey(user.getId(), tv.getId());
+        userTv.setId(userTvKey);
+        userTv.setUser(user);
+        userTv.setTv(tv);
+
+        UserTv dbUserTv = getUserTvById(userTvKey);
+        TMDBTVShow tmdbtvShow = tmdbParser.parseShowById(tv.getId());
+        if(userTv.getEpisodes() != dbUserTv.getEpisodes()){
+            userTv.setStatus(updateStatus(userTv, tmdbtvShow));
+        }else if(userTv.getStatus() != dbUserTv.getStatus()){
+            userTv.setEpisodes(updateEpisodes(userTv, tmdbtvShow));
+        }
+        saveUserTv(userTv);
     }
 
     public UserTv getUserTvById(UserTvKey userTvId){
@@ -70,6 +98,6 @@ public class UserTvService {
 
     public void deleteTvFromUserList(UserTvKey userTvId){
          log.info("Deleting tv from user list");
-         userTvRepo.findById(userTvId).ifPresent(userTv -> userTvRepo.delete(userTv));
+         userTvRepo.findById(userTvId).ifPresent(userTvRepo::delete);
     }
 }

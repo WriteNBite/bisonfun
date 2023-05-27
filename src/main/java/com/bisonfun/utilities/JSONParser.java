@@ -1,7 +1,7 @@
 package com.bisonfun.utilities;
 
-import com.bisonfun.domain.enums.MediaListStatus;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.dto.enums.MediaListStatus;
+import com.bisonfun.dto.enums.VideoContentType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;

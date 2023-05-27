@@ -1,6 +1,6 @@
 package com.bisonfun.builder;
 
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.dto.enums.VideoContentType;
 import com.bisonfun.entity.Anime;
 import lombok.extern.slf4j.Slf4j;
 

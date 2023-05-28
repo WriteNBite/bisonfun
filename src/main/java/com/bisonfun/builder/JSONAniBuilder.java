@@ -1,9 +1,9 @@
 package com.bisonfun.builder;
 
-import com.bisonfun.dto.AniAnime;
-import com.bisonfun.dto.VideoEntertainment;
-import com.bisonfun.dto.enums.VideoContentStatus;
-import com.bisonfun.dto.enums.VideoContentType;
+import com.bisonfun.model.AniAnime;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.VideoContentStatus;
+import com.bisonfun.model.enums.VideoContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -326,7 +326,7 @@ public class JSONAniBuilder implements TVContentBuilder {
 
     /**
      * Create anime object.
-     * @return {@link com.bisonfun.dto.AniAnime}
+     * @return {@link com.bisonfun.model.AniAnime}
      */
     @Override
     public AniAnime build(){

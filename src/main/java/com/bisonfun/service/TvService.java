@@ -1,6 +1,6 @@
 package com.bisonfun.service;
 
-import com.bisonfun.dto.TMDBTVShow;
+import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.entity.Tv;
 import com.bisonfun.mapper.TvMapper;
 import com.bisonfun.repository.TvRepository;

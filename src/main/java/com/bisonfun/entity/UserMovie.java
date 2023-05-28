@@ -1,6 +1,6 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.dto.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

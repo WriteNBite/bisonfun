@@ -1,6 +1,6 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.dto.enums.VideoContentType;
+import com.bisonfun.model.enums.VideoContentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

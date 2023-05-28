@@ -1,7 +1,7 @@
-package com.bisonfun.dto;
+package com.bisonfun.model;
 
-import com.bisonfun.dto.enums.VideoContentStatus;
-import com.bisonfun.dto.enums.VideoContentType;
+import com.bisonfun.model.enums.VideoContentStatus;
+import com.bisonfun.model.enums.VideoContentType;
 
 import java.sql.Date;
 import java.time.LocalDate;

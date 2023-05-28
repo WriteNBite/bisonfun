@@ -1,4 +1,4 @@
-package com.bisonfun.dto.enums;
+package com.bisonfun.model.enums;
 
 public enum VideoContentStatus {
     ONGOING,

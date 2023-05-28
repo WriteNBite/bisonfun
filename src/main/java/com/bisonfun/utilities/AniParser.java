@@ -2,10 +2,10 @@ package com.bisonfun.utilities;
 
 import com.bisonfun.builder.JSONAniBuilder;
 import com.bisonfun.builder.JSONUserAniBuilder;
-import com.bisonfun.dto.AniAnime;
-import com.bisonfun.dto.VideoEntertainment;
-import com.bisonfun.dto.enums.MediaListStatus;
-import com.bisonfun.dto.enums.VideoConsumingStatus;
+import com.bisonfun.model.AniAnime;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.MediaListStatus;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.UserAnime;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;

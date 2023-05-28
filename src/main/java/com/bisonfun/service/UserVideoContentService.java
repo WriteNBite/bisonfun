@@ -1,8 +1,8 @@
 package com.bisonfun.service;
 
-import com.bisonfun.dto.TVShow;
-import com.bisonfun.dto.enums.VideoConsumingStatus;
-import com.bisonfun.dto.enums.VideoContentStatus;
+import com.bisonfun.model.TVShow;
+import com.bisonfun.model.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoContentStatus;
 import com.bisonfun.entity.UserTvContent;
 
 public abstract class UserVideoContentService {

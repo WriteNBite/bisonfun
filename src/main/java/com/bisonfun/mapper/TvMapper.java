@@ -1,7 +1,7 @@
 package com.bisonfun.mapper;
 
-import com.bisonfun.dto.TMDBTVShow;
-import com.bisonfun.dto.VideoEntertainment;
+import com.bisonfun.model.TMDBTVShow;
+import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.entity.Tv;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

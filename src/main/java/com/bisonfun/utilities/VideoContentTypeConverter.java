@@ -1,6 +1,6 @@
 package com.bisonfun.utilities;
 
-import com.bisonfun.dto.enums.VideoContentType;
+import com.bisonfun.model.enums.VideoContentType;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

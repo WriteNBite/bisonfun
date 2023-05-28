@@ -1,4 +1,4 @@
-package com.bisonfun.dto.enums;
+package com.bisonfun.model.enums;
 
 public enum VideoConsumingStatus {
     PLANNED("Planned", 1),

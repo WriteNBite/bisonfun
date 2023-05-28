@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.dto.VideoEntertainment;
+import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.utilities.AniParser;
 import com.bisonfun.utilities.TMDBParser;
 import com.bisonfun.utilities.TooManyAnimeRequestsException;

@@ -1,7 +1,7 @@
 package com.bisonfun.web;
 
-import com.bisonfun.dto.AniAnime;
-import com.bisonfun.dto.enums.VideoConsumingStatus;
+import com.bisonfun.model.AniAnime;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.Anime;
 import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserAnime;

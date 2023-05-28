@@ -1,6 +1,6 @@
 package com.bisonfun.service;
 
-import com.bisonfun.dto.TMDBMovie;
+import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.entity.Movie;
 import com.bisonfun.mapper.MovieMapper;
 import com.bisonfun.repository.MovieRepository;

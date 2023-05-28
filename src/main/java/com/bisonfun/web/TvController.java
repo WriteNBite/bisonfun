@@ -1,8 +1,8 @@
 package com.bisonfun.web;
 
-import com.bisonfun.dto.TMDBTVShow;
-import com.bisonfun.dto.VideoEntertainment;
-import com.bisonfun.dto.enums.VideoConsumingStatus;
+import com.bisonfun.model.TMDBTVShow;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
 import com.bisonfun.service.TvService;
 import com.bisonfun.service.UserService;

@@ -1,6 +1,6 @@
 package com.bisonfun.service;
 
-import com.bisonfun.dto.AniAnime;
+import com.bisonfun.model.AniAnime;
 import com.bisonfun.entity.Anime;
 import com.bisonfun.entity.UserAnime;
 import com.bisonfun.mapper.AnimeMapper;

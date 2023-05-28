@@ -1,7 +1,7 @@
 package com.bisonfun.mapper;
 
-import com.bisonfun.dto.AniAnime;
-import com.bisonfun.dto.VideoEntertainment;
+import com.bisonfun.model.AniAnime;
+import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.entity.Anime;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

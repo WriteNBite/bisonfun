@@ -1,11 +1,11 @@
-package com.bisonfun.web;
+package com.bisonfun.service;
 
-import com.bisonfun.domain.TVShow;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
-import com.bisonfun.domain.enums.VideoContentStatus;
+import com.bisonfun.model.TVShow;
+import com.bisonfun.model.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoContentStatus;
 import com.bisonfun.entity.UserTvContent;
 
-public abstract class VideoContentController {
+public abstract class UserVideoContentService {
     public static VideoConsumingStatus updateStatus(UserTvContent userTvContent, TVShow tvShow){
         if((userTvContent.getEpisodes() > 0 || userTvContent.getStatus() == VideoConsumingStatus.COMPLETE) && userTvContent.getEpisodes() < tvShow.getEpisodes()){//if less watched episodes as it is make it watching
             return VideoConsumingStatus.WATCHING;

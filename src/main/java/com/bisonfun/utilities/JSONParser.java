@@ -1,7 +1,7 @@
 package com.bisonfun.utilities;
 
-import com.bisonfun.domain.enums.MediaListStatus;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.model.enums.MediaListStatus;
+import com.bisonfun.model.enums.VideoContentType;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +18,15 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 @Slf4j
 public class JSONParser {
-    @Autowired
+    final
     Environment environment;
     @Value("#{environment['bisonfun.tmdb.key']}")
     private String tmdbKey;
+
+    @Autowired
+    public JSONParser(Environment environment) {
+        this.environment = environment;
+    }
 
     /**
      * Get anime list by search query.

@@ -1,6 +1,6 @@
 package com.bisonfun.repository;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.UserTv;
 import com.bisonfun.entity.UserTvKey;
 import org.springframework.data.jpa.repository.Query;

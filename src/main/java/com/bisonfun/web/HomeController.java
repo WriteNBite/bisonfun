@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.VideoEntertainment;
+import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.utilities.AniParser;
 import com.bisonfun.utilities.TMDBParser;
 import com.bisonfun.utilities.TooManyAnimeRequestsException;
@@ -14,10 +14,16 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-    @Autowired
+    final
     AniParser aniParser;
-    @Autowired
+    final
     TMDBParser tmdbParser;
+
+    @Autowired
+    public HomeController(AniParser aniParser, TMDBParser tmdbParser) {
+        this.aniParser = aniParser;
+        this.tmdbParser = tmdbParser;
+    }
 
     @GetMapping("/")
     public String home(Model model) throws TooManyAnimeRequestsException {

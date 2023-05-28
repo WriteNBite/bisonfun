@@ -1,7 +1,7 @@
 package com.bisonfun.builder;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.model.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoContentType;
 import com.bisonfun.entity.Anime;
 import com.bisonfun.entity.UserAnime;
 import lombok.extern.slf4j.Slf4j;

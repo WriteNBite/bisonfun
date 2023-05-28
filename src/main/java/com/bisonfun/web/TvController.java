@@ -1,8 +1,8 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.TMDBTVShow;
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.model.TMDBTVShow;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
 import com.bisonfun.service.TvService;
 import com.bisonfun.service.UserService;
@@ -20,23 +20,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 
 @Controller
-public class TvController extends VideoContentController{
+public class TvController{
+    private final AniParser aniParser;
+    private final TMDBParser tmdbParser;
+    private final UserService userService;
+    private final UserTvService userTvService;
+    private final TvService tvService;
+
     @Autowired
-    private AniParser aniParser;
-    @Autowired
-    private TMDBParser tmdbParser;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserTvService userTvService;
-    @Autowired
-    private TvService tvService;
+    public TvController(AniParser aniParser, TMDBParser tmdbParser, UserService userService, UserTvService userTvService, TvService tvService) {
+        this.aniParser = aniParser;
+        this.tmdbParser = tmdbParser;
+        this.userService = userService;
+        this.userTvService = userTvService;
+        this.tvService = tvService;
+    }
 
     @GetMapping("/tv/{id}")
     public String tvPage(Model model, @PathVariable int id, Principal principal) throws JSONException {
@@ -65,14 +68,7 @@ public class TvController extends VideoContentController{
 
         List<VideoEntertainment> tvRecommendations = tmdbParser.parseTVRecommendations(id);
 
-        String lastAired = show.getLastAired() == null ? null : DateFormat.getDateInstance().format(show.getLastAired());
-        String releaseDate = show.getReleaseDate() == null ? "???" : DateFormat.getDateInstance().format(show.getReleaseDate());
-        String timeToWatch = show.getTimeToWatch();
-
         model.addAttribute("content", show);
-        model.addAttribute("lastAired", lastAired);
-        model.addAttribute("releaseDate", releaseDate);
-        model.addAttribute("timeToWatch", timeToWatch);
         model.addAttribute("recommendations", tvRecommendations);
 
         model.addAttribute("actions", asList(VideoConsumingStatus.values()));
@@ -91,25 +87,9 @@ public class TvController extends VideoContentController{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         User user = userService.getUserByUsername(principal.getName());
-        Tv dbTv = tvService.findById(tvId);
-        TMDBTVShow tmdbtvShow = tmdbParser.parseShowById(tvId);
-        if(dbTv == null){
-            dbTv = tvService.addNewMovie(tmdbtvShow);
-        }else{
-            dbTv = tvService.updating(dbTv, tmdbtvShow);
-        }
-        UserTvKey userTvKey = new UserTvKey(user.getId(), dbTv.getId());
-        userTv.setId(userTvKey);
-        userTv.setUser(user);
-        userTv.setTv(dbTv);
+        Tv dbTv = tvService.updateTv(tvId);
 
-        UserTv dbUserTv = userTvService.getUserTvById(userTvKey);
-        if(userTv.getEpisodes() != dbUserTv.getEpisodes()){
-            userTv.setStatus(updateStatus(userTv, tmdbtvShow));
-        }else if(userTv.getStatus() != dbUserTv.getStatus()){
-            userTv.setEpisodes(updateEpisodes(userTv, tmdbtvShow));
-        }
-        userTvService.saveUserTv(userTv);
+        userTvService.createUserTv(userTv, user, dbTv);
 
 
         String tvLink = "/tv/"+tvId;

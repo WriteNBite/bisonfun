@@ -194,7 +194,7 @@
                 </div>
                 <div>
                     <div class="key d-inline-block">Runtime:</div>
-                    <div th:text="${timeToWatch}" class="value d-inline-block">null min</div>
+                    <div th:text="${content.getTimeToWatch()}" class="value d-inline-block">null min</div>
                 </div>
                 <div>
                     <div class="key d-inline-block">Status:</div>
@@ -204,7 +204,7 @@
                 </div>
                 <div>
                     <div class="key d-inline-block">Release date:</div>
-                    <div th:text="${releaseDate}" class="value d-inline-block">null</div>
+                    <div th:text="${content.getReleaseDate() == null ? '???' : #dates.format(content.getReleaseDate(), 'dd MMM yyyy')}" class="value d-inline-block">null</div>
                 </div>
                 <div>
                     <div class="key d-inline-block">Genres:</div>

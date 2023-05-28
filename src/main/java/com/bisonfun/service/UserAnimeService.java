@@ -1,13 +1,17 @@
 package com.bisonfun.service;
 
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoContentType;
 import com.bisonfun.entity.Anime;
 import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserAnime;
 import com.bisonfun.entity.UserAnimeKey;
+import com.bisonfun.mapper.AnimeMapper;
 import com.bisonfun.repository.UserAnimeRepository;
+import com.bisonfun.utilities.AniParser;
+import com.bisonfun.utilities.ContentNotFoundException;
+import com.bisonfun.utilities.TooManyAnimeRequestsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +19,30 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UserAnimeService {
-    @Autowired
+public class UserAnimeService extends UserVideoContentService {
+    final
     UserAnimeRepository userAnimeRepo;
+    final AniParser aniParser;
+    final AnimeMapper animeMapper;
+
+    @Autowired
+    public UserAnimeService(UserAnimeRepository userAnimeRepo, AniParser aniParser, AnimeMapper animeMapper) {
+        this.userAnimeRepo = userAnimeRepo;
+        this.aniParser = aniParser;
+        this.animeMapper = animeMapper;
+    }
+
+    public int[] getSizeOfLists(int userId){
+        return new int[]{
+                getUserAnimeListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
+                getUserAnimeListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
+                getUserAnimeListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
+        };
+    }
 
     public List<UserAnime> getUserAnimeListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get userAnime list\nUser id: "+userId+"\nStatus: "+status);
@@ -39,13 +61,9 @@ public class UserAnimeService {
 
     public List<VideoEntertainment> getVideoContentListByStatus(int userId, VideoConsumingStatus status){
         log.info("Getting "+status+" anime list\nUser id: "+userId);
-        List<VideoEntertainment> animeList = new ArrayList<>();
-        for(UserAnime userAnime : userAnimeRepo.findUserAnimeByUserIdAndStatus(userId, status)){
-            Anime anime = userAnime.getAnime();
-            animeList.add(new VideoEntertainment(anime.getId(), true, anime.getType(), anime.getTitle(), null, anime.getYear() > 0 ? Date.valueOf(anime.getYear()+"-1-1") : null, anime.getPoster()));
-        }
+        List<Anime> animeList = getAnimeListByStatus(userId, status);
         log.info("Anime list: "+animeList);
-        return animeList;
+        return animeList.stream().map(animeMapper::toVideoEntertainment).collect(Collectors.toList());
     }
 
     public List<VideoEntertainment> getVideoContentListByStatusAndType(int userId, VideoConsumingStatus status, VideoContentType type){
@@ -57,6 +75,22 @@ public class UserAnimeService {
         }
         log.info("Anime list: "+animeList);
         return animeList;
+    }
+
+    public void createUserAnime(UserAnime userAnime, User user, Anime anime) throws ContentNotFoundException, TooManyAnimeRequestsException {
+        //getUserAnimeKey and UserAnime
+        UserAnimeKey userAnimeKey = new UserAnimeKey(user.getId(), anime.getId());
+        userAnime.setId(userAnimeKey);
+        userAnime.setUser(user);
+        userAnime.setAnime(anime);
+
+        UserAnime dbUserAnime = getUserAnimeById(userAnimeKey);
+        if(userAnime.getEpisodes() != dbUserAnime.getEpisodes()){//if episode number changed
+            userAnime.setStatus(updateStatus(userAnime, aniParser.parseById(anime.getId())));
+        }else if(userAnime.getStatus() != dbUserAnime.getStatus()){//if status changed
+            userAnime.setEpisodes(updateEpisodes(userAnime, aniParser.parseById(anime.getId())));
+        }
+        saveUserAnime(userAnime);
     }
 
     public UserAnime getUserAnimeById(UserAnimeKey userAnimeId){
@@ -78,7 +112,7 @@ public class UserAnimeService {
 
     public void deleteAnimeFromUserList(UserAnimeKey userAnimeId){
         log.info("Deleting anime from user list");
-        userAnimeRepo.findById(userAnimeId).ifPresent(userAnime -> userAnimeRepo.delete(userAnime));
+        userAnimeRepo.findById(userAnimeId).ifPresent(userAnimeRepo::delete);
     }
 
     public void saveUserList(User user, List<UserAnime> animeList){

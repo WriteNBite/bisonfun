@@ -1,7 +1,7 @@
 package com.bisonfun.builder;
 
-import com.bisonfun.domain.TMDBMovie;
-import com.bisonfun.domain.enums.VideoContentStatus;
+import com.bisonfun.model.TMDBMovie;
+import com.bisonfun.model.enums.VideoContentStatus;
 import com.bisonfun.utilities.JSONParser;
 import com.bisonfun.utilities.TMDB;
 import lombok.extern.slf4j.Slf4j;
@@ -239,7 +239,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
     }
     /**
      * Create movie object.
-     * @return {@link com.bisonfun.domain.TMDBMovie}
+     * @return {@link com.bisonfun.model.TMDBMovie}
      */
     @Override
     public TMDBMovie build() {

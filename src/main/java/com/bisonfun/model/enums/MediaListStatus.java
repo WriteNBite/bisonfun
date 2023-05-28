@@ -1,4 +1,4 @@
-package com.bisonfun.domain.enums;
+package com.bisonfun.model.enums;
 
 public enum MediaListStatus {
     PLANNING("PLANNING"),

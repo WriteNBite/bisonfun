@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.enums.MediaListStatus;
+import com.bisonfun.model.enums.MediaListStatus;
 import com.bisonfun.entity.User;
 import com.bisonfun.entity.UserAnime;
 import com.bisonfun.service.AnimeService;
@@ -24,16 +24,20 @@ import java.util.List;
 
 @Controller
 public class AniListController {
+    private final JSONParser jsonParser;
+    private final UserService userService;
+    private final AniParser aniParser;
+    private final AnimeService animeService;
+    private final UserAnimeService userAnimeService;
+
     @Autowired
-    private JSONParser jsonParser;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private AniParser aniParser;
-    @Autowired
-    private AnimeService animeService;
-    @Autowired
-    private UserAnimeService userAnimeService;
+    public AniListController(JSONParser jsonParser, UserService userService, AniParser aniParser, AnimeService animeService, UserAnimeService userAnimeService) {
+        this.jsonParser = jsonParser;
+        this.userService = userService;
+        this.aniParser = aniParser;
+        this.animeService = animeService;
+        this.userAnimeService = userAnimeService;
+    }
 
     @GetMapping("/anilist")
     public String aniListRegistration(@RequestParam String code, Principal principal) throws TooManyAnimeRequestsException {

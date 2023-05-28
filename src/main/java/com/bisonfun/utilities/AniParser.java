@@ -2,10 +2,10 @@ package com.bisonfun.utilities;
 
 import com.bisonfun.builder.JSONAniBuilder;
 import com.bisonfun.builder.JSONUserAniBuilder;
-import com.bisonfun.domain.AniAnime;
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.MediaListStatus;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.model.AniAnime;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.MediaListStatus;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.UserAnime;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -21,8 +21,12 @@ import java.util.List;
 @Slf4j
 @Component
 public class AniParser {
+    private final JSONParser parser;
+
     @Autowired
-    private JSONParser parser;
+    public AniParser(JSONParser parser) {
+        this.parser = parser;
+    }
 
     //parse anime lists
     public Pagination<VideoEntertainment> parse(String query) throws TooManyAnimeRequestsException {

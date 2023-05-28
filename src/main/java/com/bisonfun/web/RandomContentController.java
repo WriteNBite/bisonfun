@@ -1,8 +1,8 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoContentType;
 import com.bisonfun.entity.User;
 import com.bisonfun.service.UserAnimeService;
 import com.bisonfun.service.UserMovieService;
@@ -24,14 +24,22 @@ import java.util.regex.Pattern;
 
 @RestController
 public class RandomContentController {
-    @Autowired
+    final
     UserAnimeService userAnimeService;
-    @Autowired
+    final
     UserMovieService userMovieService;
-    @Autowired
+    final
     UserTvService userTvService;
-    @Autowired
+    final
     UserService userService;
+
+    @Autowired
+    public RandomContentController(UserAnimeService userAnimeService, UserMovieService userMovieService, UserTvService userTvService, UserService userService) {
+        this.userAnimeService = userAnimeService;
+        this.userMovieService = userMovieService;
+        this.userTvService = userTvService;
+        this.userService = userService;
+    }
 
     @GetMapping(value = "/random/video", produces = "application/json")
     public VideoEntertainment getRandomVideoContent(

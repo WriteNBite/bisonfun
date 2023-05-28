@@ -1,8 +1,7 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.*;
-import com.bisonfun.domain.enums.VideoConsumingStatus;
-import com.bisonfun.domain.enums.VideoContentStatus;
+import com.bisonfun.model.*;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
 import com.bisonfun.service.MovieService;
 import com.bisonfun.service.UserMovieService;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,16 +24,20 @@ import static java.util.Arrays.asList;
 @Controller
 public class MovieController {
 
+    private final AniParser aniParser;
+    private final TMDBParser tmdbParser;
+    private final UserService userService;
+    private final UserMovieService userMovieService;
+    private final MovieService movieService;
+
     @Autowired
-    private AniParser aniParser;
-    @Autowired
-    private TMDBParser tmdbParser;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserMovieService userMovieService;
-    @Autowired
-    private MovieService movieService;
+    public MovieController(AniParser aniParser, TMDBParser tmdbParser, UserService userService, UserMovieService userMovieService, MovieService movieService) {
+        this.aniParser = aniParser;
+        this.tmdbParser = tmdbParser;
+        this.userService = userService;
+        this.userMovieService = userMovieService;
+        this.movieService = movieService;
+    }
 
     @GetMapping("/search")
     public String searchProcess(Model model, @RequestParam String query, @RequestParam String type, @RequestParam Optional<Integer> page) throws JSONException, TooManyAnimeRequestsException {
@@ -79,22 +81,12 @@ public class MovieController {
             String animeLink = "/anime/"+anime.getId();
             return "redirect:" + animeLink;
         }
-        UserMovie userMovie;
-        if (principal == null) {
-            userMovie = new UserMovie();
-        } else {
-            User user = userService.getUserByUsername(principal.getName());
-            userMovie = userMovieService.getUserMovieById(user.getId(), movie.getId());
-        }
 
-        String releaseDate = movie.getReleaseDate() == null ? "???" : DateFormat.getDateInstance().format(movie.getReleaseDate());
-        String timeToWatch = movie.getTimeToWatch();
+        UserMovie userMovie = principal == null ? new UserMovie() : userMovieService.getUserMovieByUsernameAndId(principal.getName(), movie.getId());
 
         List<VideoEntertainment> movieRecommendations = tmdbParser.parseMovieRecommendations(id);
 
         model.addAttribute("content", movie);
-        model.addAttribute("releaseDate", releaseDate);
-        model.addAttribute("timeToWatch", timeToWatch);
         model.addAttribute("recommendations", movieRecommendations);
 
         model.addAttribute("actions", asList(VideoConsumingStatus.values()));
@@ -104,7 +96,7 @@ public class MovieController {
     }
 
     @PostMapping("/movie/{movieId}")
-    public String saveMovieToList(UserMovie userMovie, @PathVariable int movieId, Principal principal) throws ContentNotFoundException {
+    public String updateMovieList(UserMovie userMovie, @PathVariable int movieId, Principal principal) throws ContentNotFoundException {
         if (principal == null) {
             String loginLink = "/login";
             return "redirect:"+loginLink;
@@ -113,31 +105,9 @@ public class MovieController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         User user = userService.getUserByUsername(principal.getName());
-        TMDBMovie movie = tmdbParser.parseMovieById(movieId);
-        Movie dbMovie = movieService.findById(movieId);
-        if (dbMovie == null) {
-            dbMovie = movieService.addNewMovie(movie);
-        }else{
-            dbMovie = movieService.updating(dbMovie, movie);
-        }
-        UserMovieKey userMovieKey = new UserMovieKey(user.getId(), dbMovie.getId());
-        userMovie.setId(userMovieKey);
-        userMovie.setUser(user);
-        userMovie.setMovie(dbMovie);
+        Movie dbMovie = movieService.updateMovie(movieId);
 
-        UserMovie dbUserMovie = userMovieService.getUserMovieById(userMovieKey);
-        if(userMovie.getEpisodes() != dbUserMovie.getEpisodes()){
-            if(movie.getStatus() == VideoContentStatus.RELEASED && userMovie.getEpisodes() == 1){// if it released and all episodes watched then it completed
-                userMovie.setStatus(VideoConsumingStatus.COMPLETE);
-            }
-        }else if(userMovie.getStatus() != dbUserMovie.getStatus()){
-            if(userMovie.getStatus() == VideoConsumingStatus.COMPLETE) {//if complete then make all episodes watched
-                userMovie.setEpisodes(1);
-            }else if(userMovie.getStatus() == VideoConsumingStatus.PLANNED){// if planned then 0 episodes watched
-                userMovie.setEpisodes(0);
-            }
-        }
-        userMovieService.saveUserMovie(userMovie);
+        userMovieService.createUserMovie(userMovie, user, dbMovie);
 
         String movieLink = "/movie/"+movieId;
         return "redirect:" + movieLink;

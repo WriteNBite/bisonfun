@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.domain.enums.VideoConsumingStatus;
+import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
 import com.bisonfun.service.UserAnimeService;
 import com.bisonfun.service.UserMovieService;
@@ -20,16 +20,20 @@ import java.util.List;
 
 @Controller
 public class UserController {
+    private final UserService userService;
+    private final UserAnimeService userAnimeService;
+    private final UserMovieService userMovieService;
+    private final UserTvService userTvService;
+    private final Environment environment;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private UserAnimeService userAnimeService;
-    @Autowired
-    private UserMovieService userMovieService;
-    @Autowired
-    private UserTvService userTvService;
-    @Autowired
-    private Environment environment;
+    public UserController(UserService userService, UserAnimeService userAnimeService, UserMovieService userMovieService, UserTvService userTvService, Environment environment) {
+        this.userService = userService;
+        this.userAnimeService = userAnimeService;
+        this.userMovieService = userMovieService;
+        this.userTvService = userTvService;
+        this.environment = environment;
+    }
 
     @GetMapping("/users/{username}")
     public String getUsernamePage(Model model, @PathVariable String username){
@@ -37,32 +41,20 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         int userId = user.getId();
 
         //AnimeList
-        int[] animeList = {
-                userAnimeService.getUserAnimeListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                userAnimeService.getUserAnimeListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                userAnimeService.getUserAnimeListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
-        };
+        int[] animeList = userAnimeService.getSizeOfLists(userId);
         model.addAttribute("animeList", animeList);
 
         //MovieList
-        int[] movieList = {
-                userMovieService.getUserMovieListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                userMovieService.getUserMovieListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                userMovieService.getUserMovieListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
-        };
+        int[] movieList = userMovieService.getSizeOfLists(userId);
         model.addAttribute("movieList", movieList);
 
         //MovieList
-        int[] tvList = {
-                userTvService.getUserTvListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                userTvService.getUserTvListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                userTvService.getUserTvListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
-        };
+        int[] tvList = userTvService.getSizeOfLists(userId);
         model.addAttribute("tvList", tvList);
 
         return "user";
@@ -74,7 +66,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         //Planned List
         List<UserAnime> plannedList = userAnimeService.getUserAnimeListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
@@ -109,7 +101,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         //Planned List
         List<UserMovie> plannedList = userMovieService.getUserMovieListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
@@ -132,7 +124,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        model.addAttribute("user", user);
+        model.addAttribute("login", user.getUsername());
 
         //Planned List
         List<UserTv> plannedList = userTvService.getUserTvListByStatus(user.getId(), VideoConsumingStatus.PLANNED);

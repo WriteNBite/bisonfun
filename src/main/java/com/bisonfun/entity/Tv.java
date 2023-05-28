@@ -1,15 +1,21 @@
 package com.bisonfun.entity;
 
-import com.bisonfun.domain.TMDBTVShow;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.model.enums.VideoContentType;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "tv")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Tv implements Serializable {
     @Id
     private int id;
@@ -30,73 +36,6 @@ public class Tv implements Serializable {
         this.year = year;
     }
 
-    public Tv() {
-    }
-
-    public boolean update(TMDBTVShow apiTv){
-        boolean posterUpdate = !this.poster.equals(apiTv.getPoster());
-        boolean titleUpdate = !this.title.equals(apiTv.getTitle());
-        boolean yearUpdate = this.year != apiTv.getReleaseYear();
-        if(posterUpdate){ //update content if was something new
-            this.setPoster(apiTv.getPoster());
-        }
-        if(titleUpdate){
-            this.setTitle(apiTv.getTitle());
-        }
-        if(yearUpdate){
-            this.setYear(apiTv.getReleaseYear());
-        }
-        return posterUpdate || titleUpdate || yearUpdate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getPoster() {
-        return poster;
-    }
-
-    public void setPoster(String poster) {
-        this.poster = poster;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public VideoContentType getType() {
-        return type;
-    }
-
-    public void setType(VideoContentType type) {
-        this.type = type;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public Set<UserTv> getUserTvs() {
-        return userTvs;
-    }
-
-    public void setUserTvs(Set<UserTv> userTvs) {
-        this.userTvs = userTvs;
-    }
-
     @Override
     public String toString() {
         return "Tv{" +
@@ -106,5 +45,18 @@ public class Tv implements Serializable {
                 ", type=" + type +
                 ", year=" + year +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tv tv = (Tv) o;
+        return id == tv.id && year == tv.year && Objects.equals(poster, tv.poster) && title.equals(tv.title) && type == tv.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, poster, title, type, year);
     }
 }

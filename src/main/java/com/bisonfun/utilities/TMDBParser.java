@@ -2,10 +2,10 @@ package com.bisonfun.utilities;
 
 import com.bisonfun.builder.JSONMovieBuilder;
 import com.bisonfun.builder.JSONTVBuilder;
-import com.bisonfun.domain.TMDBMovie;
-import com.bisonfun.domain.TMDBTVShow;
-import com.bisonfun.domain.VideoEntertainment;
-import com.bisonfun.domain.enums.VideoContentType;
+import com.bisonfun.model.TMDBMovie;
+import com.bisonfun.model.TMDBTVShow;
+import com.bisonfun.model.VideoEntertainment;
+import com.bisonfun.model.enums.VideoContentType;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,8 +19,13 @@ import java.util.List;
 @Component
 public class TMDBParser {
 
-    @Autowired
+    final
     JSONParser parser;
+
+    @Autowired
+    public TMDBParser(JSONParser parser) {
+        this.parser = parser;
+    }
 
     public TMDBMovie parseMovieById(int id) {
 

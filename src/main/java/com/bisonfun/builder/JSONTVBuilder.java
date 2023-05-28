@@ -1,7 +1,7 @@
 package com.bisonfun.builder;
 
-import com.bisonfun.domain.TMDBTVShow;
-import com.bisonfun.domain.enums.VideoContentStatus;
+import com.bisonfun.model.TMDBTVShow;
+import com.bisonfun.model.enums.VideoContentStatus;
 import com.bisonfun.utilities.JSONParser;
 import com.bisonfun.utilities.TMDB;
 import lombok.extern.slf4j.Slf4j;
@@ -302,7 +302,7 @@ public class JSONTVBuilder implements TVContentBuilder{
     }
     /**
      * Create tv object.
-     * @return {@link com.bisonfun.domain.TMDBTVShow}
+     * @return {@link com.bisonfun.model.TMDBTVShow}
      */
     @Override
     public TMDBTVShow build() {

@@ -1,10 +1,10 @@
 package com.bisonfun;
 
 import com.bisonfun.model.VideoEntertainment;
-import com.bisonfun.utilities.AniParser;
-import com.bisonfun.utilities.ContentNotFoundException;
-import com.bisonfun.utilities.TMDBParser;
-import com.bisonfun.utilities.TooManyAnimeRequestsException;
+import com.bisonfun.client.anilist.AniListClient;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.tmdb.TmdbClient;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -22,39 +22,39 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest
 public class DataParserTest {
     @Autowired
-    private AniParser aniParser;
+    private AniListClient aniListClient;
     @Autowired
-    private TMDBParser tmdbParser;
+    private TmdbClient tmdbClient;
 
     @Test
     public void movieTrendsTest(){
-        List<VideoEntertainment> movieTrends = tmdbParser.parseMovieTrends();
+        List<VideoEntertainment> movieTrends = tmdbClient.parseMovieTrends();
         assertTrue(movieTrends.size() > 0);
     }
     @Test
     public void tvTrendsTest(){
-        List<VideoEntertainment> tvTrends = tmdbParser.parseTVTrends();
+        List<VideoEntertainment> tvTrends = tmdbClient.parseTVTrends();
         assertTrue(tvTrends.size() > 0);
     }
     @Test
     public void animeTrendsTest() throws TooManyAnimeRequestsException {
-        List<VideoEntertainment> animeTrends = aniParser.parseAnimeTrends();
+        List<VideoEntertainment> animeTrends = aniListClient.parseAnimeTrends();
         assertTrue(animeTrends.size() > 0);
     }
 
     @Test
     public void animeRecommendationsTest() throws ContentNotFoundException, TooManyAnimeRequestsException {
-        VideoEntertainment[] animeRecommendations = aniParser.parseById(1).getRecommendations();
+        VideoEntertainment[] animeRecommendations = aniListClient.parseById(1).getRecommendations();
         assertTrue(animeRecommendations.length > 0);
     }
     @Test
     public void movieRecommendationsTest(){
-        List<VideoEntertainment> movieRecommendations = tmdbParser.parseMovieRecommendations(12160);
+        List<VideoEntertainment> movieRecommendations = tmdbClient.parseMovieRecommendations(12160);
         assertTrue(movieRecommendations.size() > 0);
     }
     @Test
     public void tvRecommendationsTest(){
-        List<VideoEntertainment> tvRecommendations = tmdbParser.parseTVRecommendations(207863);
+        List<VideoEntertainment> tvRecommendations = tmdbClient.parseTVRecommendations(207863);
         assertTrue(tvRecommendations.size() > 0);
     }
 }

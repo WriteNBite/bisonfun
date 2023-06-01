@@ -1,6 +1,6 @@
-package com.bisonfun.utilities;
+package com.bisonfun.client.anilist;
 
-public enum Anilist {
+public enum AniList {
     /**
      * Link to access anilist api through GraphQL
      */
@@ -12,7 +12,7 @@ public enum Anilist {
 
     public String link;
 
-    Anilist(String link){
+    AniList(String link){
         this.link = link;
     }
 }

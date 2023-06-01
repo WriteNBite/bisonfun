@@ -1,7 +1,9 @@
-package com.bisonfun.utilities;
+package com.bisonfun.client.tmdb;
 
 import com.bisonfun.builder.JSONMovieBuilder;
 import com.bisonfun.builder.JSONTVBuilder;
+import com.bisonfun.client.NoAccessException;
+import com.bisonfun.client.Pagination;
 import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.VideoEntertainment;
@@ -17,13 +19,13 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class TMDBParser {
+public class TmdbClient {
 
     final
-    JSONParser parser;
+    TmdbApiResponse parser;
 
     @Autowired
-    public TMDBParser(JSONParser parser) {
+    public TmdbClient(TmdbApiResponse parser) {
         this.parser = parser;
     }
 

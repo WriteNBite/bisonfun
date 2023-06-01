@@ -1,4 +1,4 @@
-package com.bisonfun.utilities;
+package com.bisonfun.client;
 
 public class NoAccessException extends Exception{
     public NoAccessException(String errorMessage, Throwable throwable){

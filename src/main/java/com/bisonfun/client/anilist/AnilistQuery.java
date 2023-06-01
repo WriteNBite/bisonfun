@@ -1,4 +1,4 @@
-package com.bisonfun.utilities;
+package com.bisonfun.client.anilist;
 
 public enum AnilistQuery {
 

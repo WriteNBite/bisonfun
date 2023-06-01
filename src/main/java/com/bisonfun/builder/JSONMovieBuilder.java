@@ -2,8 +2,8 @@ package com.bisonfun.builder;
 
 import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.model.enums.VideoContentStatus;
-import com.bisonfun.utilities.JSONParser;
-import com.bisonfun.utilities.TMDB;
+import com.bisonfun.client.tmdb.TmdbApiResponse;
+import com.bisonfun.client.tmdb.TMDB;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 @Slf4j
 public class JSONMovieBuilder implements  VideoContentBuilder{
     private final JSONObject root;
-    private final JSONParser jsonParser;
+    private final TmdbApiResponse tmdbApiResponse;
 
     private int id = -1;
     private boolean isAnime;
@@ -32,19 +32,19 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
     /**
      * Get instance of builder.
      * @param root JSONObject to work with. Contains info about movie. Right now needed JSONObject from TheMovieDB API.
-     * @param jsonParser parser to get additional JSONObject from TheMovieDB API.
+     * @param tmdbApiResponse parser to get additional JSONObject from TheMovieDB API.
      * @return builder with id and title included.
      */
-    public static JSONMovieBuilder getInstance(JSONObject root, JSONParser jsonParser){
+    public static JSONMovieBuilder getInstance(JSONObject root, TmdbApiResponse tmdbApiResponse){
         log.info("Returning Instance of JSONAniBuilder");
-        return new JSONMovieBuilder(root, jsonParser);
+        return new JSONMovieBuilder(root, tmdbApiResponse);
     }
 
-    private JSONMovieBuilder(JSONObject root, JSONParser parser){
+    private JSONMovieBuilder(JSONObject root, TmdbApiResponse parser){
         log.info("Instance of JSONMovieBuilder created");
         log.info("Root: "+root.toString());
         this.root = root;
-        this.jsonParser = parser;
+        this.tmdbApiResponse = parser;
         addId();
         addTitle();
     }
@@ -71,7 +71,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
         if(id<=0){ //if id hasn't been set
             addId();
         }
-        JSONArray keywords = jsonParser.getMovieKeywords(id);
+        JSONArray keywords = tmdbApiResponse.getMovieKeywords(id);
         if (keywords != null) { // if keywords are existed
             if (keywords.isEmpty()) {
                 isAnime = false;

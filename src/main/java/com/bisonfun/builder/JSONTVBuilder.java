@@ -2,8 +2,8 @@ package com.bisonfun.builder;
 
 import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.enums.VideoContentStatus;
-import com.bisonfun.utilities.JSONParser;
-import com.bisonfun.utilities.TMDB;
+import com.bisonfun.client.tmdb.TmdbApiResponse;
+import com.bisonfun.client.tmdb.TMDB;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 @Slf4j
 public class JSONTVBuilder implements TVContentBuilder{
     private final JSONObject root;
-    private final JSONParser parser;
+    private final TmdbApiResponse parser;
 
     private int id;
     private boolean isAnime;
@@ -35,15 +35,15 @@ public class JSONTVBuilder implements TVContentBuilder{
     /**
      * Get instance of builder.
      * @param root JSONObject to work with. Contains info about tv. Right now needed JSONObject from TheMovieDB API.
-     * @param jsonParser parser to get additional JSONObject from TheMovieDB API.
+     * @param tmdbApiResponse parser to get additional JSONObject from TheMovieDB API.
      * @return builder with id and title included.
      */
-    public static JSONTVBuilder getInstance(JSONObject root, JSONParser jsonParser){
+    public static JSONTVBuilder getInstance(JSONObject root, TmdbApiResponse tmdbApiResponse){
         log.info("Returning Instance of JSONAniBuilder");
-        return new JSONTVBuilder(root, jsonParser);
+        return new JSONTVBuilder(root, tmdbApiResponse);
     }
 
-    private JSONTVBuilder(JSONObject root, JSONParser parser){
+    private JSONTVBuilder(JSONObject root, TmdbApiResponse parser){
         log.info("Instance of JSONTVBuilder created");
         log.info("Root: "+root.toString());
         this.root = root;

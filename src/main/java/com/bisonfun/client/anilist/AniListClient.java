@@ -1,12 +1,17 @@
-package com.bisonfun.utilities;
+package com.bisonfun.client.anilist;
 
 import com.bisonfun.builder.JSONAniBuilder;
 import com.bisonfun.builder.JSONUserAniBuilder;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.NoAccessException;
+import com.bisonfun.client.Pagination;
+import com.bisonfun.entity.User;
 import com.bisonfun.model.AniAnime;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.model.enums.MediaListStatus;
 import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.UserAnime;
+import com.bisonfun.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,17 +20,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Slf4j
 @Component
-public class AniParser {
-    private final JSONParser parser;
+public class AniListClient {
+    private final AniListApiResponse aniListApiResponse;
+    private final UserService userService;
 
     @Autowired
-    public AniParser(JSONParser parser) {
-        this.parser = parser;
+    public AniListClient(AniListApiResponse aniListApiResponse, UserService userService) {
+        this.aniListApiResponse = aniListApiResponse;
+        this.userService = userService;
     }
 
     //parse anime lists
@@ -33,7 +42,7 @@ public class AniParser {
         return parse(query, 1);
     }
     public Pagination<VideoEntertainment> parse(String query, int page) throws TooManyAnimeRequestsException {
-        JSONObject root = parser.getAnimeList(query, page);
+        JSONObject root = aniListApiResponse.getAnimeList(query, page);
 
         // get page info
         JSONObject pageInfo = root.getJSONObject("pageInfo");
@@ -67,7 +76,7 @@ public class AniParser {
     public List<VideoEntertainment> parseAnimeTrends() throws TooManyAnimeRequestsException {
         JSONArray animeArray;
         try {
-            animeArray = parser.getAnimeTrends().getJSONArray("media");
+            animeArray = aniListApiResponse.getAnimeTrends().getJSONArray("media");
         } catch (NoAccessException e) {
             log.error(e.getMessage());
             return new ArrayList<>();
@@ -87,12 +96,12 @@ public class AniParser {
     }
     //parse anime(as VideoEntertainment)
     public VideoEntertainment parseAnimeById(int id) throws ContentNotFoundException, TooManyAnimeRequestsException {
-        JSONObject jsonAnime = parser.getAnimeById(id);
+        JSONObject jsonAnime = aniListApiResponse.getAnimeById(id);
 
         return parseAnime(jsonAnime);
     }
     public VideoEntertainment parseAnimeByName(String name) throws ContentNotFoundException, TooManyAnimeRequestsException {
-        JSONObject jsonAnime = parser.getAnimeByName(name);
+        JSONObject jsonAnime = aniListApiResponse.getAnimeByName(name);
 
         return parseAnime(jsonAnime);
     }
@@ -110,7 +119,7 @@ public class AniParser {
     }
     //parse anime(as AniAnime)
     public AniAnime parseById(int id) throws ContentNotFoundException, TooManyAnimeRequestsException {
-        JSONObject root = parser.getAnimeById(id);
+        JSONObject root = aniListApiResponse.getAnimeById(id);
 
         JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(root);
         return aniBuilder
@@ -130,13 +139,35 @@ public class AniParser {
                 .addRecommendations().build();
     }
 
+    public String getAniListToken(User user, String code){
+        //if token is null or not null but token has been expired
+        if(user.getAniToken() == null || user.getTokenExpires().after(new Timestamp(Calendar.getInstance().getTime().getTime()))){
+            //set tokens
+            JSONObject jsonObject = aniListApiResponse.getAniToken(code);
+
+            String token = jsonObject.getString("access_token");//get AniList Token
+            int secondsAvailable = jsonObject.getInt("expires_in");
+            long expiresIn = new Timestamp(Calendar.getInstance().getTime().getTime()).getTime() + secondsAvailable * 1000L;//get expires time in milliseconds
+
+            //set
+            user.setAniToken(token);
+            user.setTokenExpires(new Timestamp(expiresIn));
+            userService.saveUser(user);
+        }
+        return user.getAniToken();
+    }
+    public int getViewerId(String token){
+        JSONObject viewer = aniListApiResponse.getUserByToken(token).getJSONObject("Viewer");
+        return viewer.getInt("id");
+    }
+
     public List<UserAnime> parseMediaList(int userId, MediaListStatus status) throws TooManyAnimeRequestsException {
         int page = 1;
         List<UserAnime> animeList = new ArrayList<>();
         JSONObject root;
         do {
             log.info("Page: "+page+" Status: "+status);
-            root = parser.getUserMediaList(userId, page, status);
+            root = aniListApiResponse.getUserMediaList(userId, page, status);
             log.info(root.toString());
 
             VideoConsumingStatus consumingStatus = null;

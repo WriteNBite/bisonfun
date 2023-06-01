@@ -1,4 +1,4 @@
-package com.bisonfun.utilities;
+package com.bisonfun.client.tmdb;
 
 public enum TMDB {
 

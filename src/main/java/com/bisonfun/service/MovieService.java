@@ -4,8 +4,8 @@ import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.entity.Movie;
 import com.bisonfun.mapper.MovieMapper;
 import com.bisonfun.repository.MovieRepository;
-import com.bisonfun.utilities.ContentNotFoundException;
-import com.bisonfun.utilities.TMDBParser;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.tmdb.TmdbClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,17 +13,17 @@ import org.springframework.stereotype.Service;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
-    private final TMDBParser tmdbParser;
+    private final TmdbClient tmdbClient;
 
     @Autowired
-    public MovieService(MovieRepository movieRepository, MovieMapper movieMapper, TMDBParser tmdbParser) {
+    public MovieService(MovieRepository movieRepository, MovieMapper movieMapper, TmdbClient tmdbClient) {
         this.movieRepository = movieRepository;
         this.movieMapper = movieMapper;
-        this.tmdbParser = tmdbParser;
+        this.tmdbClient = tmdbClient;
     }
 
     public Movie updateMovie(int movieId) throws ContentNotFoundException {
-        TMDBMovie movie = tmdbParser.parseMovieById(movieId);
+        TMDBMovie movie = tmdbClient.parseMovieById(movieId);
         Movie dbMovie = findById(movieId);
         if (dbMovie == null) {
             dbMovie = addNewMovie(movieMapper.fromModel(movie));

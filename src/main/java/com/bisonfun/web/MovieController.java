@@ -1,12 +1,15 @@
 package com.bisonfun.web;
 
+import com.bisonfun.client.*;
+import com.bisonfun.client.anilist.AniListClient;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
+import com.bisonfun.client.tmdb.TmdbClient;
 import com.bisonfun.model.*;
 import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
 import com.bisonfun.service.MovieService;
 import com.bisonfun.service.UserMovieService;
 import com.bisonfun.service.UserService;
-import com.bisonfun.utilities.*;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,16 +27,16 @@ import static java.util.Arrays.asList;
 @Controller
 public class MovieController {
 
-    private final AniParser aniParser;
-    private final TMDBParser tmdbParser;
+    private final AniListClient aniListClient;
+    private final TmdbClient tmdbClient;
     private final UserService userService;
     private final UserMovieService userMovieService;
     private final MovieService movieService;
 
     @Autowired
-    public MovieController(AniParser aniParser, TMDBParser tmdbParser, UserService userService, UserMovieService userMovieService, MovieService movieService) {
-        this.aniParser = aniParser;
-        this.tmdbParser = tmdbParser;
+    public MovieController(AniListClient aniListClient, TmdbClient tmdbClient, UserService userService, UserMovieService userMovieService, MovieService movieService) {
+        this.aniListClient = aniListClient;
+        this.tmdbClient = tmdbClient;
         this.userService = userService;
         this.userMovieService = userMovieService;
         this.movieService = movieService;
@@ -50,15 +53,15 @@ public class MovieController {
 
         switch (type) {
             case "movie":
-                finderResult = tmdbParser.parseMovieList(query, actualPage);
+                finderResult = tmdbClient.parseMovieList(query, actualPage);
                 model.addAttribute("pagination", finderResult);
                 return "list_movie";
             case "tv":
-                finderResult = tmdbParser.parseTVList(query, actualPage);
+                finderResult = tmdbClient.parseTVList(query, actualPage);
                 model.addAttribute("pagination", finderResult);
                 return "list_tv";
             case "anime":
-                finderResult = aniParser.parse(query, actualPage);
+                finderResult = aniListClient.parse(query, actualPage);
                 model.addAttribute("pagination", finderResult);
                 return "list_anime";
         }
@@ -67,12 +70,12 @@ public class MovieController {
 
     @GetMapping("/movie/{id}")
     public String moviePage(Model model, @PathVariable int id, Principal principal) throws JSONException {
-        TMDBMovie movie = tmdbParser.parseMovieById(id);
+        TMDBMovie movie = tmdbClient.parseMovieById(id);
 
         if (movie.isAnime()) {
             VideoEntertainment anime;
             try {
-                anime = aniParser.parseAnimeByName(movie.getTitle());
+                anime = aniListClient.parseAnimeByName(movie.getTitle());
             } catch (ContentNotFoundException e) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);
             } catch (TooManyAnimeRequestsException e) {
@@ -84,7 +87,7 @@ public class MovieController {
 
         UserMovie userMovie = principal == null ? new UserMovie() : userMovieService.getUserMovieByUsernameAndId(principal.getName(), movie.getId());
 
-        List<VideoEntertainment> movieRecommendations = tmdbParser.parseMovieRecommendations(id);
+        List<VideoEntertainment> movieRecommendations = tmdbClient.parseMovieRecommendations(id);
 
         model.addAttribute("content", movie);
         model.addAttribute("recommendations", movieRecommendations);

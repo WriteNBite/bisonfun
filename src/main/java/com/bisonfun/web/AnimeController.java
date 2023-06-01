@@ -9,9 +9,9 @@ import com.bisonfun.entity.UserAnimeKey;
 import com.bisonfun.service.AnimeService;
 import com.bisonfun.service.UserAnimeService;
 import com.bisonfun.service.UserService;
-import com.bisonfun.utilities.AniParser;
-import com.bisonfun.utilities.ContentNotFoundException;
-import com.bisonfun.utilities.TooManyAnimeRequestsException;
+import com.bisonfun.client.anilist.AniListClient;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,14 +30,14 @@ public class AnimeController{
     private final UserService userService;
     private final AnimeService animeService;
     private final UserAnimeService userAnimeService;
-    private final AniParser aniParser;
+    private final AniListClient aniListClient;
 
     @Autowired
-    public AnimeController(UserService userService, AnimeService animeService, UserAnimeService userAnimeService, AniParser aniParser) {
+    public AnimeController(UserService userService, AnimeService animeService, UserAnimeService userAnimeService, AniListClient aniListClient) {
         this.userService = userService;
         this.animeService = animeService;
         this.userAnimeService = userAnimeService;
-        this.aniParser = aniParser;
+        this.aniListClient = aniListClient;
     }
 
     @GetMapping("/anime/{id}")
@@ -45,7 +45,7 @@ public class AnimeController{
 
         AniAnime anime;
         try {
-            anime = aniParser.parseById(id);
+            anime = aniListClient.parseById(id);
         } catch (ContentNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

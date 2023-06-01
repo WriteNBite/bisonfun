@@ -9,7 +9,7 @@ import com.bisonfun.entity.UserMovie;
 import com.bisonfun.entity.UserMovieKey;
 import com.bisonfun.mapper.MovieMapper;
 import com.bisonfun.repository.UserMovieRepository;
-import com.bisonfun.utilities.TMDBParser;
+import com.bisonfun.client.tmdb.TmdbClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,14 +24,14 @@ public class UserMovieService {
     final
     UserMovieRepository userMovieRepo;
     final UserService userService;
-    final TMDBParser tmdbParser;
+    final TmdbClient tmdbClient;
     final MovieMapper movieMapper;
 
     @Autowired
-    public UserMovieService(UserMovieRepository userMovieRepo, UserService userService, TMDBParser tmdbParser, MovieMapper movieMapper) {
+    public UserMovieService(UserMovieRepository userMovieRepo, UserService userService, TmdbClient tmdbClient, MovieMapper movieMapper) {
         this.userMovieRepo = userMovieRepo;
         this.userService = userService;
-        this.tmdbParser = tmdbParser;
+        this.tmdbClient = tmdbClient;
         this.movieMapper = movieMapper;
     }
 
@@ -80,7 +80,7 @@ public class UserMovieService {
 
         UserMovie dbUserMovie = getUserMovieById(userMovieKey);
         if(userMovie.getEpisodes() != dbUserMovie.getEpisodes()){
-            if(tmdbParser.parseMovieById(movie.getId()).getStatus() == VideoContentStatus.RELEASED && userMovie.getEpisodes() == 1){// if it released and all episodes watched then it completed
+            if(tmdbClient.parseMovieById(movie.getId()).getStatus() == VideoContentStatus.RELEASED && userMovie.getEpisodes() == 1){// if it released and all episodes watched then it completed
                 userMovie.setStatus(VideoConsumingStatus.COMPLETE);
             }
         }else if(userMovie.getStatus() != dbUserMovie.getStatus()){

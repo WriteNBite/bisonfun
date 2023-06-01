@@ -9,7 +9,7 @@ import com.bisonfun.entity.UserTv;
 import com.bisonfun.entity.UserTvKey;
 import com.bisonfun.mapper.TvMapper;
 import com.bisonfun.repository.UserTvRepository;
-import com.bisonfun.utilities.TMDBParser;
+import com.bisonfun.client.tmdb.TmdbClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 public class UserTvService extends UserVideoContentService {
     final
     UserTvRepository userTvRepo;
-    final TMDBParser tmdbParser;
+    final TmdbClient tmdbClient;
     final TvMapper tvMapper;
 
     @Autowired
-    public UserTvService(UserTvRepository userTvRepo, TMDBParser tmdbParser, TvMapper tvMapper) {
+    public UserTvService(UserTvRepository userTvRepo, TmdbClient tmdbClient, TvMapper tvMapper) {
         this.userTvRepo = userTvRepo;
-        this.tmdbParser = tmdbParser;
+        this.tmdbClient = tmdbClient;
         this.tvMapper = tvMapper;
     }
 
@@ -70,7 +70,7 @@ public class UserTvService extends UserVideoContentService {
         userTv.setTv(tv);
 
         UserTv dbUserTv = getUserTvById(userTvKey);
-        TMDBTVShow tmdbtvShow = tmdbParser.parseShowById(tv.getId());
+        TMDBTVShow tmdbtvShow = tmdbClient.parseShowById(tv.getId());
         if(userTv.getEpisodes() != dbUserTv.getEpisodes()){
             userTv.setStatus(updateStatus(userTv, tmdbtvShow));
         }else if(userTv.getStatus() != dbUserTv.getStatus()){

@@ -1,9 +1,9 @@
 package com.bisonfun.web;
 
 import com.bisonfun.model.VideoEntertainment;
-import com.bisonfun.utilities.AniParser;
-import com.bisonfun.utilities.TMDBParser;
-import com.bisonfun.utilities.TooManyAnimeRequestsException;
+import com.bisonfun.client.anilist.AniListClient;
+import com.bisonfun.client.tmdb.TmdbClient;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,21 +15,21 @@ import java.util.List;
 public class HomeController {
 
     final
-    AniParser aniParser;
+    AniListClient aniListClient;
     final
-    TMDBParser tmdbParser;
+    TmdbClient tmdbClient;
 
     @Autowired
-    public HomeController(AniParser aniParser, TMDBParser tmdbParser) {
-        this.aniParser = aniParser;
-        this.tmdbParser = tmdbParser;
+    public HomeController(AniListClient aniListClient, TmdbClient tmdbClient) {
+        this.aniListClient = aniListClient;
+        this.tmdbClient = tmdbClient;
     }
 
     @GetMapping("/")
     public String home(Model model) throws TooManyAnimeRequestsException {
-        List<VideoEntertainment> animeTrends = aniParser.parseAnimeTrends();
-        List<VideoEntertainment> movieTrends = tmdbParser.parseMovieTrends();
-        List<VideoEntertainment> tvTrends = tmdbParser.parseTVTrends();
+        List<VideoEntertainment> animeTrends = aniListClient.parseAnimeTrends();
+        List<VideoEntertainment> movieTrends = tmdbClient.parseMovieTrends();
+        List<VideoEntertainment> tvTrends = tmdbClient.parseTVTrends();
 
         model.addAttribute("animeTrends", animeTrends);
         model.addAttribute("movieTrends", movieTrends);

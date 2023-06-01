@@ -9,9 +9,9 @@ import com.bisonfun.entity.UserAnime;
 import com.bisonfun.entity.UserAnimeKey;
 import com.bisonfun.mapper.AnimeMapper;
 import com.bisonfun.repository.UserAnimeRepository;
-import com.bisonfun.utilities.AniParser;
-import com.bisonfun.utilities.ContentNotFoundException;
-import com.bisonfun.utilities.TooManyAnimeRequestsException;
+import com.bisonfun.client.anilist.AniListClient;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 public class UserAnimeService extends UserVideoContentService {
     final
     UserAnimeRepository userAnimeRepo;
-    final AniParser aniParser;
+    final AniListClient aniListClient;
     final AnimeMapper animeMapper;
 
     @Autowired
-    public UserAnimeService(UserAnimeRepository userAnimeRepo, AniParser aniParser, AnimeMapper animeMapper) {
+    public UserAnimeService(UserAnimeRepository userAnimeRepo, AniListClient aniListClient, AnimeMapper animeMapper) {
         this.userAnimeRepo = userAnimeRepo;
-        this.aniParser = aniParser;
+        this.aniListClient = aniListClient;
         this.animeMapper = animeMapper;
     }
 
@@ -86,9 +86,9 @@ public class UserAnimeService extends UserVideoContentService {
 
         UserAnime dbUserAnime = getUserAnimeById(userAnimeKey);
         if(userAnime.getEpisodes() != dbUserAnime.getEpisodes()){//if episode number changed
-            userAnime.setStatus(updateStatus(userAnime, aniParser.parseById(anime.getId())));
+            userAnime.setStatus(updateStatus(userAnime, aniListClient.parseById(anime.getId())));
         }else if(userAnime.getStatus() != dbUserAnime.getStatus()){//if status changed
-            userAnime.setEpisodes(updateEpisodes(userAnime, aniParser.parseById(anime.getId())));
+            userAnime.setEpisodes(updateEpisodes(userAnime, aniListClient.parseById(anime.getId())));
         }
         saveUserAnime(userAnime);
     }

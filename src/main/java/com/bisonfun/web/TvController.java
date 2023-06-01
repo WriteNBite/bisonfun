@@ -1,5 +1,9 @@
 package com.bisonfun.web;
 
+import com.bisonfun.client.anilist.AniListClient;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.tmdb.TmdbClient;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.model.enums.VideoConsumingStatus;
@@ -7,7 +11,6 @@ import com.bisonfun.entity.*;
 import com.bisonfun.service.TvService;
 import com.bisonfun.service.UserService;
 import com.bisonfun.service.UserTvService;
-import com.bisonfun.utilities.*;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,16 +29,16 @@ import static java.util.Arrays.asList;
 
 @Controller
 public class TvController{
-    private final AniParser aniParser;
-    private final TMDBParser tmdbParser;
+    private final AniListClient aniListClient;
+    private final TmdbClient tmdbClient;
     private final UserService userService;
     private final UserTvService userTvService;
     private final TvService tvService;
 
     @Autowired
-    public TvController(AniParser aniParser, TMDBParser tmdbParser, UserService userService, UserTvService userTvService, TvService tvService) {
-        this.aniParser = aniParser;
-        this.tmdbParser = tmdbParser;
+    public TvController(AniListClient aniListClient, TmdbClient tmdbClient, UserService userService, UserTvService userTvService, TvService tvService) {
+        this.aniListClient = aniListClient;
+        this.tmdbClient = tmdbClient;
         this.userService = userService;
         this.userTvService = userTvService;
         this.tvService = tvService;
@@ -43,12 +46,12 @@ public class TvController{
 
     @GetMapping("/tv/{id}")
     public String tvPage(Model model, @PathVariable int id, Principal principal) throws JSONException {
-        TMDBTVShow show = tmdbParser.parseShowById(id);
+        TMDBTVShow show = tmdbClient.parseShowById(id);
 
         if (show.isAnime()) {
             VideoEntertainment anime;
             try {
-                anime = aniParser.parseAnimeByName(show.getTitle());
+                anime = aniListClient.parseAnimeByName(show.getTitle());
             }   catch (TooManyAnimeRequestsException e) {
                 throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS);
             } catch (ContentNotFoundException e) {
@@ -66,7 +69,7 @@ public class TvController{
             userTv = userTvService.getUserTvById(user.getId(), show.getId());
         }
 
-        List<VideoEntertainment> tvRecommendations = tmdbParser.parseTVRecommendations(id);
+        List<VideoEntertainment> tvRecommendations = tmdbClient.parseTVRecommendations(id);
 
         model.addAttribute("content", show);
         model.addAttribute("recommendations", tvRecommendations);

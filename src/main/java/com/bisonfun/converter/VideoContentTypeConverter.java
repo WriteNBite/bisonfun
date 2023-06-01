@@ -1,4 +1,4 @@
-package com.bisonfun.utilities;
+package com.bisonfun.converter;
 
 import com.bisonfun.model.enums.VideoContentType;
 

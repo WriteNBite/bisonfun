@@ -1,8 +1,9 @@
 package com.bisonfun;
 
-import com.bisonfun.utilities.ContentNotFoundException;
-import com.bisonfun.utilities.JSONParser;
-import com.bisonfun.utilities.TooManyAnimeRequestsException;
+import com.bisonfun.client.ContentNotFoundException;
+import com.bisonfun.client.anilist.AniListApiResponse;
+import com.bisonfun.client.tmdb.TmdbApiResponse;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,11 +21,13 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-public class JSONParserTest {
+public class ApiResponseTest {
     @Autowired
     private CacheManager cacheManager;
     @Autowired
-    private JSONParser jsonParser;
+    private TmdbApiResponse tmdbApiResponse;
+    @Autowired
+    private AniListApiResponse aniListApiResponse;
 
     public static final String JSON_ANIME = "jsonAnime";
     public static final String JSON_MOVIE = "jsonMovie";
@@ -41,7 +44,7 @@ public class JSONParserTest {
     public void animeParseCachingTest(){
         Optional<JSONObject> jsonAnime = Optional.empty();
         try {
-            jsonAnime = Optional.ofNullable(jsonParser.getAnimeById(450));
+            jsonAnime = Optional.ofNullable(aniListApiResponse.getAnimeById(450));
         } catch (TooManyAnimeRequestsException | ContentNotFoundException e) {
             e.printStackTrace();
         }
@@ -51,14 +54,14 @@ public class JSONParserTest {
 
     @Test
     public void movieParseCachingTest(){
-        Optional<JSONObject> jsonMovie = Optional.ofNullable(jsonParser.getMovieById(361743));
+        Optional<JSONObject> jsonMovie = Optional.ofNullable(tmdbApiResponse.getMovieById(361743));
 
         assertEquals(jsonMovie, getCachedJSONObject(JSON_MOVIE, 361743));
     }
 
     @Test
     public void showParseCachingTest(){
-        Optional<JSONObject> jsonShow = Optional.ofNullable(jsonParser.getShowById(76479));
+        Optional<JSONObject> jsonShow = Optional.ofNullable(tmdbApiResponse.getShowById(76479));
 
         assertEquals(jsonShow, getCachedJSONObject(JSON_SHOW, 76479));
     }
@@ -68,10 +71,10 @@ public class JSONParserTest {
         Optional<JSONObject> jsonAnimeId = Optional.empty();
         Optional<JSONObject> jsonAnimeName = Optional.empty();
         try {
-            jsonAnimeId = Optional.ofNullable(jsonParser.getAnimeById(450));
-            jsonAnimeName = Optional.ofNullable(jsonParser.getAnimeByName("Naruto"));
-            jsonParser.getAnimeById(450);
-            jsonParser.getAnimeByName("Naruto");
+            jsonAnimeId = Optional.ofNullable(aniListApiResponse.getAnimeById(450));
+            jsonAnimeName = Optional.ofNullable(aniListApiResponse.getAnimeByName("Naruto"));
+            aniListApiResponse.getAnimeById(450);
+            aniListApiResponse.getAnimeByName("Naruto");
         } catch (TooManyAnimeRequestsException | ContentNotFoundException e) {
             e.printStackTrace();
         }

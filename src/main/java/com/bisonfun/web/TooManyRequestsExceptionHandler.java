@@ -1,6 +1,6 @@
 package com.bisonfun.web;
 
-import com.bisonfun.utilities.TooManyAnimeRequestsException;
+import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

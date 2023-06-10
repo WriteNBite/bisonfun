@@ -23,11 +23,10 @@
     <link th:href="@{~/css/maincustoms.css}" rel="stylesheet" />
     <link th:href="@{~/css/usercustoms.css}" rel="stylesheet" />
     <script th:src="@{~/js/iconscript.js}"></script>
-    <script th:src="@{~/js/mainbgscript.js}"></script>
     <script th:src="@{~/js/tabscript.js}"></script>
 </head>
 
-<body onload="mainBg(); seasonIcon(); tabs()">
+<body onload="seasonIcon(); tabs()">
     <!-- Navigation-->
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
@@ -61,7 +60,7 @@
         </div>
     </nav>
     <!-- Masthead-->
-    <header class="masthead" id="background-header" th:style="'background-size: cover;'">
+    <header class="masthead" th:style="'background-image:url(' + ${background} + ');background-size: cover;'" id="background-header">
         <div class="container position-relative">
             <div class="row justify-content-center">
                 <div class="col-xl-6">

@@ -3,6 +3,7 @@ package com.bisonfun.web;
 import com.bisonfun.entity.User;
 import com.bisonfun.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,19 +13,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
-public class LoggingController {
+public class AuthController {
     private final UserService userService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Autowired
-    public LoggingController(UserService userService) {
+    public AuthController(UserService userService, RedisTemplate<String, String> redisTemplate) {
         this.userService = userService;
+        this.redisTemplate = redisTemplate;
     }
 
     @GetMapping("/register")
     public String registerPage(@RequestParam Optional<Boolean> alreadyExist, ModelMap map){
+        Random random = new Random();
+        List<String> backgrounds = new ArrayList<>(Objects.requireNonNull(redisTemplate.opsForSet().members("auth-pages-background")));
+        map.addAttribute("background", backgrounds.get(random.nextInt(backgrounds.size())));
         map.addAttribute("user", new User());
         map.addAttribute("alreadyExist", alreadyExist.orElse(false));
         return "registration";
@@ -58,6 +64,9 @@ public class LoggingController {
 
     @GetMapping("/login")
     public String showLoginPage(@RequestParam Optional<Boolean> successLogin, ModelMap map){
+        Random random = new Random();
+        List<String> background = new ArrayList<>(Objects.requireNonNull(redisTemplate.opsForSet().members("auth-pages-background")));
+        map.addAttribute("background", background.get(random.nextInt(background.size())));
         map.addAttribute("successLogin", successLogin.orElse(false));
         return "login";
     }

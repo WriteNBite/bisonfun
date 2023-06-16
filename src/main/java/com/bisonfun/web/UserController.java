@@ -6,6 +6,7 @@ import com.bisonfun.service.UserAnimeService;
 import com.bisonfun.service.UserMovieService;
 import com.bisonfun.service.UserService;
 import com.bisonfun.service.UserTvService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final UserAnimeService userAnimeService;
@@ -41,6 +43,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        log.info("User {} page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
         int userId = user.getId();
@@ -66,6 +69,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        log.info("User {} anime list page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
         //Planned List
@@ -101,6 +105,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        log.info("User {} movie list page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
         //Planned List
@@ -124,6 +129,7 @@ public class UserController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
+        log.info("User {} tv list page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
         //Planned List

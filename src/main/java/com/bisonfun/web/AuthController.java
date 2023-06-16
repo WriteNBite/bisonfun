@@ -2,6 +2,7 @@ package com.bisonfun.web;
 
 import com.bisonfun.entity.User;
 import com.bisonfun.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,7 @@ import java.security.Principal;
 import java.util.*;
 
 @Controller
+@Slf4j
 public class AuthController {
     private final UserService userService;
     private final RedisTemplate<String, String> redisTemplate;
@@ -38,16 +40,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ModelAndView processRegister(User user, ModelMap modelMap){
+        log.warn("Attempt to register {} account with {}", user.getUsername(), user.getEmail());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
         if (!userService.existUserByUsernameOrEmail(user.getUsername(), user.getEmail())){
+            log.info("{} registered successfully", user.getUsername());
             userService.saveUser(user);
             modelMap.addAttribute("successLogin", true);
             String loginLink = "/login";
             return new ModelAndView("redirect:"+loginLink, modelMap);
         }else{
+            log.warn("Account with {} and {} already exist. Registration failed", user.getUsername(), user.getEmail());
             modelMap.addAttribute("alreadyExist", true);
             String registerLink = "/register";
             return new ModelAndView("redirect:"+registerLink, modelMap);
@@ -58,6 +63,7 @@ public class AuthController {
     @GetMapping("/cabinet")
     public String personalCabinet(Principal principal){
         String username = principal.getName();
+        log.info("{} enter into his personal page", username);
         String userLink = "/users/"+username;
         return "redirect:"+userLink;
     }

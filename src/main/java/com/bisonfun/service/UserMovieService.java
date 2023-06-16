@@ -35,12 +35,16 @@ public class UserMovieService {
         this.movieMapper = movieMapper;
     }
 
-    public int[] getSizeOfLists(int userId){
-        return new int[]{
-                getUserMovieListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                getUserMovieListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                getUserMovieListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
+    public long[] getSizeOfLists(int userId){
+        return new long[]{
+                getSizeOfListByStatus(userId, VideoConsumingStatus.PLANNED),
+                getSizeOfListByStatus(userId, VideoConsumingStatus.WATCHING),
+                getSizeOfListByStatus(userId, VideoConsumingStatus.COMPLETE)
         };
+    }
+    public long getSizeOfListByStatus(int userId, VideoConsumingStatus status){
+        log.info("Get Size of User {} {} Movie List", userId, status);
+        return userMovieRepo.countUserMovieByUserIdAndStatus(userId, status);
     }
 
     public List<Movie> getMovieListByStatus(int userId, VideoConsumingStatus status){

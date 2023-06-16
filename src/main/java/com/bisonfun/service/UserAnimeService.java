@@ -34,12 +34,17 @@ public class UserAnimeService extends UserVideoContentService {
         this.animeMapper = animeMapper;
     }
 
-    public int[] getSizeOfLists(int userId){
-        return new int[]{
-                getUserAnimeListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                getUserAnimeListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                getUserAnimeListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
+    public long[] getSizeOfLists(int userId){
+        return new long[]{
+                getSizeOfListByStatus(userId, VideoConsumingStatus.PLANNED),
+                getSizeOfListByStatus(userId, VideoConsumingStatus.WATCHING),
+                getSizeOfListByStatus(userId, VideoConsumingStatus.COMPLETE)
         };
+    }
+
+    public long getSizeOfListByStatus(int userId, VideoConsumingStatus status){
+        log.info("Get Size of User {} {} Anime List", userId, status);
+        return userAnimeRepo.countUserAnimeByUserIdAndStatus(userId, status);
     }
 
     public List<UserAnime> getUserAnimeListByStatus(int userId, VideoConsumingStatus status){

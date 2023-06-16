@@ -49,15 +49,15 @@ public class UserController {
         int userId = user.getId();
 
         //AnimeList
-        int[] animeList = userAnimeService.getSizeOfLists(userId);
+        long[] animeList = userAnimeService.getSizeOfLists(userId);
         model.addAttribute("animeList", animeList);
 
         //MovieList
-        int[] movieList = userMovieService.getSizeOfLists(userId);
+        long[] movieList = userMovieService.getSizeOfLists(userId);
         model.addAttribute("movieList", movieList);
 
         //MovieList
-        int[] tvList = userTvService.getSizeOfLists(userId);
+        long[] tvList = userTvService.getSizeOfLists(userId);
         model.addAttribute("tvList", tvList);
 
         return "user";

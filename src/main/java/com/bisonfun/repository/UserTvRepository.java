@@ -11,4 +11,5 @@ import java.util.List;
 public interface UserTvRepository extends CrudRepository<UserTv, UserTvKey> {
     @Query("SELECT userTv FROM UserTv userTv WHERE userTv.id.userId = ?1 AND userTv.status = ?2")
     List<UserTv> findUserTvByUserIdAndStatus(int userId, VideoConsumingStatus status);
+    Long countUserTvByUserIdAndStatus(int userId, VideoConsumingStatus status);
 }

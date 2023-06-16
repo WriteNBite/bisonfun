@@ -13,4 +13,5 @@ import java.util.List;
 public interface UserMovieRepository extends CrudRepository<UserMovie, UserMovieKey> {
     @Query("SELECT userMovie FROM UserMovie userMovie WHERE userMovie.id.userId = ?1 AND userMovie.status = ?2")
     List<UserMovie> findUserMovieByUserIdAndStatus(int userId, VideoConsumingStatus status);
+    Long countUserMovieByUserIdAndStatus(int userId, VideoConsumingStatus status);
 }

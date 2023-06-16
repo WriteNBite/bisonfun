@@ -16,4 +16,5 @@ public interface UserAnimeRepository extends CrudRepository<UserAnime, UserAnime
     List<UserAnime> findUserAnimeByUserIdAndStatus(int userId, VideoConsumingStatus status);
     @Query("SELECT userAnime FROM UserAnime userAnime WHERE userAnime.id.userId = ?1 AND userAnime.status = ?2 AND userAnime.anime.type = ?3")
     List<UserAnime> findUserAnimeByUserIdAndStatusAndType(int userId, VideoConsumingStatus status, VideoContentType type);
+    Long countUserAnimeByUserIdAndStatus(int userId, VideoConsumingStatus status);
 }

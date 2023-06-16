@@ -33,12 +33,16 @@ public class UserTvService extends UserVideoContentService {
         this.tvMapper = tvMapper;
     }
 
-    public int[] getSizeOfLists(int userId){
-        return new int[]{
-                getUserTvListByStatus(userId, VideoConsumingStatus.PLANNED).size(),
-                getUserTvListByStatus(userId, VideoConsumingStatus.WATCHING).size(),
-                getUserTvListByStatus(userId, VideoConsumingStatus.COMPLETE).size()
+    public long[] getSizeOfLists(int userId){
+        return new long[]{
+                getSizeOfListByStatus(userId, VideoConsumingStatus.PLANNED),
+                getSizeOfListByStatus(userId, VideoConsumingStatus.WATCHING),
+                getSizeOfListByStatus(userId, VideoConsumingStatus.COMPLETE)
         };
+    }
+    public long getSizeOfListByStatus(int userId, VideoConsumingStatus status){
+        log.info("Get Size of User {} {} TV List", userId, status);
+        return userTvRepo.countUserTvByUserIdAndStatus(userId, status);
     }
 
     public List<Tv> getTvListByStatus(int userId, VideoConsumingStatus status){

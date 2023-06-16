@@ -20,28 +20,21 @@ public class JSONUserAniBuilder {
     private int score;
 
     public static JSONUserAniBuilder getInstance(JSONObject root, VideoConsumingStatus status){
-        log.info("Return instance of JSONUserAniBuilder");
         return new JSONUserAniBuilder(root, status);
     }
 
     private JSONUserAniBuilder(JSONObject root, VideoConsumingStatus status) {
-        log.info("Instance of JSONUserAniBuilder created");
-        log.info("Root: "+root.toString());
         this.root = root;
         this.status = status;
     }
 
     public JSONUserAniBuilder addProgress(){
-        log.info("Getting progress");
         progress = root.getInt("progress");
-        log.info("Score: "+score);
         return this;
     }
 
     public JSONUserAniBuilder addScore(){
-        log.info("Getting score");
         score = (int) root.getFloat("score");
-        log.info("Score: "+score);
         return this;
     }
 

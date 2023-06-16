@@ -42,24 +42,24 @@ public class UserTvService extends UserVideoContentService {
     }
 
     public List<Tv> getTvListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get tv list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get User {} TV {} list",userId, status);
         List<Tv> tvList = new ArrayList<>();
         for(UserTv userTv : userTvRepo.findUserTvByUserIdAndStatus(userId, status)){
             tvList.add(userTv.getTv());
         }
-        log.info("Tv list: "+tvList);
+        log.debug("Tv list: "+tvList);
         return tvList;
     }
 
     public List<VideoEntertainment> getContentListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get tv list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get User {} Video Entertainment {} TV list",userId, status);
         List<Tv> tvList = getTvListByStatus(userId, status);
-        log.info("Tv list: "+tvList);
+        log.debug("Tv list: "+tvList);
         return tvList.stream().map(tvMapper::toVideoEntertainment).collect(Collectors.toList());
     }
 
     public List<UserTv> getUserTvListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get userTv list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get UserTv {} list by User {}", status, userId);
         return userTvRepo.findUserTvByUserIdAndStatus(userId, status);
     }
 
@@ -80,24 +80,24 @@ public class UserTvService extends UserVideoContentService {
     }
 
     public UserTv getUserTvById(UserTvKey userTvId){
-        log.info("Getting userTv by user tv id");
+        log.info("Get UserTv by User {} and TV {} by UserTvKey", userTvId.getUserId(), userTvId.getTvId());
         UserTv userTv = userTvRepo.findById(userTvId).orElse(new UserTv());
-        log.info("UserTv: "+userTv);
+        log.debug("UserTv: "+userTv);
         return userTv;
     }
 
     public UserTv getUserTvById(int userId, int tvId){
-        log.info("User id: "+userId+"\nTv id: "+tvId);
+        log.info("Get UserTv by User {} and TV {}", userId, tvId);
         return getUserTvById(new UserTvKey(userId, tvId));
     }
 
     public UserTv saveUserTv(UserTv userTv){
-        log.info("Saving \nUserTv: "+userTv);
+        log.info("Save TV {} in User {} list", userTv.getTv().getId(), userTv.getUser().getId());
         return userTvRepo.save(userTv);
     }
 
     public void deleteTvFromUserList(UserTvKey userTvId){
-         log.info("Deleting tv from user list");
+        log.info("Delete TV {} from User {} list", userTvId.getTvId(), userTvId.getUserId());
          userTvRepo.findById(userTvId).ifPresent(userTvRepo::delete);
     }
 }

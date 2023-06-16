@@ -42,6 +42,7 @@ public class AniListClient {
         return parse(query, 1);
     }
     public Pagination<VideoEntertainment> parse(String query, int page) throws TooManyAnimeRequestsException {
+        log.info("Parsing video entertainment anime:\nquery:{}\npage{}", query, page);
         JSONObject root = aniListApiResponse.getAnimeList(query, page);
 
         // get page info
@@ -57,8 +58,8 @@ public class AniListClient {
 
         //parsing Anime List
         List<VideoEntertainment> documents = new ArrayList<>();
-        log.info("---Anime search list parsing---");
-        log.info(query+" "+page);
+        log.debug("---Anime search list parsing---");
+        log.debug(query+" "+page);
         for(int i = 0; i < count; i++){
             //New one
             JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(animeArray.getJSONObject(i));
@@ -165,10 +166,10 @@ public class AniListClient {
         int page = 1;
         List<UserAnime> animeList = new ArrayList<>();
         JSONObject root;
+        log.info("Parsing user {} {} media list", userId, status);
         do {
-            log.info("Page: "+page+" Status: "+status);
             root = aniListApiResponse.getUserMediaList(userId, page, status);
-            log.info(root.toString());
+            log.debug(root.toString());
 
             VideoConsumingStatus consumingStatus = null;
             switch (status){
@@ -177,12 +178,14 @@ public class AniListClient {
                 case COMPLETED: consumingStatus = VideoConsumingStatus.COMPLETE; break;
             }
             if(consumingStatus == null){
+                log.error("Status is null");
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
             }
 
             JSONArray mediaList = root.getJSONArray("mediaList");
             for(int i = 0; i < mediaList.length(); i++){
                 if(page>50){
+                    log.error("Something went wrong; Page is bigger than 50");
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
                 JSONUserAniBuilder aniBuilder = JSONUserAniBuilder.getInstance(mediaList.getJSONObject(i), consumingStatus);

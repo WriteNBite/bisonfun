@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Date;
-import java.util.Arrays;
 
 @Slf4j
 public class JSONMovieBuilder implements  VideoContentBuilder{
@@ -36,13 +35,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      * @return builder with id and title included.
      */
     public static JSONMovieBuilder getInstance(JSONObject root, TmdbApiResponse tmdbApiResponse){
-        log.info("Returning Instance of JSONAniBuilder");
         return new JSONMovieBuilder(root, tmdbApiResponse);
     }
 
     private JSONMovieBuilder(JSONObject root, TmdbApiResponse parser){
-        log.info("Instance of JSONMovieBuilder created");
-        log.info("Root: "+root.toString());
         this.root = root;
         this.tmdbApiResponse = parser;
         addId();
@@ -55,9 +51,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addId() {
-        log.info("Getting id");
         id = root.getInt("id");
-        log.info("Id: "+id);
         return this;
     }
 
@@ -67,28 +61,24 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addIsAnime() {
-        log.info("Check if anime");
         if(id<=0){ //if id hasn't been set
             addId();
         }
         JSONArray keywords = tmdbApiResponse.getMovieKeywords(id);
+        isAnime = false;
         if (keywords != null) { // if keywords are existed
             if (keywords.isEmpty()) {
-                isAnime = false;
-                log.info("IsAnime: "+ false);
                 return this;
             }
             for (int i = 0; i < keywords.length(); i++) {
                 JSONObject keyword = keywords.getJSONObject(i);
                 if (keyword.getInt("id") == 210024) {// 210024 - anime keyword
                     isAnime = true;
-                    log.info("IsAnime: "+ true);
+                    log.info("Movie: "+id+" is Anime");
                     return this;
                 }
             }
         }
-        isAnime = false;
-        log.info("IsAnime: "+ false);
         return this;
     }
     /**
@@ -105,9 +95,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addTitle() {
-        log.info("Getting title");
         title = root.getString("title");
-        log.info("Title: "+title);
         return this;
     }
     /**
@@ -116,13 +104,10 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addDescription() {
-        log.info("Getting description");
         if(root.isNull("overview")){
-           log.warn("Overview is null");
            description = "";
         }else{
            description = root.getString("overview");
-            log.info("Description: "+description);
         }
         return this;
     }
@@ -132,13 +117,11 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addRuntime() {
-        log.info("Getting runtime");
         if(root.isNull("runtime")){
-            log.warn("Runtime is null");
+            log.warn("Runtime is null; Movie: "+id);
             runtime = -1;
         }else{
             runtime = root.getInt("runtime");
-            log.info("Runtime: "+runtime);
         }
         return this;
     }
@@ -148,14 +131,12 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addReleaseDate() {
-        log.info("Getting release date");
         if (root.has("release_date") && !root.isNull("release_date")) {// checks if JSON has "release_date" and it's not null
             String strRelease = root.getString("release_date");
             releaseDate = strRelease.equals("") ? null : Date.valueOf(strRelease);
         } else {
             releaseDate = null;
         }
-        log.info("Release date: "+releaseDate);
         return this;
     }
     /**
@@ -172,14 +153,12 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      * @return builder.
      */
     public JSONMovieBuilder addPoster(int maxSize){
-        log.info("Getting poster");
         if (root.isNull("poster_path")) {
             poster = TMDB.NO_IMAGE.link;
         } else {
             String photoLink = maxSize < 500 ? TMDB.IMAGE_200.link : TMDB.IMAGE_500.link;
             poster = photoLink + root.getString("poster_path");
         }
-        log.info("Poster path: "+poster);
         return this;
     }
     /**
@@ -188,9 +167,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addScore() {
-        log.info("Getting score");
         score = Math.round(root.getFloat("vote_average")*10f)/10f;
-        log.info("Score: "+score);
         return this;
     }
     /**
@@ -199,13 +176,11 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addGenres() {
-        log.info("Getting genres");
         JSONArray JSONGenres = root.getJSONArray("genres");
         genres = new String[JSONGenres.length()];
         for(int i = 0; i < JSONGenres.length(); i++){
             genres[i] = JSONGenres.getJSONObject(i).getString("name");
         }
-        log.info("Genres: "+ Arrays.toString(genres));
         return this;
     }
     /**
@@ -214,7 +189,6 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public JSONMovieBuilder addStatus() {
-        log.info("Getting status");
         String strStatus = root.getString("status");
         switch (strStatus) {
             case "Released":
@@ -234,7 +208,6 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
                 status = VideoContentStatus.CANCELED;
                 break;
         }
-        log.info("Status: "+status);
         return this;
     }
     /**
@@ -243,9 +216,7 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      */
     @Override
     public TMDBMovie build() {
-        log.info("Building TMDB Movie class");
         TMDBMovie movie = new TMDBMovie(id,imdbId, isAnime, title, description, runtime, releaseDate, poster, score, genres, status, studios);
-        log.info("Movie: "+movie);
         return movie;
     }
     /**
@@ -253,13 +224,11 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      * @return builder
      */
     public JSONMovieBuilder addIMDBId(){
-        log.info("Getting IMDB id");
         if(root.isNull("imdb_id")){
             imdbId = null;
-            log.warn("There's no imdb id");
+            log.warn("There's no imdb id; Movie: "+id);
         }else{
             imdbId = root.getString("imdb_id");
-            log.info("IMDB id: "+imdbId);
         }
         return this;
     }
@@ -268,13 +237,11 @@ public class JSONMovieBuilder implements  VideoContentBuilder{
      * @return builder
      */
     public JSONMovieBuilder addStudios(){
-        log.info("Getting studios");
         JSONArray JSONStudios = root.getJSONArray("production_companies");
         studios = new String[JSONStudios.length()];
         for(int i = 0; i < JSONStudios.length(); i++){
             studios[i] = JSONStudios.getJSONObject(i).getString("name");
         }
-        log.info("Studios: "+ Arrays.toString(studios));
         return this;
     }
 }

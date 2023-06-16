@@ -11,6 +11,7 @@ import com.bisonfun.entity.*;
 import com.bisonfun.service.TvService;
 import com.bisonfun.service.UserService;
 import com.bisonfun.service.UserTvService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 @Controller
+@Slf4j
 public class TvController{
     private final AniListClient aniListClient;
     private final TmdbClient tmdbClient;
@@ -46,6 +48,7 @@ public class TvController{
 
     @GetMapping("/tv/{id}")
     public String tvPage(Model model, @PathVariable int id, Principal principal) throws JSONException {
+        log.info("User {} get TV {}", principal == null ? "Unknown" : principal.getName(), id);
         TMDBTVShow show = tmdbClient.parseShowById(id);
 
         if (show.isAnime()) {
@@ -87,8 +90,10 @@ public class TvController{
             return "redirect:"+loginLink;
         }
         if(userTv.getStatus() == null){
+            log.warn("UserTv is null");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        log.info("Update TV {} in User {} List", tvId, principal.getName());
         User user = userService.getUserByUsername(principal.getName());
         Tv dbTv = tvService.updateTv(tvId);
 
@@ -102,6 +107,7 @@ public class TvController{
     @DeleteMapping("/tv/{tvId}")
     public String deleteTvFromList(@PathVariable int tvId, Principal principal){
         User user = userService.getUserByUsername(principal.getName());
+        log.info("Delete TV {} from User {} List", tvId, user.getUsername());
         userTvService.deleteTvFromUserList(new UserTvKey(user.getId(), tvId));
         String tvLink = "/tv/"+tvId;
         return "redirect:" + tvLink;

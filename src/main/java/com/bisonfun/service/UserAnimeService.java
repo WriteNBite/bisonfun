@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,35 +43,28 @@ public class UserAnimeService extends UserVideoContentService {
     }
 
     public List<UserAnime> getUserAnimeListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get userAnime list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get UserAnime {} list by User {}", status, userId);
         return userAnimeRepo.findUserAnimeByUserIdAndStatus(userId, status);
     }
 
     public List<Anime> getAnimeListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Getting "+status+" anime list\nUser id: "+userId);
-        List<Anime> animeList = new ArrayList<>();
-        for(UserAnime userAnime : userAnimeRepo.findUserAnimeByUserIdAndStatus(userId, status)){
-            animeList.add(userAnime.getAnime());
-        }
-        log.info("Anime list: "+animeList);
+        log.info("Get User {} Anime {} list",userId, status);
+        List<Anime> animeList = userAnimeRepo.findUserAnimeByUserIdAndStatus(userId, status).stream().map(UserAnime::getAnime).collect(Collectors.toList());
+        log.debug("Anime list: "+animeList);
         return animeList;
     }
 
     public List<VideoEntertainment> getVideoContentListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Getting "+status+" anime list\nUser id: "+userId);
+        log.info("Get User {} Video Entertainment {} Anime list",userId, status);
         List<Anime> animeList = getAnimeListByStatus(userId, status);
-        log.info("Anime list: "+animeList);
+        log.debug("Anime list: "+animeList);
         return animeList.stream().map(animeMapper::toVideoEntertainment).collect(Collectors.toList());
     }
 
     public List<VideoEntertainment> getVideoContentListByStatusAndType(int userId, VideoConsumingStatus status, VideoContentType type){
-        log.info("Getting "+status+" anime list\nUser id: "+userId);
-        List<VideoEntertainment> animeList = new ArrayList<>();
-        for(UserAnime userAnime : userAnimeRepo.findUserAnimeByUserIdAndStatusAndType(userId, status, type)){
-            Anime anime = userAnime.getAnime();
-            animeList.add(new VideoEntertainment(anime.getId(), true, anime.getType(), anime.getTitle(), null, anime.getYear() > 0 ? Date.valueOf(anime.getYear()+"-1-1") : null, anime.getPoster()));
-        }
-        log.info("Anime list: "+animeList);
+        log.info("Get User {} Video Entertainment {} {} Anime list",userId, status, type);
+        List<VideoEntertainment> animeList = userAnimeRepo.findUserAnimeByUserIdAndStatusAndType(userId, status, type).stream().map(userAnime -> animeMapper.toVideoEntertainment(userAnime.getAnime())).collect(Collectors.toList());
+        log.debug("Anime list: "+animeList);
         return animeList;
     }
 
@@ -94,24 +85,24 @@ public class UserAnimeService extends UserVideoContentService {
     }
 
     public UserAnime getUserAnimeById(UserAnimeKey userAnimeId){
-        log.info("Getting userAnime");
+        log.info("Get UserAnime by User {} and Anime {} by UserAnimeKey", userAnimeId.getUserId(), userAnimeId.getAnimeId());
         UserAnime userAnime = userAnimeRepo.findById(userAnimeId).orElse(new UserAnime());
-        log.info("UserAnime: "+userAnime);
+        log.debug("UserAnime: "+userAnime);
         return userAnime;
     }
 
     public UserAnime getUserAnimeById(int userId, int animeId){
-        log.info("Get userAnime \nUser id: "+userId+"\nAnime id: "+animeId);
+        log.info("Get UserAnime by User {} and Anime {}", userId, animeId);
         return getUserAnimeById(new UserAnimeKey(userId, animeId));
     }
 
     public UserAnime saveUserAnime(UserAnime userAnime){
-        log.info("Saving userAnime");
+        log.info("Save Anime {} in User {} list", userAnime.getAnime().getId(), userAnime.getUser().getId());
         return userAnimeRepo.save(userAnime);
     }
 
     public void deleteAnimeFromUserList(UserAnimeKey userAnimeId){
-        log.info("Deleting anime from user list");
+        log.info("Delete Anime {} from User {} list", userAnimeId.getAnimeId(), userAnimeId.getUserId());
         userAnimeRepo.findById(userAnimeId).ifPresent(userAnimeRepo::delete);
     }
 

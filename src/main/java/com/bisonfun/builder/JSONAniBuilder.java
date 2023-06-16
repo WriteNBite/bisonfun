@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Date;
-import java.util.Arrays;
 
 @Slf4j
 public class JSONAniBuilder implements TVContentBuilder {
@@ -39,13 +38,10 @@ public class JSONAniBuilder implements TVContentBuilder {
      * @return builder with id and title included.
      */
     public static JSONAniBuilder getInstance(JSONObject root){
-        log.info("Returning Instance of JSONAniBuilder");
         return new JSONAniBuilder(root);
     }
 
     private JSONAniBuilder(JSONObject root){
-        log.info("Instance of JSONAniBuilder created");
-        log.info("Root: "+root.toString());
         this.root = root;
         addId();
         addTitle();
@@ -56,9 +52,7 @@ public class JSONAniBuilder implements TVContentBuilder {
      * @return builder
      */
     public JSONAniBuilder addId(){
-        log.info("Getting id");
         id = root.getInt("id");
-        log.info("Id: "+id);
         return this;
     }
 
@@ -77,13 +71,11 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addType() {
-        log.info("Getting type");
         if(root.isNull("format")){
             type = VideoContentType.UNKNOWN;
         }else {
             type = root.getString("format").equalsIgnoreCase("movie") ? VideoContentType.MOVIE : VideoContentType.TV;
         }
-        log.info("Type: "+type);
         return this;
     }
 
@@ -93,11 +85,9 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addTitle() {
-        log.info("Getting title");
         if(!root.isNull("title")) {
             JSONObject jsonTitle = root.getJSONObject("title");
             title = jsonTitle.isNull("english") ? jsonTitle.getString("romaji") : jsonTitle.getString("english");
-            log.info("Title: "+title);
         }else{
             log.error("Title wasn't found\n JSONObject: "+root);
             title = null;
@@ -111,12 +101,8 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addDescription() {
-        log.info("Getting description");
         if(!root.isNull("description")){
             this.description = root.getString("description");
-            log.info("Desc.: "+description);
-        }else{
-            log.warn("There's no description");
         }
         return this;
     }
@@ -127,9 +113,7 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addRuntime() {
-        log.info("Getting runtime");
         this.runtime = root.isNull("duration") ? -1 : root.getInt("duration");
-        log.info("Runtime: "+runtime);
         return this;
     }
 
@@ -139,10 +123,8 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addReleaseDate() {
-        log.info("Getting release date");
         JSONObject jsonReleaseDate = root.getJSONObject("startDate");
         releaseDate = parseDate(jsonReleaseDate);
-        log.info("Release date: "+releaseDate);
         return this;
     }
 
@@ -152,7 +134,6 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addPoster() {
-        log.info("Getting poster");
         JSONObject coverImages = root.getJSONObject("coverImage");
         if(coverImages.has("extraLarge")) {
             this.poster = coverImages.getString("extraLarge");
@@ -161,7 +142,6 @@ public class JSONAniBuilder implements TVContentBuilder {
         }else {
             log.warn("There's no proper image\n"+coverImages);
         }
-        log.info("Poster: "+poster);
         return this;
     }
 
@@ -171,9 +151,7 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addScore() {
-        log.info("Getting score");
         this.score = root.isNull("averageScore") ? 0 : root.getInt("averageScore")/10f;
-        log.info("Score: "+score);
         return this;
     }
 
@@ -183,14 +161,12 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addGenres() {
-        log.info("Getting genres");
         JSONArray JSONGenres = root.getJSONArray("genres");
         String[] genres = new String[JSONGenres.length()];
         for(int i = 0; i < JSONGenres.length(); i++){
             genres[i] = JSONGenres.getString(i);
         }
         this.genres = genres;
-        log.info("Genres: "+ Arrays.toString(genres));
         return this;
     }
 
@@ -200,7 +176,6 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addStatus() {
-        log.info("Getting status");
         if(!root.isNull("status")){
             String strStatus = root.getString("status");
             switch (strStatus) {
@@ -220,9 +195,8 @@ public class JSONAniBuilder implements TVContentBuilder {
                     status = VideoContentStatus.PAUSED;
                     break;
             }
-            log.info("Status: "+status);
         }else{
-            log.warn("Status isn't find");
+            log.warn("Status wasn't find; Anime id: "+id);
         }
         return this;
     }
@@ -233,10 +207,8 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addLastAired() {
-        log.info("Getting last aired date");
         JSONObject jsonLastDate = root.getJSONObject("endDate");
         lastAired = parseDate(jsonLastDate);
-        log.info("Last date: "+lastAired);
         return this;
     }
 
@@ -246,13 +218,11 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public JSONAniBuilder addEpisodes() {
-        log.info("Getting episodes");
         if(root.isNull("episodes")){
-            log.warn("Episode count wasn't found");
+            log.warn("Episode count wasn't found; Anime id: "+id);
             episodes = -1;
         }else{
             episodes =  root.getInt("episodes");
-            log.info("Episodes: "+episodes);
         }
         return this;
     }
@@ -264,9 +234,8 @@ public class JSONAniBuilder implements TVContentBuilder {
     public JSONAniBuilder addIdMAL() {
         if(!root.isNull("idMal")) {
             this.idMAL = root.getInt("idMal");
-            log.info("MAL id: "+idMAL);
         }else{
-            log.warn("No MAL id found");
+            log.warn("No MAL id found; Anime id: "+id);
         }
         return this;
     }
@@ -276,14 +245,12 @@ public class JSONAniBuilder implements TVContentBuilder {
      * @return builder
      */
     public JSONAniBuilder addStudios() {
-        log.info("Getting studios");
         JSONArray JSONStudios = root.getJSONObject("studios").getJSONArray("nodes");
         String[] studios = new String[JSONStudios.length()];
         for(int i = 0; i < JSONStudios.length(); i++){
             studios[i] = JSONStudios.getJSONObject(i).getString("name");
         }
         this.studios = studios;
-        log.info("Studios: "+Arrays.toString(studios));
         return this;
     }
 
@@ -292,14 +259,12 @@ public class JSONAniBuilder implements TVContentBuilder {
      * @return builder
      */
     public JSONAniBuilder addOtherNames() {
-        log.info("Getting other names");
         JSONArray JSONNames = root.getJSONArray("synonyms");
         String[] names = new String[JSONNames.length()];
         for(int i = 0; i < JSONNames.length(); i++){
             names[i] = JSONNames.getString(i);
         }
         otherNames = names;
-        log.info("Other names: "+Arrays.toString(otherNames));
         return this;
     }
 
@@ -308,7 +273,6 @@ public class JSONAniBuilder implements TVContentBuilder {
      * @return builder
      */
     public JSONAniBuilder addRecommendations(){
-        log.info("Getting recommendations");
         JSONArray JSONRec = root.getJSONObject("recommendations").getJSONArray("nodes");
         VideoEntertainment[] recs = new VideoEntertainment[JSONRec.length()];
         for(int i = 0; i < JSONRec.length(); i++){
@@ -320,7 +284,6 @@ public class JSONAniBuilder implements TVContentBuilder {
                     .build();
         }
         recommendations = recs;
-        log.info("Recommendations: "+Arrays.toString(recommendations));
         return this;
     }
 
@@ -330,15 +293,13 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     @Override
     public AniAnime build(){
-        log.info("Building an AniAnime class");
         AniAnime anime = new AniAnime(id, true, type, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes, idMAL, studios, otherNames, recommendations);
-        log.info("Anime: "+ anime);
         return anime;
     }
 
-    private static Date parseDate(JSONObject jsonDate){
+    private Date parseDate(JSONObject jsonDate){
         if(jsonDate.isNull("year") || jsonDate.isNull("month") || jsonDate.isNull("day")){
-            log.warn("Date is null");
+            log.warn("Date is null; Anime id: {}", id);
             return null;
         }
         String date = jsonDate.getInt("year") +

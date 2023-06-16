@@ -44,31 +44,31 @@ public class UserMovieService {
     }
 
     public List<Movie> getMovieListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get movie list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get User {} Movie {} list",userId, status);
         List<Movie> movieList = new ArrayList<>();
         for(UserMovie userMovie : userMovieRepo.findUserMovieByUserIdAndStatus(userId, status)){
             movieList.add(userMovie.getMovie());
         }
-        log.info("Movie list: "+ movieList);
+        log.debug("Movie list: "+ movieList);
         return movieList;
     }
 
     public List<VideoEntertainment> getContentListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get movie list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get User {} Video Entertainment {} Movie list",userId, status);
         List<Movie> movieList = getMovieListByStatus(userId, status);
-        log.info("Movie list: "+ movieList);
+        log.debug("Movie list: "+ movieList);
         return movieList.stream().map(movieMapper::toVideoEntertainment).collect(Collectors.toList());
     }
 
     public List<UserMovie> getUserMovieListByStatus(int userId, VideoConsumingStatus status){
-        log.info("Get userMovie list\nUser id: "+userId+"\nStatus: "+status);
+        log.info("Get UserMovie {} list by User {}", status, userId);
         return userMovieRepo.findUserMovieByUserIdAndStatus(userId, status);
     }
 
     public UserMovie getUserMovieById(UserMovieKey userMovieId){
-        log.info("Getting userMovie by user movie id");
+        log.info("Get UserMovie by User {} and Movie {} by UserMovieKey", userMovieId.getUserId(), userMovieId.getMovieId());
         UserMovie userMovie = userMovieRepo.findById(userMovieId).orElse(new UserMovie());
-        log.info("UserMovie: "+userMovie);
+        log.debug("UserMovie: "+userMovie);
         return userMovie;
     }
 
@@ -94,21 +94,22 @@ public class UserMovieService {
     }
 
     public UserMovie getUserMovieByUsernameAndId(String username, int movieId){
+        log.info("Get UserMovie by User {} and Movie {}", username, movieId);
         return getUserMovieById(userService.getUserByUsername(username).getId(), movieId);
     }
 
     public UserMovie getUserMovieById(int userId, int movieId){
-        log.info("User id: "+userId+"\nMovie id: "+movieId);
+        log.info("Get UserMovie by User {} and Movie {}", userId, movieId);
         return getUserMovieById(new UserMovieKey(userId, movieId));
     }
 
     public UserMovie saveUserMovie(UserMovie userMovie){
-        log.info("Saving \nUserMovie: "+userMovie);
+        log.info("Save Movie {} in User {} list", userMovie.getMovie().getId(), userMovie.getUser().getId());
         return userMovieRepo.save(userMovie);
     }
 
     public void deleteMovieFromUserList(UserMovieKey userMovieId){
-        log.info("Deleting movie from user list");
+        log.info("Delete Movie {} from User {} list", userMovieId.getMovieId(), userMovieId.getUserId());
         userMovieRepo.findById(userMovieId).ifPresent(userMovieRepo::delete);
     }
 }

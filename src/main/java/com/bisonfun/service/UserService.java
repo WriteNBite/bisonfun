@@ -18,21 +18,21 @@ public class UserService {
     }
 
     public User getUserByUsername(String username){
-        log.info("Getting user by username");
+        log.info("Getting User {}", username);
         User user = userRepo.findByUsername(username);
-        log.info("User: "+user);
+        log.debug("User: "+user);
         return user;
     }
 
     public User saveUser(User user){
-        log.info("Saving\n User: "+user);
+        log.info("Saving User {}", user.getUsername());
         return userRepo.save(user);
     }
 
     public boolean existUserByUsernameOrEmail(String username, String email){
-        log.info("Find user with username: "+username+" and email: "+email);
+        log.info("Check existence of User by Username {} and Email {}", username, email);
         boolean exists = userRepo.existsUserByUsernameOrEmail(username, email);
-        log.info("Exists: "+exists);
+        log.info("Existence of User with Username {} and Email {}: {}", username, email, exists);
         return exists;
     }
 }

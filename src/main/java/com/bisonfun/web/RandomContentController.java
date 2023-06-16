@@ -8,6 +8,7 @@ import com.bisonfun.service.UserAnimeService;
 import com.bisonfun.service.UserMovieService;
 import com.bisonfun.service.UserService;
 import com.bisonfun.service.UserTvService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RestController
+@Slf4j
 public class RandomContentController {
     final
     UserAnimeService userAnimeService;
@@ -53,7 +55,7 @@ public class RandomContentController {
         if(user == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-
+        log.info("User {} use random content Anime: {}; Movie: {}; TV: {};", user.getUsername(), anime.orElse("empty"), movie.orElse("empty"), tv.orElse("empty"));
         List<VideoEntertainment> contentList = new ArrayList<>();
 
         if(anime.isPresent()){

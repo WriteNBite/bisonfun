@@ -12,6 +12,7 @@ import com.bisonfun.service.UserService;
 import com.bisonfun.client.anilist.AniListClient;
 import com.bisonfun.client.ContentNotFoundException;
 import com.bisonfun.client.anilist.TooManyAnimeRequestsException;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.security.Principal;
 import static java.util.Arrays.asList;
 
 @Controller
+@Slf4j
 public class AnimeController{
 
     private final UserService userService;
@@ -42,7 +44,7 @@ public class AnimeController{
 
     @GetMapping("/anime/{id}")
     public String animePage(@PathVariable int id, Model model, Principal principal) throws JSONException, TooManyAnimeRequestsException {
-
+        log.info("User {} get Anime {}", principal == null ? "Unknown" : principal.getName(), id);
         AniAnime anime;
         try {
             anime = aniListClient.parseById(id);
@@ -74,6 +76,7 @@ public class AnimeController{
         if (userAnime.getStatus() == null) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        log.info("Update Anime {} in User {} List", animeId, principal.getName());
         Anime dbAnime = animeService.updateAnime(animeId);
 
         User user = userService.getUserByUsername(principal.getName());
@@ -86,6 +89,7 @@ public class AnimeController{
     @DeleteMapping("/anime/{animeId}")
     public String deleteAnimeFromList(@PathVariable int animeId, Principal principal){
         User user = userService.getUserByUsername(principal.getName());
+        log.info("Delete Anime {} from User {} List", animeId, user.getUsername());
         userAnimeService.deleteAnimeFromUserList(new UserAnimeKey(user.getId(), animeId));
         String redirectLink = "/anime/"+animeId;
         return "redirect:"+redirectLink;

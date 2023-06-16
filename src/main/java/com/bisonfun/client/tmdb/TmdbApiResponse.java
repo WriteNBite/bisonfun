@@ -35,7 +35,7 @@ public class TmdbApiResponse {
      */
     @Cacheable("jsonMovie")
     public JSONObject getMovieById(int id){
-        log.info("getMovieById({})", id);
+        log.info("Get Movie: {}", id);
         //Get JSON of movie by id from TMDB
         HttpResponse<String> result = Unirest.get(TMDB.MOVIE.link)
                 .routeParam("movie_id", Integer.toString(id))
@@ -43,7 +43,7 @@ public class TmdbApiResponse {
                 .queryString("language", "en-US")
                 .asString();
 
-        log.info(result.getBody());
+        log.debug(result.getBody());
 
         if(result.getStatus() == 401){
             log.error("Invalid API key (TMDB API key)");
@@ -62,7 +62,7 @@ public class TmdbApiResponse {
      */
     @Cacheable("jsonShow")
     public JSONObject getShowById(int id){
-        log.info("getShowById({})", id);
+        log.info("Get TV: {}", id);
         // get JSON of tv-show by id from TMDB
         HttpResponse<String> result = Unirest.get(TMDB.TV.link)
                 .routeParam("tv_id", Integer.toString(id))
@@ -70,7 +70,7 @@ public class TmdbApiResponse {
                 .queryString("language", "en-US")
                 .asString();
 
-        log.info(result.getBody());
+        log.debug(result.getBody());
 
         if(result.getStatus() == 401){
             log.error("Invalid API key (TMDB API key)");
@@ -89,16 +89,16 @@ public class TmdbApiResponse {
      */
     @Cacheable("movieKeywords")
     public JSONArray getMovieKeywords(int id){
-        log.info("getMovieKeywords({})", id);
+        log.info("Get Keywords of Movie: {}", id);
         HttpResponse<String> result = Unirest.get(TMDB.KEYWORDS_MOVIE.link)
                 .routeParam("movie_id", Integer.toString(id))
                 .queryString("api_key", tmdbKey)
                 .asString();
 
-        log.info(result.getBody());
+        log.debug(result.getBody());
 
         if(result.getStatus() == 401 || result.getStatus() == 404){
-            log.info("Something went wrong");
+            log.error("Something went wrong, got status {} in getMovieKeywords", result.getStatus());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -112,16 +112,16 @@ public class TmdbApiResponse {
      */
     @Cacheable("tvKeywords")
     public JSONArray getShowKeywords(int id){
-        log.info("getShowKeywords({})", id);
+        log.info("Get Keywords of TV Show: {}", id);
         HttpResponse<String> result = Unirest.get(TMDB.KEYWORDS_TV.link)
                 .routeParam("tv_id", Integer.toString(id))
                 .queryString("api_key", tmdbKey)
                 .asString();
 
-        log.info(result.getBody());
+        log.debug(result.getBody());
 
         if(result.getStatus() == 401 || result.getStatus() == 404){
-            log.info("Something went wrong");
+            log.error("Something went wrong, got status {} in getMovieKeywords", result.getStatus());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -136,7 +136,7 @@ public class TmdbApiResponse {
      * @return JSONObject with page info(current page, etc.) and JSONArray with movie\tv JSONObjects.
      */
     public JSONObject getTMDBList(String query, VideoContentType contentType, int page){
-        log.info("getTMDBList({}, {}, {})", query, contentType, page);
+        log.info("Get list of {} by \"{}\" Page: {}", contentType, query, page);
         //get list of content from TMDB
         HttpResponse<String> result = Unirest.get(contentType == VideoContentType.MOVIE ? TMDB.SEARCH_MOVIE.link : TMDB.SEARCH_TV.link)
                 .queryString("api_key", tmdbKey)
@@ -146,7 +146,7 @@ public class TmdbApiResponse {
                 .queryString("include_adult", false)
                 .asString();
 
-        log.info(result.getBody());
+        log.debug(result.getBody());
 
         if(result.getStatus() == 404){
             log.error("Content couldn't be found: "+query);
@@ -172,6 +172,7 @@ public class TmdbApiResponse {
                     .queryString("api_key", tmdbKey)
                     .asString();
         }catch (Exception e){
+            log.error("Caught exception {}", e.getMessage());
             throw new NoAccessException("Can't access to TheMovieDB");
         }
         if(result.getStatus() == 401){
@@ -194,6 +195,7 @@ public class TmdbApiResponse {
                     .queryString("api_key", tmdbKey)
                     .asString();
         }catch (Exception e){
+            log.error("Caught exception {}", e.getMessage());
             throw new NoAccessException("Can't access to TheMovieDB");
         }
         if(result.getStatus() == 401){
@@ -210,7 +212,7 @@ public class TmdbApiResponse {
      */
     @Cacheable("movieRec")
     public JSONObject getMovieRecommendations(int id) throws NoAccessException {
-        log.info("Get movie recommendations");
+        log.info("Get movie recommendations by {} movie", id);
 
         HttpResponse<String> result = Unirest.get(TMDB.RECOMMENDATIONS_MOVIE.link)
                 .routeParam("movie_id", String.valueOf(id))
@@ -231,7 +233,7 @@ public class TmdbApiResponse {
      */
     @Cacheable("tvRec")
     public JSONObject getTvRecommendations(int id) throws NoAccessException {
-        log.info("Get tv recommendations");
+        log.info("Get tv recommendations by {} tv show", id);
 
         HttpResponse<String> result = Unirest.get(TMDB.RECOMMENDATIONS_TV.link)
                 .routeParam("tv_id", String.valueOf(id))

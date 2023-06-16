@@ -10,6 +10,7 @@ import com.bisonfun.entity.*;
 import com.bisonfun.service.MovieService;
 import com.bisonfun.service.UserMovieService;
 import com.bisonfun.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 
 @Controller
+@Slf4j
 public class MovieController {
 
     private final AniListClient aniListClient;
@@ -45,6 +47,7 @@ public class MovieController {
     @GetMapping("/search")
     public String searchProcess(Model model, @RequestParam String query, @RequestParam String type, @RequestParam Optional<Integer> page) throws JSONException, TooManyAnimeRequestsException {
         int actualPage = page.orElse(1);
+        log.info("{} search \"{}\". Page: {}", type, query, actualPage);
 
         Pagination<VideoEntertainment> finderResult;
 
@@ -70,6 +73,7 @@ public class MovieController {
 
     @GetMapping("/movie/{id}")
     public String moviePage(Model model, @PathVariable int id, Principal principal) throws JSONException {
+        log.info("User {} get Movie {}", principal == null ? "Unknown" : principal.getName(), id);
         TMDBMovie movie = tmdbClient.parseMovieById(id);
 
         if (movie.isAnime()) {
@@ -105,8 +109,10 @@ public class MovieController {
             return "redirect:"+loginLink;
         }
         if (userMovie.getStatus() == null) {
+            log.warn("UserMovie is null");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+        log.info("Update Movie {} in User {} List", movieId, principal.getName());
         User user = userService.getUserByUsername(principal.getName());
         Movie dbMovie = movieService.updateMovie(movieId);
 
@@ -119,6 +125,7 @@ public class MovieController {
     @DeleteMapping("/movie/{movieId}")
     public String deleteMovieFromList(@PathVariable int movieId, Principal principal){
         User user = userService.getUserByUsername(principal.getName());
+        log.info("Delete Movie {} from User {} List", movieId, user.getUsername());
         userMovieService.deleteMovieFromUserList(new UserMovieKey(user.getId(), movieId));
         String movieLink = "/movie/"+movieId;
         return "redirect:" + movieLink;

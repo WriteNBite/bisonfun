@@ -2,9 +2,9 @@ package com.bisonfun.web;
 
 import com.bisonfun.entity.User;
 import com.bisonfun.service.UserService;
+import com.bisonfun.service.redis.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -20,18 +20,18 @@ import java.util.*;
 @Slf4j
 public class AuthController {
     private final UserService userService;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final ImageService imageService;
 
     @Autowired
-    public AuthController(UserService userService, RedisTemplate<String, String> redisTemplate) {
+    public AuthController(UserService userService, ImageService imageService) {
         this.userService = userService;
-        this.redisTemplate = redisTemplate;
+        this.imageService = imageService;
     }
 
     @GetMapping("/register")
     public String registerPage(@RequestParam Optional<Boolean> alreadyExist, ModelMap map){
         Random random = new Random();
-        List<String> backgrounds = new ArrayList<>(Objects.requireNonNull(redisTemplate.opsForSet().members("auth-pages-background")));
+        List<String> backgrounds = imageService.getAuthPageBackground();
         map.addAttribute("background", backgrounds.get(random.nextInt(backgrounds.size())));
         map.addAttribute("user", new User());
         map.addAttribute("alreadyExist", alreadyExist.orElse(false));
@@ -71,7 +71,7 @@ public class AuthController {
     @GetMapping("/login")
     public String showLoginPage(@RequestParam Optional<Boolean> successLogin, ModelMap map){
         Random random = new Random();
-        List<String> background = new ArrayList<>(Objects.requireNonNull(redisTemplate.opsForSet().members("auth-pages-background")));
+        List<String> background = imageService.getAuthPageBackground();
         map.addAttribute("background", background.get(random.nextInt(background.size())));
         map.addAttribute("successLogin", successLogin.orElse(false));
         return "login";

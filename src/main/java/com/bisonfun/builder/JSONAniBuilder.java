@@ -9,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class JSONAniBuilder implements TVContentBuilder {
@@ -274,16 +276,21 @@ public class JSONAniBuilder implements TVContentBuilder {
      */
     public JSONAniBuilder addRecommendations(){
         JSONArray JSONRec = root.getJSONObject("recommendations").getJSONArray("nodes");
-        VideoEntertainment[] recs = new VideoEntertainment[JSONRec.length()];
+        List<VideoEntertainment> recs = new ArrayList<>();
         for(int i = 0; i < JSONRec.length(); i++){
-            JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(JSONRec.getJSONObject(i).getJSONObject("mediaRecommendation"));
-            recs[i] = aniBuilder
+            JSONObject recommendation = JSONRec.getJSONObject(i);
+            if(recommendation.isNull("mediaRecommendation")){
+                continue;
+            }
+            JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(recommendation.getJSONObject("mediaRecommendation"));
+            VideoEntertainment rec = aniBuilder
                     .addReleaseDate()
                     .addPoster()
                     .addType()
                     .build();
+            recs.add(rec);
         }
-        recommendations = recs;
+        recommendations = recs.toArray(new VideoEntertainment[0]);
         return this;
     }
 

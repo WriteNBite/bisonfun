@@ -1,6 +1,7 @@
 package com.bisonfun;
 
 import com.bisonfun.model.TMDBMovie;
+import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.client.anilist.AniListClient;
 import com.bisonfun.client.ContentNotFoundException;
@@ -54,7 +55,7 @@ public class DataParserTest {
     }
     @Test
     public void tvRecommendationsTest(){
-        List<VideoEntertainment> tvRecommendations = tmdbClient.parseTVRecommendations(207863);
+        List<TMDBTVShow> tvRecommendations = tmdbClient.parseTVRecommendations(207863);
         assertTrue(tvRecommendations.size() > 0);
     }
 }

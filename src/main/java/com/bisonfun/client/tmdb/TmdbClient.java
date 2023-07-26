@@ -1,6 +1,5 @@
 package com.bisonfun.client.tmdb;
 
-import com.bisonfun.builder.JSONMovieBuilder;
 import com.bisonfun.builder.JSONTVBuilder;
 import com.bisonfun.client.NoAccessException;
 import com.bisonfun.client.Pagination;
@@ -8,6 +7,7 @@ import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.model.enums.VideoContentType;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,29 +23,19 @@ public class TmdbClient {
 
     final
     TmdbApiResponse parser;
+    final Gson gson;
 
     @Autowired
-    public TmdbClient(TmdbApiResponse parser) {
+    public TmdbClient(TmdbApiResponse parser, Gson gson) {
         this.parser = parser;
+        this.gson = gson;
     }
 
     public TMDBMovie parseMovieById(int id) {
 
         JSONObject root = parser.getMovieById(id);
 
-        JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(root, parser);
-
-        return movieBuilder
-                .addDescription()
-                .addRuntime()
-                .addReleaseDate()
-                .addPoster()
-                .addScore()
-                .addGenres()
-                .addStatus()
-                .addIsAnime()
-                .addStudios()
-                .addIMDBId().build();
+        return gson.fromJson(String.valueOf(root), TMDBMovie.class);
     }
 
     public TMDBTVShow parseShowById(int id) {
@@ -80,11 +70,7 @@ public class TmdbClient {
 
         List<VideoEntertainment> movieList = new ArrayList<>();
         for(int i = 0; i < count; i++){
-            JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(data.getJSONObject(i), parser);
-            VideoEntertainment movie = movieBuilder
-                    .addDescription()
-                    .addReleaseDate()
-                    .addPoster().build();
+            VideoEntertainment movie = gson.fromJson(String.valueOf(data.getJSONObject(i)), TMDBMovie.class);
             movieList.add(movie);
         }
         return new Pagination<>(page, count, movieList, lastPage);
@@ -99,16 +85,12 @@ public class TmdbClient {
         }
         List<VideoEntertainment> movieList = new ArrayList<>();
         for(int i = 0; i < movies.length(); i++){
-            JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(movies.getJSONObject(i), parser);
-            VideoEntertainment movie = movieBuilder
-                    .addDescription()
-                    .addReleaseDate()
-                    .addPoster().build();
+            VideoEntertainment movie = gson.fromJson(movies.getJSONObject(i).toString(), TMDBMovie.class);
             movieList.add(movie);
         }
         return movieList;
     }
-    public List<VideoEntertainment> parseMovieRecommendations(int id){
+    public List<TMDBMovie> parseMovieRecommendations(int id){
         JSONArray movies;
         try {
             movies = parser.getMovieRecommendations(id).getJSONArray("results");
@@ -116,13 +98,9 @@ public class TmdbClient {
             log.error(e.getMessage());
             return new ArrayList<>();
         }
-        List<VideoEntertainment> movieList = new ArrayList<>();
+        List<TMDBMovie> movieList = new ArrayList<>();
         for(int i = 0; i < movies.length(); i++){
-            JSONMovieBuilder movieBuilder = JSONMovieBuilder.getInstance(movies.getJSONObject(i), parser);
-            VideoEntertainment movie = movieBuilder
-                    .addDescription()
-                    .addReleaseDate()
-                    .addPoster(200).build();
+            TMDBMovie movie = gson.fromJson(String.valueOf(movies.getJSONObject(i)), TMDBMovie.class);
             movieList.add(movie);
         }
         return movieList;

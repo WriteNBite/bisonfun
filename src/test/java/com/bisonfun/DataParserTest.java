@@ -1,5 +1,6 @@
 package com.bisonfun;
 
+import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.client.anilist.AniListClient;
 import com.bisonfun.client.ContentNotFoundException;
@@ -14,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -49,7 +49,7 @@ public class DataParserTest {
     }
     @Test
     public void movieRecommendationsTest(){
-        List<VideoEntertainment> movieRecommendations = tmdbClient.parseMovieRecommendations(12160);
+        List<TMDBMovie> movieRecommendations = tmdbClient.parseMovieRecommendations(12160);
         assertTrue(movieRecommendations.size() > 0);
     }
     @Test

@@ -38,6 +38,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!-- Exclude the default Jackson dependency -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
@@ -106,6 +113,11 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20230227</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
         <dependency>
             <groupId>com.konghq</groupId>

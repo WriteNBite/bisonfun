@@ -91,7 +91,7 @@ public class MovieController {
 
         UserMovie userMovie = principal == null ? new UserMovie() : userMovieService.getUserMovieByUsernameAndId(principal.getName(), movie.getId());
 
-        List<VideoEntertainment> movieRecommendations = tmdbClient.parseMovieRecommendations(id);
+        List<TMDBMovie> movieRecommendations = tmdbClient.parseMovieRecommendations(id);
 
         model.addAttribute("content", movie);
         model.addAttribute("recommendations", movieRecommendations);

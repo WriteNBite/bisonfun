@@ -17,8 +17,8 @@ public class TmdbMovieDeserializer implements JsonDeserializer<TMDBMovie> {
 
     @Override
     public TMDBMovie deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        if(!json.isJsonObject()){
-            throw new UnsupportedOperationException("JsonElement "+json+" is not JsonObject");
+        if (!json.isJsonObject()) {
+            throw new UnsupportedOperationException("JsonElement " + json + " is not JsonObject");
         }
         root = json.getAsJsonObject();
 
@@ -30,7 +30,7 @@ public class TmdbMovieDeserializer implements JsonDeserializer<TMDBMovie> {
     }
 
     private int getId() throws MissingMemberException {
-        if(!root.has("id")){
+        if (!root.has("id")) {
             MissingMemberException exception = new MissingMemberException("Id");
             log.error(exception.getMessage());
             throw exception;
@@ -38,14 +38,10 @@ public class TmdbMovieDeserializer implements JsonDeserializer<TMDBMovie> {
         return root.get("id").getAsInt();
     }
 
-    private Boolean getIsAnime(){
-        if(!root.has("keywords")){
-            log.error(new MissingMemberException("Keywords").getMessage());
-            return false;
-        }
-        JsonArray keywords = root.getAsJsonArray("keywords");
-        for(JsonElement keyword : keywords){
-            if(keyword.getAsJsonObject().get("id").getAsInt() == 210024){// 210024 - anime keyword
+    private Boolean getIsAnime() {
+        JsonArray keywords = Deserializer.getAsJsonArray(root, "keywords");
+        for (JsonElement keyword : keywords) {
+            if (keyword.getAsJsonObject().get("id").getAsInt() == 210024) {// 210024 - anime keyword
                 return true;
             }
         }
@@ -53,107 +49,55 @@ public class TmdbMovieDeserializer implements JsonDeserializer<TMDBMovie> {
     }
 
     private String getTitle() throws MissingMemberException {
-        if(!root.has("title")){
+        JsonElement element = root.get("title");
+        if (element == null || !element.isJsonPrimitive()) {
             MissingMemberException exception = new MissingMemberException("Title");
             log.error(exception.getMessage());
             throw exception;
         }
-        JsonElement element = root.get("title");
-        if(!element.isJsonPrimitive()){
-            throw new UnsupportedOperationException("Title has wrong type");
-        }
         return element.getAsString();
     }
 
-    private String getDescription(){
-        if(!root.has("overview")){
-            log.error(new MissingMemberException("Overview (Description)").getMessage());
-            return "";
-        }
-        JsonElement element = root.get("overview");
-        if(!element.isJsonPrimitive()){
-            throw new UnsupportedOperationException("The overview is not primitive");
-        }
-        return element.getAsString();
+    private String getDescription() {
+        return Deserializer.getAsString(root ,"overview");
     }
 
-    private int getRuntime(){
-        if(!root.has("runtime")){
-            log.error(new MissingMemberException("Runtime").getMessage());
-            return -1;
-        }
+    private int getRuntime() {
         JsonElement element = root.get("runtime");
-        if(element.isJsonNull()){
+        if (element == null || !element.isJsonPrimitive()) {
+            log.debug(new MissingMemberException("Runtime").getMessage());
             return -1;
-        }else{
-            return element.getAsInt();
         }
+        return element.getAsInt();
     }
 
-    private Date getReleaseDate(){
-        if(!root.has("release_date")){
-            log.error(new MissingMemberException("Release Date").getMessage());
-            return null;
+    private Date getReleaseDate() {
+        String strRelease = Deserializer.getAsString(root, "release_date");
+        if(strRelease == null){
+            strRelease = "";
         }
-        JsonElement element = root.get("release_date");
-        if(element.isJsonNull()){
-            return null;
-        }
-        String strRelease = element.getAsString();
         return strRelease.equals("") ? null : Date.valueOf(strRelease);
     }
 
-    private String getPosterPath(){
-        if(!root.has("poster_path")){
-            log.error(new MissingMemberException("Poster Path").getMessage());
-            return null;
-        }
-        JsonElement element = root.get("poster_path");
-        if(element.isJsonNull()){
-            return null;
-        }
-        return element.getAsString();
+    private String getPosterPath() {
+        return Deserializer.getAsString(root, "poster_path");
     }
 
-    private float getScore(){
-        if(!root.has("vote_average")){
-            log.error(new MissingMemberException("Score").getMessage());
-            return 0;
-        }
-        JsonElement element = root.get("vote_average");
-        if(element.isJsonNull()){
-            return 0;
-        }else{
-            return Math.round(element.getAsFloat()*10f)/10f;
-        }
+    private float getScore() {
+        return Math.round(Deserializer.getAsFloat(root, "vote_average") * 10f) / 10f;
     }
 
-    private String[] getGenres(){
-        if(!root.has("genres")){
-            log.error(new MissingMemberException("Genres").getMessage());
-            return new String[0];
-        }
-        JsonElement element = root.get("genres");
-        if(element.isJsonNull()){
-            return new String[0];
-        }else{
-            JsonArray array = element.getAsJsonArray();
-            List<String> genres = new ArrayList<>();
-            for(JsonElement genre : array){
-                genres.add(genre.getAsJsonObject().get("name").getAsString());
-            }
-            return genres.toArray(new String[0]);
-        }
+    private String[] getGenres() {
+        JsonArray array = Deserializer.getAsJsonArray(root, "genres");
+        return getAsList(array).toArray(new String[0]);
     }
 
-    private VideoContentStatus getStatus(){
-        if(!root.has("status")){
-            MissingMemberException exception = new MissingMemberException("Status");
-            log.error(exception.getMessage());
-            return null;
+    private VideoContentStatus getStatus() {
+        String strStatus = Deserializer.getAsString(root, "status");
+        if(strStatus == null){
+            strStatus = "";
         }
-        String strStatus = root.get("status").getAsString();
-        VideoContentStatus status = null;
+        VideoContentStatus status;
         switch (strStatus) {
             case "Released":
                 status = VideoContentStatus.RELEASED;
@@ -171,38 +115,30 @@ public class TmdbMovieDeserializer implements JsonDeserializer<TMDBMovie> {
             case "Canceled":
                 status = VideoContentStatus.CANCELED;
                 break;
+            default:
+                status = null;
+                break;
         }
         return status;
     }
 
-    public String getImdbId(){
-        if(!root.has("imdb_id")){
-            log.error(new MissingMemberException("IMDB ID").getMessage());
-            return null;
-        }
-        JsonElement element = root.get("imdb_id");
-        if(element.isJsonNull()){
-            log.warn("There's no imdb id; Movie: "+root);
-            return null;
-        }else{
-            return element.getAsString();
-        }
+    private String getImdbId() {
+        return Deserializer.getAsString(root, "imdb_id");
     }
 
-    public String[] getStudios(){
-        if(!root.has("production_companies")){
-            log.error(new MissingMemberException("Production Companies (Studios)").getMessage());
-            return new String[0];
+    private String[] getStudios() {
+        JsonArray array = Deserializer.getAsJsonArray(root, "production_companies");
+        return getAsList(array).toArray(new String[0]);
+    }
+
+    private List<String> getAsList(JsonArray jsonArray){
+        List<String> list = new ArrayList<>();
+        for (JsonElement element : jsonArray) {
+            if(element.isJsonObject()) {
+                JsonObject jsonObject = element.getAsJsonObject();
+                list.add(Deserializer.getAsString(jsonObject, "name"));
+            }
         }
-        JsonElement element =  root.get("production_companies");
-        if(element.isJsonNull()){
-            return new String[0];
-        }
-        JsonArray array = element.getAsJsonArray();
-        List<String> studios = new ArrayList<>();
-        for(JsonElement studio : array){
-            studios.add(studio.getAsJsonObject().get("name").getAsString());
-        }
-        return studios.toArray(new String[0]);
+        return list;
     }
 }

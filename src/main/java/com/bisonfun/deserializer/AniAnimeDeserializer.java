@@ -39,12 +39,11 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private VideoContentType getType() {
-        if (!root.has("format") || !root.get("format").isJsonPrimitive()) {
-            log.debug(new MissingMemberException("Type").getMessage());
+        String format = Deserializer.getAsString(root, "format");
+        if(format == null){
             return VideoContentType.UNKNOWN;
         }
-        JsonElement element = root.get("format");
-        return element.getAsString().equalsIgnoreCase("movie") ? VideoContentType.MOVIE : VideoContentType.TV;
+        return format.equalsIgnoreCase("movie") ? VideoContentType.MOVIE : VideoContentType.TV;
     }
 
     private String getTitle() throws MissingMemberException {
@@ -59,12 +58,8 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private String getDescription() {
-        if (!root.has("description") || !root.get("description").isJsonPrimitive()) {
-            log.debug(new MissingMemberException("Description").getMessage());
-            return "";
-        }
-        JsonElement element = root.get("description");
-        return element.getAsString();
+        String description = Deserializer.getAsString(root, "description");
+        return description == null ? "" : description;
     }
 
     private int getRuntime() {
@@ -86,11 +81,11 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private String getPosterPath() {
-        if (!root.has("coverImage") || !root.get("coverImage").isJsonObject()) {
+        JsonElement element = root.get("coverImage");
+        if (element == null || !element.isJsonObject()) {
             log.debug(new MissingMemberException("Poster Path").getMessage());
             return null;
         }
-        JsonElement element = root.get("coverImage");
         if (element.getAsJsonObject().has("extraLarge")) {
             return element.getAsJsonObject().get("extraLarge").getAsString();
         } else if (element.getAsJsonObject().has("large")) {
@@ -111,12 +106,7 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private String[] getGenres() {
-        JsonElement element = root.get("genres");
-        if (element == null || !element.isJsonArray()) {
-            log.debug(new MissingMemberException("Genres").getMessage());
-            return new String[0];
-        }
-        JsonArray array = element.getAsJsonArray();
+        JsonArray array = Deserializer.getAsJsonArray(root, "genres");
         List<String> genres = new ArrayList<>();
         for (JsonElement genre : array) {
             genres.add(genre.getAsString());
@@ -125,13 +115,11 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private VideoContentStatus getStatus() {
-        if (!root.has("status") || !root.get("status").isJsonPrimitive()) {
-            MissingMemberException exception = new MissingMemberException("Status");
-            log.debug(exception.getMessage());
-            return null;
+        String strStatus = Deserializer.getAsString(root, "status");
+        if(strStatus == null){
+            strStatus = "";
         }
-        String strStatus = root.get("status").getAsString();
-        VideoContentStatus status = null;
+        VideoContentStatus status;
         switch (strStatus) {
             case "FINISHED":
                 status = VideoContentStatus.RELEASED;
@@ -148,20 +136,20 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
             case "CANCELLED":
                 status = VideoContentStatus.CANCELED;
                 break;
+            default:
+                status = null;
+                break;
         }
         return status;
     }
 
     private String[] getStudios() {
-        if (!root.has("studios")) {
+        JsonElement element = root.get("studios");
+        if (element == null || !element.isJsonObject()) {
             log.debug(new MissingMemberException("Studios").getMessage());
             return new String[0];
         }
-        JsonElement element = root.get("studios").getAsJsonObject().get("nodes");
-        if (element == null || !element.isJsonArray()) {
-            return new String[0];
-        }
-        JsonArray array = element.getAsJsonArray();
+        JsonArray array = Deserializer.getAsJsonArray(element.getAsJsonObject(), "nodes");
         List<String> studios = new ArrayList<>();
         for (JsonElement studio : array) {
             studios.add(studio.getAsJsonObject().get("name").getAsString());
@@ -198,12 +186,7 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private String[] getOtherNames() {
-        JsonElement element = root.get("synonyms");
-        if (element == null || !element.isJsonArray()) {
-            log.debug(new MissingMemberException("Other names").getMessage());
-            return new String[0];
-        }
-        JsonArray array = element.getAsJsonArray();
+        JsonArray array = Deserializer.getAsJsonArray(root, "synonyms");
         List<String> genres = new ArrayList<>();
         for (JsonElement genre : array) {
             genres.add(genre.getAsString());
@@ -212,15 +195,12 @@ public class AniAnimeDeserializer implements JsonDeserializer<AniAnime> {
     }
 
     private VideoEntertainment[] getRecommendations(JsonDeserializationContext context) {
-        if (!root.has("recommendations")) {
+        JsonElement element = root.get("recommendations");
+        if (element == null || !element.isJsonObject()) {
             log.debug(new MissingMemberException("Recommendations").getMessage());
             return new VideoEntertainment[0];
         }
-        JsonElement element = root.get("recommendations").getAsJsonObject().get("nodes");
-        if (element == null || !element.isJsonArray()) {
-            return new VideoEntertainment[0];
-        }
-        JsonArray array = element.getAsJsonArray();
+        JsonArray array = Deserializer.getAsJsonArray(element.getAsJsonObject(), "nodes");
         List<VideoEntertainment> recs = new ArrayList<>();
         for (JsonElement rec : array) {
             JsonObject recommendation = rec.getAsJsonObject().get("mediaRecommendation").getAsJsonObject();

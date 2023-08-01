@@ -26,6 +26,15 @@ public final class Deserializer {
         return element.getAsJsonArray();
     }
 
+    public static JsonObject getAsJsonObject(JsonObject root, String jsonObjectName){
+        JsonElement element = root.get(jsonObjectName);
+        if (element == null || !element.isJsonObject()) {
+            log.debug(new MissingMemberException(jsonObjectName, root.toString()).getMessage());
+            return new JsonObject();
+        }
+        return element.getAsJsonObject();
+    }
+
     public static float getAsFloat(JsonObject root, String jsonElementName){
         JsonElement element = root.get(jsonElementName);
         if (element == null || !element.isJsonPrimitive()) {
@@ -33,5 +42,13 @@ public final class Deserializer {
             return 0;
         }
         return element.getAsFloat();
+    }
+    public static int getAsInt(JsonObject root, String jsonElementName){
+        JsonElement element = root.get(jsonElementName);
+        if (element == null || !element.isJsonPrimitive()) {
+            log.debug(new MissingMemberException(jsonElementName, root.toString()).getMessage());
+            return 0;
+        }
+        return element.getAsInt();
     }
 }

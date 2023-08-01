@@ -44,7 +44,7 @@ public class AniListApiResponse {
 
         //get anime list from AniList API
         HttpResponse<String> result = Unirest.post(AniList.GRAPHQL.link)
-                .queryString("query", AnilistQuery.SEARCH.query)
+                .queryString("query", AniListQuery.SEARCH.getQuery())
                 .queryString("variables", variables)
                 .asString();
 
@@ -59,7 +59,7 @@ public class AniListApiResponse {
             log.error("Anime weren't found("+search+");");
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }else if(result.getStatus() == 400){
-            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_ID+"\n"+variables);
+            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AniListQuery.ANIME_BY_ID+"\n"+variables);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -77,7 +77,7 @@ public class AniListApiResponse {
         HttpResponse<String> result;
         try {
             result = Unirest.post(AniList.GRAPHQL.link)
-                    .queryString("query", AnilistQuery.ANIME_TRENDING.query)
+                    .queryString("query", AniListQuery.ANIME_TRENDING.getQuery())
                     .asString();
         }catch (Exception e){
             throw new NoAccessException("No Access to Anilist.co");
@@ -90,7 +90,7 @@ public class AniListApiResponse {
             log.warn("delay in {} seconds", seconds);
             throw new TooManyAnimeRequestsException("Too many requests to Anilist.co. will be available after " + seconds + "seconds", seconds);
         }else if(result.getStatus() == 400){
-            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_ID+"\n");
+            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AniListQuery.ANIME_BY_ID+"\n");
             throw new NoAccessException("No Access to Anilist.co");
         }
 
@@ -112,7 +112,7 @@ public class AniListApiResponse {
 
         //get anime from AniList API
         HttpResponse<String> anime = Unirest.post(AniList.GRAPHQL.link)
-                .queryString("query", AnilistQuery.ANIME_BY_ID.query)
+                .queryString("query", AniListQuery.ANIME_BY_ID.getQuery())
                 .queryString("variables", variables)
                 .asString();
 
@@ -126,7 +126,7 @@ public class AniListApiResponse {
             log.error("Anime {} not found", id);
             throw new ContentNotFoundException("Anime #"+id+" not found");
         }else if(anime.getStatus() == 400){
-            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_ID+"\n"+variables);
+            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AniListQuery.ANIME_BY_ID+"\n"+variables);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -148,7 +148,7 @@ public class AniListApiResponse {
 
         //get anime from AniList API
         HttpResponse<String> anime = Unirest.post(AniList.GRAPHQL.link)
-                .queryString("query", AnilistQuery.ANIME_BY_NAME.query)
+                .queryString("query", AniListQuery.ANIME_BY_NAME.getQuery())
                 .queryString("variables", variables)
                 .asString();
 
@@ -162,7 +162,7 @@ public class AniListApiResponse {
             log.error("Anime \"{}\" not found", name);
             throw new ContentNotFoundException("Anime '"+name+"' not found");
         }else if(anime.getStatus() == 400){
-            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AnilistQuery.ANIME_BY_NAME+"\n"+variables);
+            log.error("Something went wrong:\n"+ AniList.GRAPHQL+"\n"+AniListQuery.ANIME_BY_NAME+"\n"+variables);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -203,7 +203,7 @@ public class AniListApiResponse {
 
         HttpResponse<String> userResponse = Unirest.post(AniList.GRAPHQL.link)
                 .header("Authorization", "Bearer "+token)
-                .queryString("query", AnilistQuery.VIEWER.query)
+                .queryString("query", AniListQuery.VIEWER.getQuery())
                 .asString();
         if(userResponse.getStatus() == 400){
             log.error("Something went wrong: {}", userResponse.getBody());
@@ -230,7 +230,7 @@ public class AniListApiResponse {
 
         //get anime list from AniList API
         HttpResponse<String> result = Unirest.post(AniList.GRAPHQL.link)
-                .queryString("query", AnilistQuery.USER_LIST.query)
+                .queryString("query", AniListQuery.USER_LIST.getQuery())
                 .queryString("variables", variables)
                 .asString();
 

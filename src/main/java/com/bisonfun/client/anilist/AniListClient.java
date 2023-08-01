@@ -1,6 +1,5 @@
 package com.bisonfun.client.anilist;
 
-import com.bisonfun.builder.JSONUserAniBuilder;
 import com.bisonfun.client.ContentNotFoundException;
 import com.bisonfun.client.NoAccessException;
 import com.bisonfun.client.Pagination;
@@ -8,7 +7,6 @@ import com.bisonfun.entity.User;
 import com.bisonfun.model.AniAnime;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.model.enums.MediaListStatus;
-import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.UserAnime;
 import com.bisonfun.service.UserService;
 import com.google.gson.Gson;
@@ -136,29 +134,13 @@ public class AniListClient {
             root = aniListApiResponse.getUserMediaList(userId, page, status);
             log.debug(root.toString());
 
-            VideoConsumingStatus consumingStatus = null;
-            switch (status){
-                case PLANNING: consumingStatus = VideoConsumingStatus.PLANNED; break;
-                case CURRENT: consumingStatus = VideoConsumingStatus.WATCHING; break;
-                case COMPLETED: consumingStatus = VideoConsumingStatus.COMPLETE; break;
-            }
-            if(consumingStatus == null){
-                log.error("Status is null");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            }
-
             JSONArray mediaList = root.getJSONArray("mediaList");
             for(int i = 0; i < mediaList.length(); i++){
                 if(page>50){
                     log.error("Something went wrong; Page is bigger than 50");
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-                JSONUserAniBuilder aniBuilder = JSONUserAniBuilder.getInstance(mediaList.getJSONObject(i), consumingStatus);
-                aniBuilder.addAnime()
-                        .addProgress()
-                        .addScore();
-
-                animeList.add(aniBuilder.build());
+                animeList.add(gson.fromJson(String.valueOf(mediaList.getJSONObject(i)), UserAnime.class));
             }
             page++;
         }while (root.getJSONObject("pageInfo").getBoolean("hasNextPage"));

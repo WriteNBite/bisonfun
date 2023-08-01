@@ -3,6 +3,8 @@ package com.bisonfun.config;
 import com.bisonfun.deserializer.AniAnimeDeserializer;
 import com.bisonfun.deserializer.TmdbMovieDeserializer;
 import com.bisonfun.deserializer.TmdbTvShowDeserializer;
+import com.bisonfun.deserializer.UserAnimeDeserializer;
+import com.bisonfun.entity.UserAnime;
 import com.bisonfun.model.AniAnime;
 import com.bisonfun.model.TMDBMovie;
 import com.bisonfun.model.TMDBTVShow;
@@ -22,6 +24,7 @@ public class GsonConfig {
                 .registerTypeAdapter(TMDBMovie.class, new TmdbMovieDeserializer())
                 .registerTypeAdapter(TMDBTVShow.class, new TmdbTvShowDeserializer())
                 .registerTypeAdapter(AniAnime.class, new AniAnimeDeserializer())
+                .registerTypeAdapter(UserAnime.class, new UserAnimeDeserializer())
                 .registerTypeAdapter(VideoEntertainment.class, new VideoEntertainmentSerializer())
                 .create();
     }

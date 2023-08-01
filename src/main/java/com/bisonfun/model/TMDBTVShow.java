@@ -1,11 +1,16 @@
 package com.bisonfun.model;
 
+import com.bisonfun.client.tmdb.TMDB;
 import com.bisonfun.model.enums.VideoContentStatus;
 import com.bisonfun.model.enums.VideoContentType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 import java.util.Arrays;
 
+@Getter
+@Setter
 public class TMDBTVShow extends TVShow{
 
     protected int seasons;
@@ -18,33 +23,16 @@ public class TMDBTVShow extends TVShow{
         this.networks = networks;
         this.studios = studios;
     }
-
-    public String getPosterBySize(int width){
-        return this.poster.replaceAll("p/w[\\d]+/", "p/w"+width+"/");
+    @Override
+    public String getPoster() {
+        return getPoster(500);
     }
-
-    public int getSeasons() {
-        return seasons;
-    }
-
-    public void setSeasons(int seasons) {
-        this.seasons = seasons;
-    }
-
-    public String[] getNetworks() {
-        return networks;
-    }
-
-    public void setNetworks(String[] networks) {
-        this.networks = networks;
-    }
-
-    public String[] getStudios() {
-        return studios;
-    }
-
-    public void setStudios(String[] studios) {
-        this.studios = studios;
+    public String getPoster(int maxSize) {
+        if(poster == null){
+            return TMDB.NO_IMAGE.link;
+        }
+        String link = maxSize < 500 ? TMDB.IMAGE_200.link : TMDB.IMAGE_500.link;
+        return link + poster;
     }
 
     @Override

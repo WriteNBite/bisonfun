@@ -119,12 +119,17 @@ public class UserAnimeService extends UserVideoContentService {
                 userAnime.setId(dbUserAnime.getId());
                 //set the biggest score
                 userAnime.setScore(Math.max(dbUserAnime.getScore(), userAnime.getScore()));
-                //set the biggest progress
-                userAnime.setEpisodes(Math.max(dbUserAnime.getEpisodes(), userAnime.getEpisodes()));
+
+                //set db progress and status if it has bigger progress
+                if(dbUserAnime.getEpisodes() > userAnime.getEpisodes()){
+                    userAnime.setEpisodes(dbUserAnime.getEpisodes());
+                    userAnime.setStatus(dbUserAnime.getStatus());
+                } else if (dbUserAnime.getEpisodes() == userAnime.getEpisodes()) { //if progress is the same, set status by bigger stage
+                    userAnime.setStatus(userAnime.getStatus().getStage() > dbUserAnime.getStatus().getStage() ? userAnime.getStatus() : dbUserAnime.getStatus());
+                }
+
                 //set user
                 userAnime.setUser(user);
-                //set status with the biggest stage
-                userAnime.setStatus(userAnime.getStatus().getStage() > dbUserAnime.getStatus().getStage() ? userAnime.getStatus() : dbUserAnime.getStatus());
             }else{
                 //set pk
                 userAnime.setId(new UserAnimeKey(user.getId(), userAnime.getAnime().getId()));

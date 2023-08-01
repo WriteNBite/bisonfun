@@ -1,5 +1,7 @@
 package com.bisonfun;
 
+import com.bisonfun.model.TMDBMovie;
+import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.client.anilist.AniListClient;
 import com.bisonfun.client.ContentNotFoundException;
@@ -14,7 +16,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -29,17 +32,17 @@ public class DataParserTest {
     @Test
     public void movieTrendsTest(){
         List<VideoEntertainment> movieTrends = tmdbClient.parseMovieTrends();
-        assertTrue(movieTrends.size() > 0);
+        assertFalse(movieTrends.isEmpty());
     }
     @Test
     public void tvTrendsTest(){
         List<VideoEntertainment> tvTrends = tmdbClient.parseTVTrends();
-        assertTrue(tvTrends.size() > 0);
+        assertFalse(tvTrends.isEmpty());
     }
     @Test
     public void animeTrendsTest() throws TooManyAnimeRequestsException {
         List<VideoEntertainment> animeTrends = aniListClient.parseAnimeTrends();
-        assertTrue(animeTrends.size() > 0);
+        assertFalse(animeTrends.isEmpty());
     }
 
     @Test
@@ -49,12 +52,12 @@ public class DataParserTest {
     }
     @Test
     public void movieRecommendationsTest(){
-        List<VideoEntertainment> movieRecommendations = tmdbClient.parseMovieRecommendations(12160);
-        assertTrue(movieRecommendations.size() > 0);
+        List<TMDBMovie> movieRecommendations = tmdbClient.parseMovieRecommendations(12160);
+        assertFalse(movieRecommendations.isEmpty());
     }
     @Test
     public void tvRecommendationsTest(){
-        List<VideoEntertainment> tvRecommendations = tmdbClient.parseTVRecommendations(207863);
-        assertTrue(tvRecommendations.size() > 0);
+        List<TMDBTVShow> tvRecommendations = tmdbClient.parseTVRecommendations(207863);
+        assertFalse(tvRecommendations.isEmpty());
     }
 }

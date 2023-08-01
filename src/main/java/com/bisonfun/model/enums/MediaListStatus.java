@@ -1,16 +1,18 @@
 package com.bisonfun.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum MediaListStatus {
     PLANNING("PLANNING"),
     CURRENT("CURRENT"),
-    COMPLETED("COMPLETED");
+    COMPLETED("COMPLETED"),
+    PAUSED("PAUSED"),
+    DROPPED("DROPPED");
 
     private final String string;
 
-    private MediaListStatus(String string){
+    MediaListStatus(String string){
         this.string = string;
-    }
-    public String getString(){
-        return string;
     }
 }

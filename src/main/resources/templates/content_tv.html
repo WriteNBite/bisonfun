@@ -256,7 +256,7 @@
         </div>
         <div class="wrapper">
             <div th:each="entertainment : ${recommendations}" class="alert alert-success">
-                <img th:src="${entertainment.poster}" alt="">
+                <img th:src="${entertainment.getPoster(200)}" alt="">
                 <div class="title">
                     <a th:href="@{/tv/{id}(id=${entertainment.id})}" th:text="${entertainment.title}" class="alert-link">Title</a>
                 </div>

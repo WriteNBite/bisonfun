@@ -72,7 +72,7 @@ public class TvController{
             userTv = userTvService.getUserTvById(user.getId(), show.getId());
         }
 
-        List<VideoEntertainment> tvRecommendations = tmdbClient.parseTVRecommendations(id);
+        List<TMDBTVShow> tvRecommendations = tmdbClient.parseTVRecommendations(id);
 
         model.addAttribute("content", show);
         model.addAttribute("recommendations", tvRecommendations);

@@ -52,19 +52,11 @@ public class AniListController {
 
         int viewerId = aniListClient.getViewerId(token);
 
-        //processing planned anime list
-        List<UserAnime> plannedAnime = aniListClient.parseMediaList(viewerId, MediaListStatus.PLANNING);
-        animeService.saveAnimeFromUserAnimeList(plannedAnime);
-        userAnimeService.saveUserList(user, plannedAnime);
-        //processing watching anime list
-        List<UserAnime> watchingAnime = aniListClient.parseMediaList(viewerId, MediaListStatus.CURRENT);
-        animeService.saveAnimeFromUserAnimeList(watchingAnime);
-        userAnimeService.saveUserList(user, watchingAnime);
-        //processing finished anime list
-        List<UserAnime> finishedAnime = aniListClient.parseMediaList(viewerId, MediaListStatus.COMPLETED);
-        animeService.saveAnimeFromUserAnimeList(finishedAnime);
-        userAnimeService.saveUserList(user, finishedAnime);
-
+        for(MediaListStatus status : MediaListStatus.values()){
+            List<UserAnime> userAnimeList = aniListClient.parseMediaList(viewerId, status);
+            animeService.saveAnimeFromUserAnimeList(userAnimeList);
+            userAnimeService.saveUserList(user, userAnimeList);
+        }
 
         String redirectLink = "/users/"+user.getUsername()+"/anime";
         return "redirect:"+redirectLink;

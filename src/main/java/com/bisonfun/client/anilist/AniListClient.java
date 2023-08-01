@@ -1,7 +1,5 @@
 package com.bisonfun.client.anilist;
 
-import com.bisonfun.builder.JSONAniBuilder;
-import com.bisonfun.builder.JSONUserAniBuilder;
 import com.bisonfun.client.ContentNotFoundException;
 import com.bisonfun.client.NoAccessException;
 import com.bisonfun.client.Pagination;
@@ -9,9 +7,9 @@ import com.bisonfun.entity.User;
 import com.bisonfun.model.AniAnime;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.model.enums.MediaListStatus;
-import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.UserAnime;
 import com.bisonfun.service.UserService;
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,11 +28,13 @@ import java.util.List;
 public class AniListClient {
     private final AniListApiResponse aniListApiResponse;
     private final UserService userService;
+    private final Gson gson;
 
     @Autowired
-    public AniListClient(AniListApiResponse aniListApiResponse, UserService userService) {
+    public AniListClient(AniListApiResponse aniListApiResponse, UserService userService, Gson gson) {
         this.aniListApiResponse = aniListApiResponse;
         this.userService = userService;
+        this.gson = gson;
     }
 
     //parse anime lists
@@ -61,14 +61,7 @@ public class AniListClient {
         log.debug("---Anime search list parsing---");
         log.debug(query+" "+page);
         for(int i = 0; i < count; i++){
-            //New one
-            JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(animeArray.getJSONObject(i));
-            VideoEntertainment anime = aniBuilder
-                    .addType()
-                    .addReleaseDate()
-                    .addPoster()
-                    .build();
-
+            VideoEntertainment anime = gson.fromJson(String.valueOf(animeArray.getJSONObject(i)), AniAnime.class);
             documents.add(anime);
         }
         return new Pagination<>(page, count, documents, lastPage);
@@ -84,13 +77,7 @@ public class AniListClient {
         }
         List<VideoEntertainment> trends = new ArrayList<>();
         for(int i = 0; i < animeArray.length(); i++){
-            JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(animeArray.getJSONObject(i));
-            VideoEntertainment anime = aniBuilder
-                    .addType()
-                    .addReleaseDate()
-                    .addPoster()
-                    .build();
-
+            VideoEntertainment anime = gson.fromJson(String.valueOf(animeArray.getJSONObject(i)), AniAnime.class);
             trends.add(anime);
         }
         return trends;
@@ -107,37 +94,13 @@ public class AniListClient {
         return parseAnime(jsonAnime);
     }
     private VideoEntertainment parseAnime(JSONObject jsonAnime){
-        JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(jsonAnime);
-        return aniBuilder
-                .addType()
-                .addDescription()
-                .addRuntime()
-                .addReleaseDate()
-                .addScore()
-                .addGenres()
-                .addStatus()
-                .addPoster().build();
+        return gson.fromJson(String.valueOf(jsonAnime), AniAnime.class);
     }
     //parse anime(as AniAnime)
     public AniAnime parseById(int id) throws ContentNotFoundException, TooManyAnimeRequestsException {
         JSONObject root = aniListApiResponse.getAnimeById(id);
 
-        JSONAniBuilder aniBuilder = JSONAniBuilder.getInstance(root);
-        return aniBuilder
-                .addType()
-                .addDescription()
-                .addRuntime()
-                .addReleaseDate()
-                .addScore()
-                .addGenres()
-                .addStatus()
-                .addPoster()
-                .addIdMAL()
-                .addLastAired()
-                .addEpisodes()
-                .addStudios()
-                .addOtherNames()
-                .addRecommendations().build();
+        return gson.fromJson(String.valueOf(root), AniAnime.class);
     }
 
     public String getAniListToken(User user, String code){
@@ -171,29 +134,13 @@ public class AniListClient {
             root = aniListApiResponse.getUserMediaList(userId, page, status);
             log.debug(root.toString());
 
-            VideoConsumingStatus consumingStatus = null;
-            switch (status){
-                case PLANNING: consumingStatus = VideoConsumingStatus.PLANNED; break;
-                case CURRENT: consumingStatus = VideoConsumingStatus.WATCHING; break;
-                case COMPLETED: consumingStatus = VideoConsumingStatus.COMPLETE; break;
-            }
-            if(consumingStatus == null){
-                log.error("Status is null");
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            }
-
             JSONArray mediaList = root.getJSONArray("mediaList");
             for(int i = 0; i < mediaList.length(); i++){
                 if(page>50){
                     log.error("Something went wrong; Page is bigger than 50");
                     throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-                JSONUserAniBuilder aniBuilder = JSONUserAniBuilder.getInstance(mediaList.getJSONObject(i), consumingStatus);
-                aniBuilder.addAnime()
-                        .addProgress()
-                        .addScore();
-
-                animeList.add(aniBuilder.build());
+                animeList.add(gson.fromJson(String.valueOf(mediaList.getJSONObject(i)), UserAnime.class));
             }
             page++;
         }while (root.getJSONObject("pageInfo").getBoolean("hasNextPage"));

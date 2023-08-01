@@ -53,7 +53,7 @@ public class TmdbApiResponse {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return new JSONObject(result.getBody());
+        return new JSONObject(result.getBody()).put("keywords", getMovieKeywords(id));
     }
     /**
      * Get tv by id. Cacheable as "jsonShow".
@@ -80,7 +80,7 @@ public class TmdbApiResponse {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return new JSONObject(result.getBody());
+        return new JSONObject(result.getBody()).put("keywords", getShowKeywords(id));
     }
     /**
      * Get movie keywords by movie id. Cacheable as "movieKeywords".

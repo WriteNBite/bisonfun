@@ -1,5 +1,8 @@
 package com.bisonfun.service;
 
+import com.bisonfun.dto.ProgressBar;
+import com.bisonfun.dto.user.UserContentListProgress;
+import com.bisonfun.dto.user.UserContentListProgressBar;
 import com.bisonfun.model.TMDBTVShow;
 import com.bisonfun.model.VideoEntertainment;
 import com.bisonfun.model.enums.VideoConsumingStatus;
@@ -33,12 +36,12 @@ public class UserTvService extends UserVideoContentService {
         this.tvMapper = tvMapper;
     }
 
-    public long[] getSizeOfLists(int userId){
-        return new long[]{
-                getSizeOfListByStatus(userId, VideoConsumingStatus.PLANNED),
-                getSizeOfListByStatus(userId, VideoConsumingStatus.WATCHING),
-                getSizeOfListByStatus(userId, VideoConsumingStatus.COMPLETE)
-        };
+    public ProgressBar<VideoConsumingStatus, Long> getListProgressBar(int userId){
+        ProgressBar<VideoConsumingStatus, Long> progressBar = new UserContentListProgressBar();
+        for(VideoConsumingStatus status : VideoConsumingStatus.values()){
+            progressBar.addProgressParts(new UserContentListProgress(status, getSizeOfListByStatus(userId, status)));
+        }
+        return progressBar;
     }
     public long getSizeOfListByStatus(int userId, VideoConsumingStatus status){
         log.info("Get Size of User {} {} TV List", userId, status);

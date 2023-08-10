@@ -1,11 +1,10 @@
 package com.bisonfun.web;
 
+import com.bisonfun.dto.ProgressBar;
+import com.bisonfun.dto.user.UserContentType;
 import com.bisonfun.model.enums.VideoConsumingStatus;
 import com.bisonfun.entity.*;
-import com.bisonfun.service.UserAnimeService;
-import com.bisonfun.service.UserMovieService;
-import com.bisonfun.service.UserService;
-import com.bisonfun.service.UserTvService;
+import com.bisonfun.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -27,14 +26,16 @@ public class UserController {
     private final UserMovieService userMovieService;
     private final UserTvService userTvService;
     private final Environment environment;
+    private final UserStatService userStatService;
 
     @Autowired
-    public UserController(UserService userService, UserAnimeService userAnimeService, UserMovieService userMovieService, UserTvService userTvService, Environment environment) {
+    public UserController(UserService userService, UserAnimeService userAnimeService, UserMovieService userMovieService, UserTvService userTvService, Environment environment, UserStatService userStatService) {
         this.userService = userService;
         this.userAnimeService = userAnimeService;
         this.userMovieService = userMovieService;
         this.userTvService = userTvService;
         this.environment = environment;
+        this.userStatService = userStatService;
     }
 
     @GetMapping("/users/{username}")
@@ -48,17 +49,17 @@ public class UserController {
 
         int userId = user.getId();
 
-        //AnimeList
-        long[] animeList = userAnimeService.getSizeOfLists(userId);
-        model.addAttribute("animeList", animeList);
+        ProgressBar<VideoConsumingStatus, Long> animeListProgressBar = userAnimeService.getListProgressBar(userId);
+        model.addAttribute("animeListProgressBar", animeListProgressBar);
+        ProgressBar<VideoConsumingStatus, Long> movieListProgressBar = userMovieService.getListProgressBar(userId);
+        model.addAttribute("movieListProgressBar", movieListProgressBar);
+        ProgressBar<VideoConsumingStatus, Long> tvListProgressBar = userTvService.getListProgressBar(userId);
+        model.addAttribute("tvListProgressBar", tvListProgressBar);
 
-        //MovieList
-        long[] movieList = userMovieService.getSizeOfLists(userId);
-        model.addAttribute("movieList", movieList);
-
-        //MovieList
-        long[] tvList = userTvService.getSizeOfLists(userId);
-        model.addAttribute("tvList", tvList);
+        ProgressBar<UserContentType, Integer> episodeStatProgressBar = userStatService.getEpisodeStatProgressBar(userId);
+        model.addAttribute("episodeProgressBar", episodeStatProgressBar);
+        ProgressBar<UserContentType, Float> meanScoreProgressBar = userStatService.getMeanScoreStatProgressBar(userId);
+        model.addAttribute("meanScoreProgressBar", meanScoreProgressBar);
 
         return "user";
     }

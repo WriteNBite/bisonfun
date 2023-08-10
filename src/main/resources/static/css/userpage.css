@@ -1,0 +1,36 @@
+.progress{
+    height: 2rem;
+}
+@media (orientation: portrait) {
+    .navbar-brand{
+        margin: auto;
+    }
+    .avatar{
+        width: 400px;
+    }
+    .username{
+        font-size: 500%;
+    }
+    .progress-bars,
+    .stats .stat{
+        width: 300%;
+        font-size: 300%;
+    }
+    .progress-bars div h3 a{
+        font-size: 300%;
+    }
+    .stats .stat h5{
+        font-size: 150%;
+    }
+    .stats h3{
+        font-size: 450%;
+    }
+    .progress-bars div .progress,
+    .stats .stat .progress{
+        height: 5rem;
+        font-size: 80%;
+    }
+    .progress-bars div .description{
+        display: none !important;
+    }
+}

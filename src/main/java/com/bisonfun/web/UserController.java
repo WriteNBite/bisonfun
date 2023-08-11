@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @Slf4j
@@ -73,17 +73,16 @@ public class UserController {
         log.info("User {} anime list page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
-        //Planned List
-        List<UserAnime> plannedList = userAnimeService.getUserAnimeListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
-        model.addAttribute("plannedList", plannedList);
-
-        //Watching List
-        List<UserAnime> watchingList = userAnimeService.getUserAnimeListByStatus(user.getId(), VideoConsumingStatus.WATCHING);
-        model.addAttribute("watchingList", watchingList);
-
-        //Complete List
-        List<UserAnime> completeList = userAnimeService.getUserAnimeListByStatus(user.getId(), VideoConsumingStatus.COMPLETE);
-        model.addAttribute("completeList", completeList);
+        //UserLists
+        Map<VideoConsumingStatus, List<UserAnime>> userLists = new LinkedHashMap<>();
+        boolean empty = true;
+        for(VideoConsumingStatus status : VideoConsumingStatus.values()){
+            List<UserAnime> userAnimeList = userAnimeService.getUserAnimeListByStatus(user.getId(), status);
+            userLists.put(status, userAnimeList);
+            empty = empty && userAnimeList.isEmpty();
+        }
+        model.addAttribute("userLists", userLists);
+        model.addAttribute("isEmpty", empty);
 
         //Principal
         boolean loggedList;
@@ -109,17 +108,16 @@ public class UserController {
         log.info("User {} movie list page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
-        //Planned List
-        List<UserMovie> plannedList = userMovieService.getUserMovieListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
-        model.addAttribute("plannedList", plannedList);
-
-        //Watching List
-        List<UserMovie> watchingList = userMovieService.getUserMovieListByStatus(user.getId(), VideoConsumingStatus.WATCHING);
-        model.addAttribute("watchingList", watchingList);
-
-        //Complete List
-        List<UserMovie> completeList = userMovieService.getUserMovieListByStatus(user.getId(), VideoConsumingStatus.COMPLETE);
-        model.addAttribute("completeList", completeList);
+        //UserLists
+        Map<VideoConsumingStatus, List<UserMovie>> userLists = new LinkedHashMap<>();
+        boolean empty = true;
+        for(VideoConsumingStatus status : VideoConsumingStatus.values()){
+            List<UserMovie> userMovieList = userMovieService.getUserMovieListByStatus(user.getId(), status);
+            userLists.put(status, userMovieList);
+            empty = empty && userMovieList.isEmpty();
+        }
+        model.addAttribute("userLists", userLists);
+        model.addAttribute("isEmpty", empty);
 
         return "user_movie_list";
     }
@@ -133,17 +131,16 @@ public class UserController {
         log.info("User {} tv list page is visited", user.getUsername());
         model.addAttribute("login", user.getUsername());
 
-        //Planned List
-        List<UserTv> plannedList = userTvService.getUserTvListByStatus(user.getId(), VideoConsumingStatus.PLANNED);
-        model.addAttribute("plannedList", plannedList);
-
-        //Watching List
-        List<UserTv> watchingList = userTvService.getUserTvListByStatus(user.getId(), VideoConsumingStatus.WATCHING);
-        model.addAttribute("watchingList", watchingList);
-
-        //Complete List
-        List<UserTv> completeList = userTvService.getUserTvListByStatus(user.getId(), VideoConsumingStatus.COMPLETE);
-        model.addAttribute("completeList", completeList);
+        //UserLists
+        Map<VideoConsumingStatus, List<UserTv>> userLists = new LinkedHashMap<>();
+        boolean empty = true;
+        for(VideoConsumingStatus status : VideoConsumingStatus.values()){
+            List<UserTv> userTvList = userTvService.getUserTvListByStatus(user.getId(), status);
+            userLists.put(status, userTvList);
+            empty = empty && userTvList.isEmpty();
+        }
+        model.addAttribute("userLists", userLists);
+        model.addAttribute("isEmpty", empty);
 
         return "user_tv_list";
     }

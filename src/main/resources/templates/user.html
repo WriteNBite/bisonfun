@@ -21,9 +21,7 @@
     <!-- Core theme CSS (includes Bootstrap)-->
     <link th:href="@{~/css/mainstyles.css}" rel="stylesheet" />
     <link th:href="@{~/css/usercustoms.css}" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"
-        integrity="sha512-sW/w8s4RWTdFFSduOTGtk4isV1+190E/GghVffMA9XczdJ2MDzSzLEubKAs5h0wzgSJOQTRYyaz73L3d6RtJSg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link th:href="@{~/css/userpage.css}" rel="stylesheet" />
     <style>
         img {
             max-width: 100%;
@@ -37,7 +35,7 @@
     <!-- Navigation-->
     <nav class="navbar navbar-light bg-light static-top">
         <div class="container">
-            <a class="navbar-brand" href="/"><img src="" id="icon"> BisonFun <span style="color:purple">User</span></a>
+            <a class="navbar-brand" href="/"><img src="" height="48px" id="icon"> BisonFun <span style="color:purple">User</span></a>
             <form th:action="@{~/search}" method="get" class="form-subscribe">
                 <!-- Search input-->
                 <div class="row">
@@ -87,50 +85,136 @@
         </div>
     </nav>
     <main class="container mt-3">
+
         <div class="row container">
-            <div class="col-4">
-                <img class="alert alert-bisonfun" th:src="@{https://robohash.org/{username}(username=${login}, set='set4')}" alt="">
-                <div class="row">
-                    <div class="btn-group mt-2 container">
-                        <h1 th:text="${login}">Username</h1>
+            <div class="">
+                <img class="mx-auto d-block mt-3 avatar" width="160"
+                     th:src="@{https://api.dicebear.com/6.x/notionists-neutral/svg(seed=${login}, backgroundColor='c0aede')}" alt="avatar">
+                <div class="btn-group mt-2 container">
+                    <h1 th:text="${login}" class="mx-auto username"></h1>
+                </div>
+            </div>
+            <div class="container col-8 progress-bars">
+                <div th:if="${!animeListProgressBar.isEmpty()}" class="pb-3">
+                    <h3><a class="text-decoration-none link-primary" th:href="@{~/users/{username}/anime(username=${username})}">Anime
+                        List</a></h3>
+                    <div class="progress">
+                        <div th:if="${animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null && animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue() > 0}"
+                             class="progress-bar bg-bisonfun" role="progressbar"
+                             th:style="'width:'+${animeListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE)}+'%'" aria-valuenow="67"
+                             aria-valuemin="0" aria-valuemax="261"
+                             th:text="${animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue()}">
+                        </div>
+                        <div class="progress-bar bg" role="progressbar"
+                             th:style="'width: '+${animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null ? (animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null ? 100 - animeListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) - animeListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) : 100 - animeListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE)) : 100}+'%'"
+                             aria-valuenow="179" aria-valuemin="0" aria-valuemax="261"
+                             th:text="${animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null ? (animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null ? animeListProgressBar.getTotal() - animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue() - animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue() : animeListProgressBar.getTotal() - animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getKey()) : animeListProgressBar.getTotal()}">
+                        </div>
+                        <div th:if="${animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null && animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue() > 0}"
+                             class="progress-bar bg-secondary" role="progressbar"
+                             th:style="${'width: '+animeListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED)+'%'}" aria-valuenow="15"
+                             aria-valuemin="0" aria-valuemax="261"
+                             th:text="${animeListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue()}">
+                        </div>
+                    </div>
+                    <div class="d-inline description">
+                        <span th:text="'· '"></span>
+                        <span th:each="animeListProgress : ${animeListProgressBar.getProgressParts()}"
+                              th:if="${animeListProgress.getValue() > 0}"
+                              th:text="${animeListProgress.getKey().getString()+' ('+animeListProgress.getValue()+') · '}">
+                        </span>
+                    </div>
+                </div>
+                <div th:if="${!movieListProgressBar.isEmpty()}" class="pb-3">
+                    <h3><a class="text-decoration-none link-danger" th:href="@{~/users/{username}/movie(username=${username})}">Movie
+                        List</a></h3>
+                    <div class="progress">
+                        <div th:if="${movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null && movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue() > 0}"
+                             class="progress-bar bg-bisonfun" role="progressbar"
+                             th:style="'width:'+${movieListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE)}+'%'" aria-valuenow="67"
+                             aria-valuemin="0" aria-valuemax="261"
+                             th:text="${movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue()}">
+                        </div>
+                        <div class="progress-bar bg-danger" role="progressbar"
+                             th:style="'width: '+${movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null ? (movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null ? 100 - movieListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) - movieListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) : 100 - movieListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE)) : 100}+'%'"
+                             aria-valuenow="179" aria-valuemin="0" aria-valuemax="261"
+                             th:text="${movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null ? (movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null ? movieListProgressBar.getTotal() - movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue() - movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue() : movieListProgressBar.getTotal() - movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getKey()) : movieListProgressBar.getTotal()}">
+                        </div>
+                        <div th:if="${movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null && movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue() > 0}"
+                             class="progress-bar bg-secondary" role="progressbar"
+                             th:style="${'width: '+movieListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED)+'%'}" aria-valuenow="15"
+                             aria-valuemin="0" aria-valuemax="261"
+                             th:text="${movieListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue()}">
+                        </div>
+                    </div>
+                    <div class="d-inline description">
+                        <span th:text="'· '"></span>
+                        <span th:each="movieListProgress : ${movieListProgressBar.getProgressParts()}"
+                              th:if="${movieListProgress.getValue() > 0}"
+                              th:text="${movieListProgress.getKey().getString()+' ('+movieListProgress.getValue()+') · '}">
+                        </span>
+                    </div>
+                </div>
+                <div th:if="${!tvListProgressBar.isEmpty()}" class="pb-3">
+                    <h3><a class="text-decoration-none link-success" th:href="@{~/users/{username}/tv(username=${username})}">TV
+                        List</a></h3>
+                    <div class="progress">
+                        <div th:if="${tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null && tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue() > 0}"
+                             class="progress-bar bg-bisonfun" role="progressbar"
+                             th:style="'width:'+${tvListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE)}+'%'" aria-valuenow="67"
+                             aria-valuemin="0" aria-valuemax="261"
+                             th:text="${tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue()}">
+                        </div>
+                        <div class="progress-bar bg-success" role="progressbar"
+                             th:style="'width: '+${tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null ? (tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null ? 100 - tvListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) - tvListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) : 100 - tvListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE)) : 100}+'%'"
+                             aria-valuenow="179" aria-valuemin="0" aria-valuemax="261"
+                             th:text="${tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE) != null ? (tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null ? tvListProgressBar.getTotal() - tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue() - tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getValue() : tvListProgressBar.getTotal() - tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).COMPLETE).getKey()) : tvListProgressBar.getTotal()}">
+                        </div>
+                        <div th:if="${tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED) != null && tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue() > 0}"
+                             class="progress-bar bg-secondary" role="progressbar"
+                             th:style="${'width: '+tvListProgressBar.getPercentByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED)+'%'}" aria-valuenow="15"
+                             aria-valuemin="0" aria-valuemax="261"
+                             th:text="${tvListProgressBar.getProgressByKey(T(com.bisonfun.model.enums.VideoConsumingStatus).DROPPED).getValue()}">
+                        </div>
+                    </div>
+                    <div class="d-inline description">
+                        <span th:text="'· '"></span>
+                        <span th:each="tvListProgress : ${tvListProgressBar.getProgressParts()}"
+                              th:if="${tvListProgress.getValue() > 0}"
+                              th:text="${tvListProgress.getKey().getString()+' ('+tvListProgress.getValue()+') · '}">
+                        </span>
                     </div>
                 </div>
             </div>
-            <div class="container col-8">
-                <div class="row container border d-flex align-items-center">
-                    <div class="col">
-                        <h3><a class="text-decoration-none link-primary" th:href="@{~/users/{username}/anime(username=${username})}">Anime</a></h3>
-                        <p>Total: <span th:text="${animeList[0]+animeList[1]+animeList[2]}"></span></p>
-                        <p>Planed: <span th:text="${animeList[0]}"></span></p>
-                        <p>Watching: <span th:text="${animeList[1]}"></span></p>
-                        <p>Complete: <span th:text="${animeList[2]}"></span></p>
-                    </div>
-                    <div class="col">
-                        <canvas id="chart" style="display: block; box-sizing: border-box;"></canvas>
-                    </div>
-                </div>
-                <div class="row container border d-flex align-items-center">
-                    <div class="col">
-                        <h3><a class="text-decoration-none link-danger" th:href="@{~/users/{username}/movie(username=${username})}">Movie</a></h3>
-                        <p>Total: <span th:text="${movieList[0]+movieList[1]+movieList[2]}"></span></p>
-                        <p>Planed: <span th:text="${movieList[0]}"></span></p>
-                        <p>Watching: <span th:text="${movieList[1]}"></span></p>
-                        <p>Complete: <span th:text="${movieList[2]}"></span></p>
-                    </div>
-                    <div class="col">
-                        <canvas id="movie-chart" style="display: block; box-sizing: border-box;"></canvas>
+        </div>
+        <div class="row container py-5 stats">
+            <h3 class="d-block text-center mx-auto pt-2">Stats</h3>
+            <div th:if="${!meanScoreProgressBar.isEmpty()}" class="container stat col-8 py-3">
+                <h5>Mean Score</h5>
+                <div class="progress">
+                    <div th:each="meanScoreProgress : ${meanScoreProgressBar.getProgressParts()}"
+                         th:if="${meanScoreProgress.getValue() > 0}"
+                         th:class="'progress-bar '+${meanScoreProgress.getKey() == T(com.bisonfun.dto.user.UserContentType).ANIME ? 'bg-primary' : (meanScoreProgress.getKey() == T(com.bisonfun.dto.user.UserContentType).MOVIE ? 'bg-danger' : 'bg-success')}"
+                         role="progressbar"
+                         th:style="'width: '+${meanScoreProgressBar.getPercentByKey(meanScoreProgress.getKey())}+'%'"
+                         aria-valuenow="34.6" aria-valuemin="0" aria-valuemax="1212"
+                         th:text="${meanScoreProgress.getValue()}+'%'">634
                     </div>
                 </div>
-                <div class="row container border d-flex align-items-center">
-                    <div class="col">
-                        <h3><a class="text-decoration-none link-success" th:href="@{~/users/{username}/tv(username=${username})}">TV</a></h3>
-                        <p>Total: <span th:text="${tvList[0]+tvList[1]+tvList[2]}"></span></p>
-                        <p>Planed: <span th:text="${tvList[0]}"></span></p>
-                        <p>Watching: <span th:text="${tvList[1]}"></span></p>
-                        <p>Complete: <span th:text="${tvList[2]}"></span></p>
-                    </div>
-                    <div class="col">
-                        <canvas id="tv-chart" style="display: block; box-sizing: border-box;"></canvas>
+            </div>
+            <div class="container stat col-8 pb-3">
+                <h5>Episode Watched</h5>
+                <div class="d-inline">
+                    <span th:text="'Total: '+${episodeProgressBar.getTotal()}+' Episodes'">Total: <span>1212</span> Episodes</span>
+                </div>
+                <div class="progress">
+                    <div th:each="episodeProgress : ${episodeProgressBar.getProgressParts()}"
+                         th:if="${episodeProgress.getValue() > 0}"
+                         th:class="'progress-bar '+${episodeProgress.getKey() == T(com.bisonfun.dto.user.UserContentType).ANIME ? 'bg-primary' : (episodeProgress.getKey() == T(com.bisonfun.dto.user.UserContentType).MOVIE ? 'bg-danger' : 'bg-success')}"
+                         role="progressbar"
+                         th:style="'width: '+${episodeProgressBar.getPercentByKey(episodeProgress.getKey())}+'%'"
+                         aria-valuenow="34.6" aria-valuemin="0" aria-valuemax="1212"
+                         th:text="${episodeProgress.getValue()}">634
                     </div>
                 </div>
             </div>
@@ -160,84 +244,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Core theme JS-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script th:inline="javascript">
-        const Anime = {
-            "planned": /*[[${animeList[0]}]]*/ 0,
-            "watching": /*[[${animeList[1]}]]*/ 0,
-            "finished": /*[[${animeList[2]}]]*/ 0
-        };
-        const Movie = {
-            "planned": /*[[${movieList[0]}]]*/ 0,
-            "watching": /*[[${movieList[1]}]]*/ 0,
-            "finished": /*[[${movieList[2]}]]*/ 0
-        };
-        const Tv = {
-            "planned": /*[[${tvList[0]}]]*/ 0,
-            "watching": /*[[${tvList[1]}]]*/ 0,
-            "finished": /*[[${tvList[2]}]]*/ 0
-        };
-
-        const ctx = document.getElementById("chart").getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ["Planned", "Watching", "Complete"],
-                datasets: [{
-                    label: 'food Items',
-                    data: [Anime.planned, Anime.watching, Anime.finished],
-                    backgroundColor: ["#0080ff", "#8000ff", "#0000ff"]
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        const ctm = document.getElementById("movie-chart").getContext('2d');
-        const movieChart = new Chart(ctm, {
-            type: 'doughnut',
-            data: {
-                labels: ["Planned", "Watching", "Complete"],
-                datasets: [{
-                    label: 'food Items',
-                    data: [Movie.planned, Movie.watching, Movie.finished],
-                    backgroundColor: ["#ff8000", "#ff0080", "#ff0000"]
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        //TV Chart
-        const ctT = document.getElementById("tv-chart").getContext('2d');
-        const tvChart = new Chart(ctT, {
-            type: 'doughnut',
-            data: {
-                labels: ["Planned", "Watching", "Complete"],
-                datasets: [{
-                    label: 'food Items',
-                    data: [Tv.planned, Tv.watching, Tv.finished],
-                    backgroundColor: ["#00de80", "#80de00", "#00de00"]
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    </script>
 </body>
 
 </html>

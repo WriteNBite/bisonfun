@@ -92,12 +92,12 @@
         <a th:if="${loggedList}" th:href='${anilist}'>AniList Synchronisation</a>
         <br>
     </div>
-    <div th:if="${plannedList.size()} > 0">
+    <div th:each="userList : ${userLists.entrySet()}" th:if="${userList.getValue() != null && !userList.getValue().isEmpty()}">
         <div class="container">
-            <h4 class="d-inline-block">Planned</h4>
-            <button class="expnd list-button planned-button btn"></button>
+            <h4 class="d-inline-block" th:text="${userList.getKey().getString()}">Planned</h4>
+            <button th:class="'expnd list-button '+${userList.getKey().getString()}+'-button btn'"></button>
         </div>
-        <table id="planned-table" class="table table-bordered">
+        <table th:id="${userList.getKey().getString()}+'-table'" class="table table-bordered">
             <thead>
             <tr class="bg-primary" style="color: white;">
                 <th scope="col" class="cell-number">#</th>
@@ -108,81 +108,21 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="plannedAnime : ${plannedList}">
-                <th class="align-middle text-center" th:text="${plannedList.indexOf(plannedAnime)} + 1" scope="row">1</th>
+            <tr th:each="userAnime : ${userList.getValue()}">
+                <th class="align-middle text-center" th:text="${userList.getValue().indexOf(userAnime)} + 1" scope="row">1</th>
                 <td>
-                    <img class="poster" th:src="${plannedAnime.anime.poster}" alt="">
+                    <img class="poster" th:src="${userAnime.anime.poster}" alt="">
                 </td>
                 <td class="align-middle">
-                    <a th:href="@{/anime/{id}(id=${plannedAnime.anime.id})}" class="link text-decoration-none" th:text="${plannedAnime.anime.title}">title <span th:if="${plannedAnime.anime.year} > 0" th:text="' ('+${plannedAnime.anime.year}+')'">(year)</span></a>
+                    <a th:href="@{/anime/{id}(id=${userAnime.anime.id})}" class="link text-decoration-none" th:text="${userAnime.anime.title}">title <span th:if="${userAnime.anime.year} > 0" th:text="' ('+${userAnime.anime.year}+')'">(year)</span></a>
                 </td>
-                <td class="align-middle text-center" th:text="${plannedAnime.score}">-</td>
-                <td class="align-middle text-center" th:text="${plannedAnime.episodes}">?</td>
+                <td class="align-middle text-center" th:text="${userAnime.score}">-</td>
+                <td class="align-middle text-center" th:text="${userAnime.episodes}">?</td>
             </tr>
             </tbody>
         </table>
     </div>
-    <div th:if="${watchingList.size()} > 0">
-        <div class="container">
-            <h4 class="d-inline-block">Watching</h4>
-            <button class="expnd list-button watching-button btn"></button>
-        </div>
-        <table id="watching-table" class="table table-bordered">
-            <thead>
-            <tr class="bg-primary" style="color: white;">
-                <th scope="col" class="cell-number">#</th>
-                <th scope="col" class="cell-poster">Poster</th>
-                <th scope="col" class="cell-title">Title</th>
-                <th scope="col" class="cell-rating">Rating</th>
-                <th scope="col" class="cell-episodes">Progress</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="watchingAnime : ${watchingList}">
-                <th class="align-middle text-center" th:text="${watchingList.indexOf(watchingAnime)} + 1" scope="row">1</th>
-                <td>
-                    <img class="poster" th:src="${watchingAnime.anime.poster}" alt="">
-                </td>
-                <td class="align-middle">
-                    <a th:href="@{/anime/{id}(id=${watchingAnime.anime.id})}" class="link text-decoration-none" th:text="${watchingAnime.anime.title}">title <span th:if="${watchingAnime.anime.year} > 0" th:text="' ('+${watchingAnime.anime.year}+')'">(year)</span></a>
-                </td>
-                <td class="align-middle text-center" th:text="${watchingAnime.score}">-</td>
-                <td class="align-middle text-center" th:text="${watchingAnime.episodes}">?</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div th:if="${completeList.size()} > 0">
-        <div class="container">
-            <h4 class="d-inline-block">Completed</h4>
-            <button class="expnd list-button completed-button btn"></button>
-        </div>
-        <table id="completed-table" class="table table-bordered">
-            <thead>
-            <tr class="bg-primary" style="color: white;">
-                <th scope="col" class="cell-number">#</th>
-                <th scope="col" class="cell-poster">Poster</th>
-                <th scope="col" class="cell-title">Title</th>
-                <th scope="col" class="cell-rating">Rating</th>
-                <th scope="col" class="cell-episodes">Progress</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="completeAnime : ${completeList}">
-                <th class="align-middle text-center" th:text="${completeList.indexOf(completeAnime)} + 1" scope="row">1</th>
-                <td>
-                    <img class="poster" th:src="${completeAnime.anime.poster}" alt="">
-                </td>
-                <td class="align-middle">
-                    <a th:href="@{/anime/{id}(id=${completeAnime.anime.id})}" class="link text-decoration-none" th:text="${completeAnime.anime.title}">title <span th:if="${completeAnime.anime.year} > 0" th:text="' ('+${completeAnime.anime.year}+')'">(year)</span></a>
-                </td>
-                <td class="align-middle text-center" th:text="${completeAnime.score}">-</td>
-                <td class="align-middle text-center" th:text="${completeAnime.episodes}">?</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div th:if="${completeList.size() < 1 && watchingList.size() < 1 && plannedList.size() < 1}" class="text-center">
+    <div th:if="${isEmpty}" class="text-center">
         <img class="img-fluid empty" th:src="@{~/images/empty-anime.jpg}" alt="">
         <h4 class="text-center">
             Sometimes what a person needs is just one piece of <a th:href="@{~/anime/585}" class="text-decoration-none">anime</a>

@@ -1,12 +1,14 @@
 $(document).ready(function(){
     $('.expnd').click(function(){
         let listType = this.classList;
-        if(listType.contains("planned-button")){
-            $("#planned-table").toggle();
-        }else if(listType.contains("watching-button")){
-            $("#watching-table").toggle();
-        }else if(listType.contains("completed-button")){
-            $("#completed-table").toggle();
+
+        const regex = /expnd list-button (\w+)-button btn/;
+        const match = listType.value.match(regex);
+        if (match) {
+            const customValue = match[1]; // This will contain the "Custom" value
+            $("#"+customValue+"-table").toggle();
+        } else {
+            console.log("No match found");
         }
         this.classList.toggle('list-button__active');
     });

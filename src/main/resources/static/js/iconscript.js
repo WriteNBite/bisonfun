@@ -1,6 +1,6 @@
 async function seasonIcon(){
     let icon = document.getElementById('icon');
-    icon.setAttribute("height", "48px");
+    icon.style.height = '48px'
     let iconLink = await getIcons();
     console.log(iconLink);
     icon.src = iconLink;

@@ -5,8 +5,10 @@ import lombok.SneakyThrows;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import java.io.File;
-import java.nio.file.Files;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Getter
 public enum AniListQuery {
@@ -38,10 +40,18 @@ public enum AniListQuery {
     @SneakyThrows
     AniListQuery(String classpath){
         Resource resource = new ClassPathResource(classpath);
-        File file = resource.getFile();
-        query = new String(Files.readAllBytes(file.toPath()));
+        InputStream inputStream = resource.getInputStream();
+        query = inputStreamToString(inputStream);
 
     }
     private final String query;
 
+    private String inputStreamToString(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        for (int length; (length = inputStream.read(buffer)) != -1; ) {
+            result.write(buffer, 0, length);
+        }
+        return result.toString(StandardCharsets.UTF_8);
+    }
 }

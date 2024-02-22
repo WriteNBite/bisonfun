@@ -21,7 +21,7 @@ public class TmdbTvShowDeserializer implements JsonDeserializer<TMDBTVShow> {
         }
         root = json.getAsJsonObject();
         try {
-            return new TMDBTVShow(getId(), getIsAnime(), getTitle(), getDescription(), getRuntime(), getReleaseDate(), getPosterPath(), getScore(), getGenres(), getStatus(), getLastAired(), getEpisodes(), getSeasons(), getNetworks(), getStudios());
+            return new TMDBTVShow(getId(), getIsAnime(), getTitle(), getDescription(), getRuntime(), getReleaseDate(), getPosterPath(), getScore(), getGenres(), getStatus(), getLastAired(), getEpisodes(), getSeasons(), getNetworks(), getStudios(), getImdbId());
         } catch (MissingMemberException e) {
             throw new RuntimeException(e);
         }
@@ -34,6 +34,10 @@ public class TmdbTvShowDeserializer implements JsonDeserializer<TMDBTVShow> {
             throw exception;
         }
         return root.get("id").getAsInt();
+    }
+
+    private String getImdbId() {
+        return Deserializer.getAsString(Deserializer.getAsJsonObject(root, "external_ids"), "imdb_id");
     }
 
     private Boolean getIsAnime() {
@@ -80,7 +84,7 @@ public class TmdbTvShowDeserializer implements JsonDeserializer<TMDBTVShow> {
         if (strRelease == null) {
             strRelease = "";
         }
-        return strRelease.equals("") ? null : Date.valueOf(strRelease);
+        return strRelease.isEmpty() ? null : Date.valueOf(strRelease);
     }
 
     private String getPosterPath() {
@@ -165,7 +169,7 @@ public class TmdbTvShowDeserializer implements JsonDeserializer<TMDBTVShow> {
         if(strLast == null){
             strLast = "";
         }
-        return strLast.equals("") ? null : Date.valueOf(strLast);
+        return strLast.isEmpty() ? null : Date.valueOf(strLast);
     }
 
     private int getEpisodes() {

@@ -2,8 +2,10 @@ package com.bisonfun.client.tmdb;
 
 import com.bisonfun.client.NoAccessException;
 import com.bisonfun.model.enums.VideoContentType;
+import kong.unirest.GetRequest;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,7 +82,9 @@ public class TmdbApiResponse {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return new JSONObject(result.getBody()).put("keywords", getShowKeywords(id));
+        return new JSONObject(result.getBody())
+                .put("keywords", getShowKeywords(id))
+                .put("external_ids", getTvExternalId(id));
     }
     /**
      * Get movie keywords by movie id. Cacheable as "movieKeywords".
@@ -133,18 +137,22 @@ public class TmdbApiResponse {
      * @param query string query to find movie\tv.
      * @param contentType (Movie or TV).
      * @param page current page of list.
+     * @param year year of release
      * @return JSONObject with page info(current page, etc.) and JSONArray with movie\tv JSONObjects.
      */
-    public JSONObject getTMDBList(String query, VideoContentType contentType, int page){
+    public JSONObject getTMDBList(String query, VideoContentType contentType, int page, Integer year){
         log.info("Get list of {} by \"{}\" Page: {}", contentType, query, page);
         //get list of content from TMDB
-        HttpResponse<String> result = Unirest.get(contentType == VideoContentType.MOVIE ? TMDB.SEARCH_MOVIE.link : TMDB.SEARCH_TV.link)
+        GetRequest request = Unirest.get(contentType == VideoContentType.MOVIE ? TMDB.SEARCH_MOVIE.link : TMDB.SEARCH_TV.link)
                 .queryString("api_key", tmdbKey)
                 .queryString("language", "en-US")
                 .queryString("query", query)
                 .queryString("page", page)
-                .queryString("include_adult", false)
-                .asString();
+                .queryString("include_adult", false);
+        if (year != null){
+            request.queryString("year", year);
+        }
+        HttpResponse<String> result = request.asString();
 
         log.debug(result.getBody());
 
@@ -157,6 +165,10 @@ public class TmdbApiResponse {
         }
 
         return new JSONObject(result.getBody());
+    }
+
+    public JSONObject getTMDBList(String query, VideoContentType contentType, int page){
+        return getTMDBList(query, contentType, page, null);
     }
     /**
      * Get list of movie trends. Cacheable as "movieTrends".
@@ -192,6 +204,30 @@ public class TmdbApiResponse {
         HttpResponse<String> result;
         try {
             result = Unirest.get(TMDB.TRENDS_TV.link)
+                    .queryString("api_key", tmdbKey)
+                    .asString();
+        }catch (Exception e){
+            log.error("Caught exception {}", e.getMessage());
+            throw new NoAccessException("Can't access to TheMovieDB");
+        }
+        if(result.getStatus() == 401){
+            log.error("Invalid API key (TMDB API key)");
+            throw new NoAccessException("Can't access to TheMovieDB (wrong API key)");
+        }
+        return new JSONObject(result.getBody());
+    }
+    /**
+     * Get object with external ids to current tv. Cacheable as "tvExternalIds".
+     * @return JSONObject with external ids ( tmdb id, imdb_id, freebase_mid, freebase_id, tvdb_id, tvrage_id, wikidata_id, facebook_id, instagram_id, twitter_id ).
+     */
+    @SneakyThrows
+    @Cacheable("tvExternalIds")
+    public JSONObject getTvExternalId(int id){
+        log.info("Get tv external ids");
+        HttpResponse<String> result;
+        try {
+            result = Unirest.get(TMDB.EXTERNAL_ID_TV.link)
+                    .routeParam("tv_id", String.valueOf(id))
                     .queryString("api_key", tmdbKey)
                     .asString();
         }catch (Exception e){

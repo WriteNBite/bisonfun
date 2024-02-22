@@ -16,12 +16,14 @@ public class TMDBTVShow extends TVShow{
     protected int seasons;
     protected String[] studios;
     protected String[] networks;
+    protected String imdbId;
 
-    public TMDBTVShow(int id, boolean isAnime, String title, String description, int runtime, Date releaseDate, String poster, float score, String[] genres, VideoContentStatus status, Date lastAired, int episodes, int seasons, String[] networks, String[] studios) {
+    public TMDBTVShow(int id, boolean isAnime, String title, String description, int runtime, Date releaseDate, String poster, float score, String[] genres, VideoContentStatus status, Date lastAired, int episodes, int seasons, String[] networks, String[] studios, String imdbId) {
         super(id, isAnime, VideoContentType.TV, title, description, runtime, releaseDate, poster, score, genres, status, lastAired, episodes);
         this.seasons = seasons;
         this.networks = networks;
         this.studios = studios;
+        this.imdbId = imdbId;
     }
     @Override
     public String getPoster() {
@@ -38,7 +40,8 @@ public class TMDBTVShow extends TVShow{
     @Override
     public String toString() {
         return "TMDBTVShow{" +
-                "seasons=" + seasons +
+                "imdbId='" + imdbId + '\'' +
+                ", seasons=" + seasons +
                 ", studios=" + Arrays.toString(studios) +
                 ", networks=" + Arrays.toString(networks) +
                 ", lastAired=" + lastAired +

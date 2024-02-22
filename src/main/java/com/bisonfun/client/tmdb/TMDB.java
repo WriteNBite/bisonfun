@@ -44,6 +44,7 @@ public enum TMDB {
      * Link to get tv trends
      */
     TRENDS_TV("https://api.themoviedb.org/3/trending/tv/week"),
+    EXTERNAL_ID_TV("https://api.themoviedb.org/3/tv/{tv_id}/external_ids"),
     RECOMMENDATIONS_MOVIE("https://api.themoviedb.org/3/movie/{movie_id}/recommendations"),
     RECOMMENDATIONS_TV("https://api.themoviedb.org/3/tv/{tv_id}/recommendations");
 

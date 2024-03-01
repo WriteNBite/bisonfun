@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -69,17 +70,19 @@ public class UserVideoContentService  {
                 .collect(Collectors.toList());
     }
 
-    public void createUserVideoContent(UserVideoContent userVideoContent, User user, VideoContent videoContent) throws ContentNotFoundException, TooManyAnimeRequestsException {
+    public void updateUserVideoContent(UserVideoContent userVideoContent, User user, VideoContent videoContent) throws ContentNotFoundException, TooManyAnimeRequestsException {
         UserVideoContentKey userVideoContentKey = new UserVideoContentKey(user.getId(), videoContent.getId());
         userVideoContent.setId(userVideoContentKey);
         userVideoContent.setUser(user);
         userVideoContent.setVideoContent(videoContent);
 
-        UserVideoContent dbUserVideoContent = getUserVideoContentById(userVideoContentKey);
-        if(userVideoContent.getEpisodes() != dbUserVideoContent.getEpisodes()){//if episode number changed
-            userVideoContent.setStatus(updateStatus(userVideoContent));
-        } else if (userVideoContent.getStatus() != dbUserVideoContent.getStatus()) {//if status changed
-            userVideoContent.setEpisodes(updateEpisodes(userVideoContent));
+        Optional<UserVideoContent> dbUserVideoContent = getUserVideoContentById(userVideoContentKey);
+        if (dbUserVideoContent.isPresent()) {
+            if (userVideoContent.getEpisodes() != dbUserVideoContent.get().getEpisodes()) {//if episode number changed
+                userVideoContent.setStatus(updateStatus(userVideoContent));
+            } else if (userVideoContent.getStatus() != dbUserVideoContent.get().getStatus()) {//if status changed
+                userVideoContent.setEpisodes(updateEpisodes(userVideoContent));
+            }
         }
         saveUserVideoContent(userVideoContent);
     }
@@ -114,14 +117,14 @@ public class UserVideoContentService  {
         return tvShow;
     }
 
-    private UserVideoContent getUserVideoContentById(UserVideoContentKey userVideoContentKey) {
+    private Optional<UserVideoContent> getUserVideoContentById(UserVideoContentKey userVideoContentKey) {
         log.info("Get User Video Content by User {} and VideoContent {} by UserVideoContentKey", userVideoContentKey.getUserId(), userVideoContentKey.getVideoContentId());
-        UserVideoContent userVideoContent = userVideoContentRepository.findById(userVideoContentKey).orElse(new UserVideoContent());
+        Optional<UserVideoContent> userVideoContent = userVideoContentRepository.findById(userVideoContentKey);
         log.debug("UserVideoContent: "+userVideoContent);
         return userVideoContent;
     }
 
-    public UserVideoContent getUserVideoContentById(int userId, long videoContentId){
+    public Optional<UserVideoContent> getUserVideoContentById(int userId, long videoContentId){
         log.info("Get User Video Content by User {} and Video Content {}", userId, videoContentId);
         return getUserVideoContentById(new UserVideoContentKey(userId, videoContentId));
     }

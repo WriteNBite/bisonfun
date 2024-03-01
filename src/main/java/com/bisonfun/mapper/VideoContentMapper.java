@@ -1,5 +1,8 @@
 package com.bisonfun.mapper;
 
+import com.bisonfun.entity.Anime;
+import com.bisonfun.entity.Movie;
+import com.bisonfun.entity.Tv;
 import com.bisonfun.entity.VideoContent;
 import com.bisonfun.model.AniAnime;
 import com.bisonfun.model.TMDBMovie;
@@ -46,6 +49,24 @@ public interface VideoContentMapper {
     default VideoContent fromTmdbTv(@NotNull TMDBTVShow tv){
         return fromTvModels(null, tv);
     }
+
+    @Mapping(target = "id", expression = "java(nullId())")
+    @Mapping(target = "aniListId", source = "id")
+    @Mapping(target = "category", constant = "ANIME")
+    @Mapping(target = "year", expression = "java(parseYear(anime.getYear()))")
+    VideoContent fromAnime(Anime anime);
+
+    @Mapping(target = "id", expression = "java(nullId())")
+    @Mapping(target = "tmdbId", source = "id")
+    @Mapping(target = "category", constant = "MAINSTREAM")
+    @Mapping(target = "year", expression = "java(parseYear(movie.getYear()))")
+    VideoContent fromMovie(Movie movie);
+
+    @Mapping(target = "id", expression = "java(nullId())")
+    @Mapping(target = "tmdbId", source = "id")
+    @Mapping(target = "category", constant = "MAINSTREAM")
+    @Mapping(target = "year", expression = "java(parseYear(tv.getYear()))")
+    VideoContent fromTv(Tv tv);
 
     @Mapping(target = "releaseDate", source = "year", qualifiedByName = "yearDate")
     @Mapping(target = "anime", source = "category", qualifiedByName = "isAnime")
@@ -104,11 +125,15 @@ public interface VideoContentMapper {
     default Integer contentYear(VideoEntertainment... videoEntertainments) {
         Integer year = null;
         for(VideoEntertainment videoEntertainment : videoEntertainments){
-            if(year == null && videoEntertainment != null && videoEntertainment.getReleaseYear() > 0){
-                year = videoEntertainment.getReleaseYear();
+            if(year == null && videoEntertainment != null){
+                year = parseYear(videoEntertainment.getReleaseYear());
             }
         }
         return year;
+    }
+
+    default Integer parseYear(int year){
+        return year > 0 ? year : null;
     }
 
     default String contentImdbId(TMDBMovie movie, TMDBTVShow tv){

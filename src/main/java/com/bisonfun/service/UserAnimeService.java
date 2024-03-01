@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UserAnimeService extends UserVideoContentService {
+public class UserAnimeService extends UserTvVideoContentService {
     final
     UserAnimeRepository userAnimeRepo;
     final AniListClient aniListClient;

@@ -59,6 +59,25 @@ public class TmdbClient {
         }
         return new Pagination<>(page, count, movieList, lastPage);
     }
+    public VideoEntertainment parseTmdbContentByName(String name, VideoContentType type,  int year){
+        JSONObject root = parser.getTMDBList(name, type, 1, year);
+        JSONArray data = root.getJSONArray("results");
+
+        int count = data.length();
+        if(count <= 0){
+            return null;
+        }
+
+        String stringContent = String.valueOf(data.getJSONObject(0));
+
+        if(type == VideoContentType.MOVIE) {
+            return gson.fromJson(stringContent, TMDBMovie.class);
+        } else if (type == VideoContentType.TV) {
+            return gson.fromJson(stringContent, TMDBTVShow.class);
+        }
+
+        return null;
+    }
     public List<VideoEntertainment> parseMovieTrends(){
         JSONArray movies;
         try {

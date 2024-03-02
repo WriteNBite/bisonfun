@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class UserTvService extends UserVideoContentService {
+public class UserTvService extends UserTvVideoContentService {
     final
     UserTvRepository userTvRepo;
     final TmdbClient tmdbClient;

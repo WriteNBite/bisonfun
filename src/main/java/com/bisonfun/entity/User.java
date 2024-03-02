@@ -41,6 +41,9 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserTv> userTvs = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserVideoContent> userVideoContents = new HashSet<>();
+
     @Override
     public String toString() {
         return "User{" +

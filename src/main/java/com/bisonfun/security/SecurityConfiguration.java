@@ -1,15 +1,15 @@
 package com.bisonfun.security;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration{
 
     static final String LOGIN_FORM_URL = "/login";
     static final String TARGET_AFTER_SUCCESSFUL_LOGIN_PARAM = "target";
@@ -30,14 +30,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         this.authenticationProvider = databaseAuthenticationProvider;
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth){
-        auth.authenticationProvider(authenticationProvider);
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception{
-
+    @Bean
+    public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
         http
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().csrf().disable()
@@ -48,15 +42,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().requestCache().disable()
                 .exceptionHandling().authenticationEntryPoint(loginWithTargetUrlAuthenticationEntryPoint)
 
-                .and().formLogin()
-                .loginPage(LOGIN_FORM_URL).permitAll()
-                .successHandler(redirectToOriginalUrlAuthenticationSuccessHandler)
+                .and().formLogin(loginForm -> loginForm
+                        .loginPage(LOGIN_FORM_URL).permitAll()
+                        .successHandler(redirectToOriginalUrlAuthenticationSuccessHandler)
+                )
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(LOGIN_FORM_URL).permitAll()
+                        .requestMatchers("/cabinet").authenticated()
+                        .requestMatchers("/wtw").authenticated()
+                        .anyRequest().permitAll()
+                )
+                .authenticationProvider(authenticationProvider);
 
-                .and().authorizeRequests()
-                .antMatchers(LOGIN_FORM_URL).permitAll()
-                .antMatchers("/cabinet").authenticated()
-                .antMatchers("/wtw").authenticated()
-                .anyRequest().permitAll();
-
+        return http.build();
     }
 }
